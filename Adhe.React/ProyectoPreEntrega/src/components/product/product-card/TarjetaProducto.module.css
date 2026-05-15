@@ -1,0 +1,48 @@
+.tarjetaProducto {
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 16px;
+  text-align: center;
+  background-color: #fff;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.imagen {
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+}
+
+.nombre {
+  font-size: 1.2rem;
+  margin: 8px 0;
+}
+
+.precio {
+  color: #28a745;
+  font-weight: bold;
+}
+
+.actions {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+  margin-top: 0.75rem;
+}
+
+.button {
+  background: transparent;
+  border: 1px solid #007bff;
+  color: #007bff;
+  padding: 6px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.buttonPrimary {
+  background: #007bff;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+}

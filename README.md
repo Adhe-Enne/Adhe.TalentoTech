@@ -24,7 +24,7 @@ La carpeta [`Adhe.Java`](./Adhe.Java/) contiene los proyectos desarrollados dura
 La carpeta [`Adhe.React`](./Adhe.React/) contiene los ejercicios incrementales desarrollados durante el curso **React JS**:
 
 - Proyecto incremental: Una aplicación en **React** con **TypeScript** y **Vite**, construida de manera evolutiva a través de 16 ejercicios consecutivos.
-  - 📖 Más detalles: [`README`](./Adhe.React/README.md).
+  - 📖 Más detalles: [`README`](./Adhe.React/React-EjerciciosIncrementales/README.md).
 
 ---
 

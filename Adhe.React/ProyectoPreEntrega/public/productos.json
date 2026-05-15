@@ -1,0 +1,44 @@
+[
+  {
+    "id": 101,
+    "imagen": "https://picsum.photos/seed/p1/600/400",
+    "nombre": "Camiseta Minimal",
+    "precio": 19.99,
+    "descripcion": "Camiseta de algodón, corte clásico. Disponible en varios colores."
+  },
+  {
+    "id": 102,
+    "imagen": "https://picsum.photos/seed/p2/600/400",
+    "nombre": "Taza Cerámica",
+    "precio": 9.5,
+    "descripcion": "Taza blanca con acabado mate. Apta para microondas."
+  },
+  {
+    "id": 103,
+    "imagen": "https://picsum.photos/seed/p3/600/400",
+    "nombre": "Libreta A5",
+    "precio": 6.75,
+    "descripcion": "Libreta de tapa dura, 120 páginas, papel reciclado."
+  },
+  {
+    "id": 104,
+    "imagen": "https://picsum.photos/seed/p4/600/400",
+    "nombre": "Mochila Urbana",
+    "precio": 49.99,
+    "descripcion": "Mochila resistente al agua con compartimento para laptop."
+  },
+  {
+    "id": 105,
+    "imagen": "https://picsum.photos/seed/p5/600/400",
+    "nombre": "Auriculares Bluetooth",
+    "precio": 79.9,
+    "descripcion": "Sonido estéreo, cancelación pasiva y batería de larga duración."
+  },
+  {
+    "id": 106,
+    "imagen": "https://picsum.photos/seed/p6/600/400",
+    "nombre": "Lámpara de Mesa",
+    "precio": 34.0,
+    "descripcion": "Lámpara LED con regulador de intensidad y brazo flexible."
+  }
+]
