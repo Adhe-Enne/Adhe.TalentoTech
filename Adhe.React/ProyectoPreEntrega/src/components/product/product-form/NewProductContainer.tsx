@@ -1,6 +1,6 @@
 import React from "react";
 
-import ProductForm from "../components/product/product-form/ProductForm";
+import ProductForm from "./ProductForm";
 
 type FormPayload = {
   nombre: string;

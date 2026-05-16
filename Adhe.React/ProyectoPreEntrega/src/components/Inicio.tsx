@@ -1,17 +1,17 @@
 import React, { type JSX } from "react";
 import { Routes, Route } from "react-router-dom";
 
-import Contacto from "../components/contact/Contacto";
-import Layout from "../components/layout/Layout";
-import CarritoContainer from "../containers/CarritoContainer";
-import HomeContainer from "../containers/HomeContainer";
-import NewProductContainerWrapper from "../containers/NewProductContainerWrapper";
-import NotificationBar from "../containers/NotificationBar";
-import ProductDetailContainer from "../containers/ProductDetailContainer";
 import { FavoritesProvider } from "../contexts/FavoritesContext";
 import { NotificationProvider } from "../contexts/NotificationContext";
 import { ProductsProvider } from "../contexts/ProductsContext";
 import { useCart } from "../hooks/useCart";
+import CarritoContainer from "./cart/CarritoContainer";
+import Contacto from "./contact/Contacto";
+import HomeContainer from "./home/HomeContainer";
+import NotificationBar from "./home/NotificationBar";
+import Layout from "./layout/Layout";
+import ProductDetailContainer from "./product/product-detail/ProductDetailContainer";
+import NewProductContainerWrapper from "./product/product-form/NewProductContainerWrapper";
 
 const Inicio: React.FC = (): JSX.Element => {
   const { getCartQuantity } = useCart();

@@ -1,12 +1,12 @@
 import React, { useCallback } from "react";
 import { useNavigate, type NavigateFunction } from "react-router-dom";
 
-import type { Product } from "../models";
+import type { Product } from "../../models";
 
-import Home from "../components/Home";
-import { useCart } from "../hooks/useCart";
-import { useNotification } from "../hooks/useNotification";
-import { useProducts } from "../hooks/useProducts";
+import { useCart } from "../../hooks/useCart";
+import { useNotification } from "../../hooks/useNotification";
+import { useProducts } from "../../hooks/useProducts";
+import Home from "./Home";
 
 const HomeContainer: React.FC = () => {
   const { setNotification } = useNotification();

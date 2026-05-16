@@ -1,7 +1,7 @@
 import React from "react";
 
-import { type Product } from "../../models";
-import TarjetaProducto from "./product-card/TarjetaProducto";
+import { type Product } from "../../../models";
+import TarjetaProducto from "./TarjetaProducto";
 
 interface ListaProductosProps {
   products: Product[];

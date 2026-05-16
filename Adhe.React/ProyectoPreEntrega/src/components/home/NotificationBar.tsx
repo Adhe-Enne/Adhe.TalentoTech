@@ -1,8 +1,8 @@
 import React from "react";
 
-import type { NotificationVariant } from "../contexts/NotificationContext";
+import type { NotificationVariant } from "../../contexts/NotificationContext";
 
-import { useNotification } from "../hooks/useNotification";
+import { useNotification } from "../../hooks/useNotification";
 
 const NotificationBar: React.FC = () => {
   const { notification, dismiss } = useNotification();

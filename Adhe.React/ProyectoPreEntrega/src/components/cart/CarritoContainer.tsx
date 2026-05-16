@@ -1,8 +1,8 @@
 import React, { useCallback } from "react";
 import { useNavigate, type NavigateFunction } from "react-router-dom";
 
-import Carrito from "../components/Carrito";
-import { useCart } from "../hooks/useCart";
+import { useCart } from "../../hooks/useCart";
+import Carrito from "./Carrito";
 
 const CarritoContainer: React.FC = () => {
   const navigate: NavigateFunction = useNavigate();

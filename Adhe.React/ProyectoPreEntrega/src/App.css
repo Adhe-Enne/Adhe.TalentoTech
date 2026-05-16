@@ -2,7 +2,8 @@
   position: fixed;
   top: 10px;
   right: 10px;
-  padding: 10px 20px;
+  /* dejar espacio a la derecha para el botón de cierre */
+  padding: 10px 40px 10px 20px;
   border-radius: 5px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
   z-index: 1000;
@@ -37,14 +38,20 @@
 
 .notification__close {
   position: absolute;
-  top: 4px;
-  right: 8px;
+  /* centrar verticalmente la X respecto al contenedor */
+  top: 50%;
+  right: 12px;
+  transform: translateY(-50%);
   background: transparent;
   border: none;
   color: inherit;
   font-size: 18px;
   line-height: 1;
   cursor: pointer;
+  padding: 4px; /* área táctil mínima */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .notification__close:focus {

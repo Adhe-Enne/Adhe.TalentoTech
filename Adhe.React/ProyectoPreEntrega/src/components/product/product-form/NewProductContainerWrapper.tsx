@@ -1,10 +1,10 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate, type NavigateFunction } from "react-router-dom";
 
-import type { Product } from "../models";
+import type { Product } from "../../../models";
 
-import { useNotification } from "../hooks/useNotification";
-import { useProducts } from "../hooks/useProducts";
+import { useNotification } from "../../../hooks/useNotification";
+import { useProducts } from "../../../hooks/useProducts";
 import NewProductContainer from "./NewProductContainer";
 
 const NewProductContainerWrapper: React.FC = () => {
@@ -61,6 +61,7 @@ const NewProductContainerWrapper: React.FC = () => {
             }
 
             imageUrl = await fileToDataUrl(p.file);
+
             if (!isMountedRef.current) {
               return;
             }

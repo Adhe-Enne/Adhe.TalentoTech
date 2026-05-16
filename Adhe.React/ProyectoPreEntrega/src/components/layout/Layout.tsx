@@ -1,7 +1,7 @@
 import React from "react";
 import { Link, Outlet } from "react-router-dom";
 
-import Directorio from "../../containers/DirectorioContainer";
+import Directorio from "../contact/DirectorioContainer";
 import "./Layout.css";
 
 interface LayoutProps {
@@ -72,7 +72,7 @@ const Layout: React.FC<LayoutProps> = (props) => {
         <div className="footer-directory container mb-2">
           <Directorio />
         </div>
-        <p className="mb-0">© 2026 E-commerce</p>
+        <p className="mb-0">© {new Date().getFullYear()} E-commerce</p>
       </footer>
     </div>
   );

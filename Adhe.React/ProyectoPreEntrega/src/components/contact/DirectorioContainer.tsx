@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 
-import Directorio from "../components/contact/Directorio";
-import { type Person } from "../models";
+import { type Person } from "../../models";
+import Directorio from "./Directorio";
 
 const DirectorioContainer: React.FC = () => {
   const [error, setError] = useState<string | null>(null);

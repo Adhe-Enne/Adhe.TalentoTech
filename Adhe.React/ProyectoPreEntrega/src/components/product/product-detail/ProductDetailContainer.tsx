@@ -1,12 +1,12 @@
 import React, { useCallback } from "react";
 import { useNavigate, useParams, type NavigateFunction } from "react-router-dom";
 
-import type { Product } from "../models";
+import type { Product } from "../../../models";
 
-import DetalleProducto from "../components/product/product-detail/DetalleProducto";
-import { useCart } from "../hooks/useCart";
-import { useNotification } from "../hooks/useNotification";
-import { useProducts } from "../hooks/useProducts";
+import { useCart } from "../../../hooks/useCart";
+import { useNotification } from "../../../hooks/useNotification";
+import { useProducts } from "../../../hooks/useProducts";
+import DetalleProducto from "./DetalleProducto";
 
 const ProductDetailContainer: React.FC = () => {
   const { addToCart } = useCart();
