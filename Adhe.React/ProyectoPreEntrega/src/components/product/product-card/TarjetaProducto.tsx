@@ -19,11 +19,33 @@ const TarjetaProducto: React.FC<TarjetaProductoProps> = (props) => {
 
   return (
     <div className={`card h-100 ${styles.tarjetaProducto}`}>
-      <img alt={product.nombre} className={`card-img-top ${styles.imagen}`} src={product.imagen} />
+      <button
+        aria-label={`Ver detalles de ${product.nombre}`}
+        className={styles.imageWrapper}
+        onClick={() => onClick?.(product)}
+        type="button"
+      >
+        <img alt={product.nombre} className={styles.imagen} src={product.imagen} />
+        <button
+          aria-label={fav ? "Eliminar favorito" : "Marcar favorito"}
+          aria-pressed={fav}
+          className={styles.favButton}
+          onClick={(e) => {
+            e.stopPropagation();
+            toggleFavorite(product.id);
+          }}
+          title={fav ? "Eliminar favorito" : "Marcar favorito"}
+          type="button"
+        >
+          <span aria-hidden="true">{fav ? "♥" : "♡"}</span>
+        </button>
+        <span className={"badge-price " + styles.priceBadge}>${product.precio.toFixed(2)}</span>
+      </button>
+
       <div className="card-body d-flex flex-column">
         <h5 className="card-title">{product.nombre}</h5>
-        <p className="card-text text-success fw-bold">${product.precio.toFixed(2)}</p>
-        <div className="mt-auto d-flex gap-2">
+
+        <div className={`d-flex gap-2 ${styles.actions}`}>
           {onClick && (
             <button className="btn btn-outline-primary btn-sm" onClick={() => onClick(product)}>
               Ver detalle
@@ -35,20 +57,6 @@ const TarjetaProducto: React.FC<TarjetaProductoProps> = (props) => {
               Añadir
             </button>
           )}
-
-          <button
-            aria-label={fav ? "Eliminar favorito" : "Marcar favorito"}
-            aria-pressed={fav}
-            className={`btn btn-sm ${fav ? "btn-danger" : "btn-outline-danger"}`}
-            onClick={(e) => {
-              e.stopPropagation();
-              toggleFavorite(product.id);
-            }}
-            title={fav ? "Eliminar favorito" : "Marcar favorito"}
-            type="button"
-          >
-            <span aria-hidden="true">{fav ? "♥" : "♡"}</span>
-          </button>
         </div>
       </div>
     </div>

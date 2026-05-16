@@ -19,20 +19,17 @@ export const FavoritesProvider: React.FC<ProviderProps> = (props) => {
 
   const toggleFavorite: (id: number) => void = useCallback(
     (id: number) => {
-      let willAdd: boolean | undefined;
+      const willAdd: boolean = !store.has(id);
 
       setStore((prev) => {
-        willAdd = !prev.has(id);
         const next: Set<number> = new Set(prev);
         willAdd ? next.add(id) : next.delete(id);
         return next;
       });
 
-      if (willAdd !== undefined) {
-        setNotification(willAdd ? "Añadido a favoritos" : "Eliminado de favoritos", 3000, willAdd ? "info" : "warning");
-      }
+      setNotification(willAdd ? "Añadido a favoritos" : "Eliminado de favoritos", 3000, willAdd ? "info" : "warning");
     },
-    [setNotification],
+    [store, setNotification],
   );
 
   useEffect(() => {

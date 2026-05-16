@@ -87,3 +87,51 @@
     transform: translateY(0);
   }
 }
+
+/* App-wide refinements for e-commerce look */
+:root {
+  --brand-accent: #17a2b8; /* accent color */
+  --card-radius: 12px;
+}
+
+.main-wrapper {
+  padding: 2.5rem 1rem;
+}
+
+.site-header {
+  box-shadow: 0 4px 14px rgba(39, 62, 81, 0.06);
+}
+
+.product-grid-row {
+  gap: 1.25rem;
+}
+
+.footer {
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.02), transparent);
+}
+
+/* Cart list specific styles */
+.cart-list .list-group {
+  margin-top: 1rem;
+  border: none;
+}
+
+.cart-list .list-group-item {
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 8px;
+  margin-bottom: 0.75rem;
+  padding: 0.85rem 1rem;
+  background: #ffffff;
+}
+
+.cart-list .list-group-item img {
+  width: 64px;
+  height: 64px;
+  object-fit: cover;
+  border-radius: 6px;
+}
+
+.cart-list .d-flex.justify-content-between.mt-3 {
+  border-top: 1px dashed rgba(0, 0, 0, 0.06);
+  padding-top: 12px;
+}

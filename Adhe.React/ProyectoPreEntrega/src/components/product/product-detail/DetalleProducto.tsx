@@ -14,14 +14,19 @@ const DetalleProducto: React.FC<DetalleProductoProps> = (props) => {
 
   return (
     <div className="container">
-      <div className="row gx-4 gy-3 justify-content-center">
+      <div className="row gx-4 gy-3 justify-content-center product-detail">
         <div className="col-12 col-md-5">
-          <img alt={product.nombre} className="img-fluid rounded" src={product.imagen} />
+          <div className="card">
+            <img alt={product.nombre} className="img-fluid rounded-top" src={product.imagen} />
+          </div>
         </div>
         <div className="col-12 col-md-5">
           <h2>{product.nombre}</h2>
-          <p>{product.descripcion ?? "Sin descripción"}</p>
-          <p className="fw-bold">${product.precio.toFixed(2)}</p>
+          <div className="mb-3 text-muted">{product.descripcion ?? "Sin descripción"}</div>
+
+          <div className="mb-3">
+            <span className="badge-price">${product.precio.toFixed(2)}</span>
+          </div>
 
           <div className="d-flex align-items-center gap-2 mt-3">
             <label className="mb-0" htmlFor="cantidad-input">
@@ -36,14 +41,14 @@ const DetalleProducto: React.FC<DetalleProductoProps> = (props) => {
               type="number"
               value={cantidad}
             />
-            <button className="btn btn-primary" onClick={() => onAddToCart(product, cantidad)}>
+            <button className="btn btn-cta" onClick={() => onAddToCart(product, cantidad)}>
               Añadir al carrito
             </button>
           </div>
 
           {onBack && (
             <div className="mt-3">
-              <button className="btn btn-secondary" onClick={onBack}>
+              <button className="btn btn-ghost" onClick={onBack}>
                 Volver
               </button>
             </div>
