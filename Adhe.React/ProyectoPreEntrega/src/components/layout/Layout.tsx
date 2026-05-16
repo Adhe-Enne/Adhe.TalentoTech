@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef, useEffect, useCallback } from "react";
 import { Link, Outlet } from "react-router-dom";
 
 import Directorio from "../contact/DirectorioContainer";
@@ -11,9 +11,25 @@ interface LayoutProps {
 
 const Layout: React.FC<LayoutProps> = (props) => {
   const { cartCount, children } = props;
+  const headerRef: React.RefObject<HTMLElement | null> = useRef<HTMLElement | null>(null);
+
+  const updateHeaderOffset: () => void = useCallback(() => {
+    try {
+      const h: number = headerRef.current?.offsetHeight ?? 0;
+      document.documentElement.style.setProperty("--header-offset", `${h}px`);
+    } catch {
+      // ignore
+    }
+  }, []);
+
+  useEffect(() => {
+    updateHeaderOffset();
+    window.addEventListener("resize", updateHeaderOffset);
+    return (): void => window.removeEventListener("resize", updateHeaderOffset);
+  }, [updateHeaderOffset]);
   return (
     <div className="layout">
-      <header className="header">
+      <header className="header" ref={headerRef}>
         <nav className="navbar navbar-expand-lg navbar-dark bg-primary">
           <div className="container">
             <Link className="navbar-brand" to="/">

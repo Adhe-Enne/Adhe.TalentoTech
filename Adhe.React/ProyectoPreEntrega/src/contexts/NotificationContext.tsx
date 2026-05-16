@@ -4,15 +4,16 @@ import type { ProviderProps } from "../models/ProviderProps";
 
 export type NotificationVariant = "success" | "info" | "warning" | "danger" | "primary" | "secondary";
 
-export type NotificationPayload = {
+export type NotificationItem = {
+  id: number;
   message: string;
   variant?: NotificationVariant;
 };
 
 export type NotificationContextType = {
-  notification: NotificationPayload | null;
+  notifications: NotificationItem[];
   setNotification: (message: string | null, duration?: number, variant?: NotificationVariant) => void;
-  dismiss: () => void;
+  dismiss: (id?: number) => void;
 };
 
 type SetNotificationFn = (message: string | null, duration?: number, variant?: NotificationVariant) => void;
@@ -23,49 +24,75 @@ const NotificationContext: React.Context<NotificationContextType | undefined> = 
 
 export const NotificationProvider: React.FC<ProviderProps> = (props) => {
   const { children } = props;
-  const [notif, setNotif] = useState<NotificationPayload | null>(null);
-  const atimerRef: { current: number | null } = useRef<number | null>(null);
+  const [notifs, setNotifs] = useState<NotificationItem[]>([]);
+  const idRef: React.RefObject<number> = useRef<number>(1);
+  const timersRef: React.RefObject<Map<number, number>> = useRef<Map<number, number>>(new Map());
 
-  const dismiss: () => void = useCallback((): void => {
-    if (atimerRef.current !== null) {
-      globalThis.clearTimeout(atimerRef.current);
-      atimerRef.current = null;
+  const clearTimer: (id: number) => void = useCallback((id: number) => {
+    const t: number | undefined = timersRef.current.get(id);
+    if (t !== undefined) {
+      globalThis.clearTimeout(t);
+      timersRef.current.delete(id);
     }
-    setNotif(null);
   }, []);
+
+  const dismiss: (id?: number) => void = useCallback(
+    (id?: number): void => {
+      if (id === undefined) {
+        // dismiss all
+        timersRef.current.forEach((t) => globalThis.clearTimeout(t));
+        timersRef.current.clear();
+        setNotifs([]);
+      } else {
+        clearTimer(id);
+        setNotifs((prev) => prev.filter((n) => n.id !== id));
+      }
+    },
+    [clearTimer],
+  );
+
+  const removeNotification: (id: number) => void = (id: number): void => {
+    setNotifs((prev) => prev.filter((n) => n.id !== id));
+    timersRef.current.delete(id);
+  };
 
   const setNotification: SetNotificationFn = useCallback(
     (message: string | null, duration = 3000, variant?: NotificationVariant): void => {
-      // clear any existing timer
-      if (atimerRef.current !== null) {
-        globalThis.clearTimeout(atimerRef.current);
-        atimerRef.current = null;
+      if (message === null) {
+        return;
       }
 
-      setNotif(message ? { message, variant } : null);
+      const id: number = idRef.current++;
+      const item: NotificationItem = { id, message, variant };
 
-      if (message !== null) {
-        atimerRef.current = globalThis.setTimeout((): void => {
-          setNotif(null);
-          atimerRef.current = null;
-        }, duration) as unknown as number;
-      }
+      // add to top of stack (newest first)
+      setNotifs((prev) => [item, ...prev]);
+
+      const timer: number = globalThis.setTimeout((): void => {
+        removeNotification(id);
+      }, duration) as unknown as number;
+
+      timersRef.current.set(id, timer);
     },
     [],
   );
 
-  useEffect((): (() => void) => {
+  function clearTimers(): void {
+    const timers: Map<number, number> = timersRef.current;
+    timers.forEach((t) => globalThis.clearTimeout(t));
+    timers.clear();
+  }
+
+  useEffect(() => {
     return (): void => {
-      if (atimerRef.current !== null) {
-        globalThis.clearTimeout(atimerRef.current);
-        atimerRef.current = null;
-      }
+      // Capturar el valor actual de timersRef.current en una variable local
+      clearTimers();
     };
   }, []);
 
   const value: NotificationContextType = useMemo(
-    () => ({ notification: notif, setNotification, dismiss }),
-    [notif, setNotification, dismiss],
+    () => ({ notifications: notifs, setNotification, dismiss }),
+    [notifs, setNotification, dismiss],
   );
 
   return <NotificationContext.Provider value={value}>{children}</NotificationContext.Provider>;

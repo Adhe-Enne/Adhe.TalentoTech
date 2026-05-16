@@ -38,7 +38,7 @@ function parseFavorites(raw: string | null): Set<number> {
       );
     }
   } catch {
-    // ignore parse errors
+    // ignore
   }
 
   return new Set<number>();
@@ -69,43 +69,44 @@ export const FavoritesProvider: React.FC<ProviderProps> = (props) => {
 
   const toggleFavorite: (id: number) => void = useCallback(
     (id: number): void => {
+      // compute current intent from current store snapshot
+      const willAdd: boolean = !store.has(id);
+
+      // update store (pure updater)
       setStore((prev: Set<number>) => {
         const next: Set<number> = new Set<number>(prev);
-        const willAdd: boolean = !next.has(id);
         if (willAdd) {
           next.add(id);
         } else {
           next.delete(id);
         }
-
-        try {
-          if (typeof setNotification === "function") {
-            if (willAdd) {
-              setNotification("Añadido a favoritos", 3000, "info");
-            } else {
-              setNotification("Eliminado de favoritos", 3000, "warning");
-            }
-          }
-        } catch {
-          // ignore
-        }
-
         return next;
       });
+
+      // side-effect: show notification - keep outside updater to avoid duplicate calls
+      try {
+        if (typeof setNotification === "function") {
+          if (willAdd) {
+            setNotification("Añadido a favoritos", 3000, "info");
+          } else {
+            setNotification("Eliminado de favoritos", 3000, "warning");
+          }
+        }
+      } catch {
+        // ignore
+      }
     },
-    [setNotification],
+    [setNotification, store],
   );
 
-  // persist as array
   useEffect(() => {
     try {
       localStorage.setItem(FAVORITES_KEY, JSON.stringify([...store]));
     } catch {
-      // ignore quota/deny
+      // ignore
     }
   }, [store]);
 
-  // cross-tab sync
   useEffect((): (() => void) => {
     const onStorage: (e: StorageEvent) => void = (e: StorageEvent): void => {
       if (e.key !== FAVORITES_KEY) {

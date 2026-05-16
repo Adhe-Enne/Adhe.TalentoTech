@@ -1,14 +1,33 @@
-.notification {
+.notification-wrapper {
   position: fixed;
-  top: 10px;
-  right: 10px;
+  top: calc(var(--header-offset, 64px) + 12px);
+  left: 0;
+  right: 0;
+  z-index: 1100;
+  pointer-events: none; /* allow clicks only on the notifications themselves */
+}
+
+.notification-wrapper .container {
+  pointer-events: none;
+}
+
+.notification-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: flex-end;
+}
+
+.notification {
+  position: relative;
   /* dejar espacio a la derecha para el botón de cierre */
   padding: 10px 40px 10px 20px;
   border-radius: 5px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-  z-index: 1000;
-  animation: fadeInOut 3s ease-in-out;
   color: #fff;
+  pointer-events: auto;
+  display: inline-block;
+  animation: slideInDown 180ms ease-out;
 }
 
 .notification--success {
@@ -58,21 +77,13 @@
   outline: 2px solid rgba(255, 255, 255, 0.6);
 }
 
-@keyframes fadeInOut {
-  0% {
+@keyframes slideInDown {
+  from {
     opacity: 0;
-    transform: translateY(-10px);
+    transform: translateY(-6px);
   }
-  10% {
+  to {
     opacity: 1;
     transform: translateY(0);
-  }
-  90% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-  100% {
-    opacity: 0;
-    transform: translateY(-10px);
   }
 }

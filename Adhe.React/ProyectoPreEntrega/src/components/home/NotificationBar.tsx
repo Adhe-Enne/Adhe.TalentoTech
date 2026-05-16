@@ -1,27 +1,31 @@
 import React from "react";
 
-import type { NotificationVariant } from "../../contexts/NotificationContext";
-
 import { useNotification } from "../../hooks/useNotification";
 
 const NotificationBar: React.FC = () => {
-  const { notification, dismiss } = useNotification();
+  const { notifications, dismiss } = useNotification();
 
-  const message: string | undefined = notification?.message;
-  const variant: NotificationVariant | undefined = notification?.variant;
-
-  const variantClass: string = variant ? `notification--${variant}` : "notification--success";
-
-  if (message === undefined) {
+  if (!notifications || notifications.length === 0) {
     return null;
   }
 
   return (
-    <div aria-live="polite" className={"notification " + variantClass} role="status">
-      {message}
-      <button aria-label="Cerrar notificación" className="notification__close" onClick={dismiss}>
-        ×
-      </button>
+    <div aria-atomic="true" aria-live="polite" className="notification-wrapper">
+      <div className="container">
+        <div className="notification-stack">
+          {notifications.map((n) => {
+            const variantClass: string = n.variant ? `notification--${n.variant}` : "notification--success";
+            return (
+              <output aria-live="polite" className={`notification ${variantClass}`} key={n.id}>
+                {n.message}
+                <button aria-label="Cerrar notificación" className="notification__close" onClick={() => dismiss(n.id)}>
+                  ×
+                </button>
+              </output>
+            );
+          })}
+        </div>
+      </div>
     </div>
   );
 };
