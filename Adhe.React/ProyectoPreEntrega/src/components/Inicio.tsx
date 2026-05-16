@@ -1,9 +1,9 @@
 import React, { type JSX } from "react";
 import { Routes, Route } from "react-router-dom";
 
-import { FavoritesProvider } from "../contexts/FavoritesContext";
-import { NotificationProvider } from "../contexts/NotificationContext";
-import { ProductsProvider } from "../contexts/ProductsContext";
+import { FavoritesProvider } from "../contexts/Favorites/Favorites.Provider";
+import { NotificationProvider } from "../contexts/Notification/Notification.Provider";
+import { ProductsProvider } from "../contexts/Products/Products.Provider";
 import { useCart } from "../hooks/useCart";
 import CarritoContainer from "./cart/CarritoContainer";
 import Contacto from "./contact/Contacto";

@@ -1,26 +1,14 @@
-import React, { createContext, useState, useRef, useEffect, useCallback, useMemo } from "react";
+import React, { useState, useRef, useEffect, useCallback, useMemo } from "react";
 
-import type { ProviderProps } from "../models/ProviderProps";
+import type { ProviderProps } from "../../models/ProviderProps";
+import type {
+  NotificationContextType,
+  NotificationItem,
+  NotificationVariant,
+  SetNotificationFn,
+} from "./Notification.Types";
 
-export type NotificationVariant = "success" | "info" | "warning" | "danger" | "primary" | "secondary";
-
-export type NotificationItem = {
-  id: number;
-  message: string;
-  variant?: NotificationVariant;
-};
-
-export type NotificationContextType = {
-  notifications: NotificationItem[];
-  setNotification: (message: string | null, duration?: number, variant?: NotificationVariant) => void;
-  dismiss: (id?: number) => void;
-};
-
-type SetNotificationFn = (message: string | null, duration?: number, variant?: NotificationVariant) => void;
-
-const NotificationContext: React.Context<NotificationContextType | undefined> = createContext<
-  NotificationContextType | undefined
->(undefined);
+import NotificationContext from "./NotificationContext";
 
 export const NotificationProvider: React.FC<ProviderProps> = (props) => {
   const { children } = props;
@@ -97,5 +85,3 @@ export const NotificationProvider: React.FC<ProviderProps> = (props) => {
 
   return <NotificationContext.Provider value={value}>{children}</NotificationContext.Provider>;
 };
-
-export default NotificationContext;

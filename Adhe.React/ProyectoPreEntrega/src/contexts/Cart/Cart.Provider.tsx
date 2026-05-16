@@ -1,19 +1,10 @@
-import React, { createContext, useState, useCallback, useMemo } from "react";
+import React, { useState, useCallback, useMemo } from "react";
 
-import type { Product, CartItem } from "../models";
-import type { ProviderProps } from "../models/ProviderProps";
+import type { CartItem, Product } from "../../models";
+import type { ProviderProps } from "../../models/ProviderProps";
+import type { CartContextType } from "./Cart.Type";
 
-export type CartContextType = {
-  cart: CartItem[];
-  addToCart: (product: Product, cantidad?: number) => void;
-  removeFromCart: (productId: number) => void;
-  updateQuantity: (productId: number, cantidad: number) => void;
-  clearCart: () => void;
-  getCartQuantity: () => number;
-  getCartTotal: () => number;
-};
-
-const CartContext: React.Context<CartContextType | undefined> = createContext<CartContextType | undefined>(undefined);
+import CartContext from "./CartContext";
 
 export const CartProvider: React.FC<ProviderProps> = (props) => {
   const { children } = props;
@@ -23,9 +14,11 @@ export const CartProvider: React.FC<ProviderProps> = (props) => {
     (product: Product, cantidad: number = 1): void => {
       setCart((prev) => {
         const existing: CartItem | undefined = prev.find((it) => it.product.id === product.id);
+
         if (existing) {
           return prev.map((it) => (it.product.id === product.id ? { ...it, cantidad: it.cantidad + cantidad } : it));
         }
+
         return [...prev, { cantidad, product }];
       });
     },
@@ -59,5 +52,3 @@ export const CartProvider: React.FC<ProviderProps> = (props) => {
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
 };
-
-export default CartContext;

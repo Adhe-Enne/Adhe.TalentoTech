@@ -1,6 +1,8 @@
 import { useContext } from "react";
 
-import FavoritesContext, { type FavoritesContextType } from "../contexts/FavoritesContext";
+import type { FavoritesContextType } from "../contexts/Favorites/Favorites.Types";
+
+import FavoritesContext from "../contexts/Favorites/FavoritesContext";
 
 const useFavorites: () => FavoritesContextType = () => {
   const ctx: FavoritesContextType | undefined = useContext(FavoritesContext);

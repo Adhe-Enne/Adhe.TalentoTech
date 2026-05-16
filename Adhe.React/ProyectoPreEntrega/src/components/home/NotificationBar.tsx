@@ -1,5 +1,7 @@
 import React from "react";
 
+import type { NotificationItem } from "../../contexts/Notification/Notification.Types";
+
 import { useNotification } from "../../hooks/useNotification";
 
 const NotificationBar: React.FC = () => {
@@ -13,7 +15,7 @@ const NotificationBar: React.FC = () => {
     <div aria-atomic="true" aria-live="polite" className="notification-wrapper">
       <div className="container">
         <div className="notification-stack">
-          {notifications.map((n) => {
+          {notifications.map((n: NotificationItem) => {
             const variantClass: string = n.variant ? `notification--${n.variant}` : "notification--success";
             return (
               <output aria-live="polite" className={`notification ${variantClass}`} key={n.id}>

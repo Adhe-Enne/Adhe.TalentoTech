@@ -1,8 +1,8 @@
 import { useContext } from "react";
 
-import type { ProductsContextType } from "../contexts/ProductsContext";
+import type { ProductsContextType } from "../contexts/Products/Products.Types";
 
-import ProductsContext from "../contexts/ProductsContext";
+import ProductsContext from "../contexts/Products/ProductsContext";
 
 export const useProducts: () => ProductsContextType = (): ProductsContextType => {
   const ctx: ProductsContextType | undefined = useContext(ProductsContext);
