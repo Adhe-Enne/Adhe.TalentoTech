@@ -47,7 +47,7 @@
   justify-content: center;
   box-shadow: var(--shadow-soft);
   cursor: pointer;
-  color: #17a2b8;
+  color: #0f6670;
 }
 
 .favButton[aria-pressed="true"] {
@@ -59,7 +59,7 @@
   position: absolute;
   top: 10px;
   left: 10px;
-  background-color: #17a2b8;
+  background-color: #0f6670;
   color: white;
   padding: 5px 10px;
   border-radius: 5px;
@@ -84,7 +84,7 @@
 }
 
 .tarjetaProducto .card-text {
-  color: #17a2b8;
+  color: #0f6670;
   font-weight: 700;
   font-size: 1rem;
   margin: 0;

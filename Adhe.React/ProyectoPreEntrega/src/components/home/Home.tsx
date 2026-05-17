@@ -5,17 +5,18 @@ import ListaProductos from "../product/product-card/ListaProductos";
 
 interface HomeProps {
   products: Product[];
+  emptyMessage?: string;
   loading?: boolean;
   onAddToCart: (product: Product, cantidad?: number) => void;
   onSelect: (product: Product) => void;
 }
 
 const Home: React.FC<HomeProps> = (props) => {
-  const { loading, products, onAddToCart, onSelect } = props;
+  const { loading, emptyMessage, products, onAddToCart, onSelect } = props;
 
   const renderProductList: () => JSX.Element = () => {
     return products.length === 0 ? (
-      <div className="alert alert-info">No hay productos disponibles.</div>
+      <div className="alert alert-info">{emptyMessage ?? "No hay productos disponibles."}</div>
     ) : (
       <ListaProductos onAddToCart={(p: Product) => onAddToCart(p, 1)} onSelect={onSelect} products={products} />
     );

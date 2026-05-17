@@ -1,5 +1,5 @@
-import React, { useRef, useEffect, useCallback } from "react";
-import { Link, Outlet } from "react-router-dom";
+import React, { useRef, useEffect, useCallback, useState } from "react";
+import { Link, Outlet, useLocation } from "react-router-dom";
 
 import useFavorites from "../../hooks/useFavorites";
 import "./Layout.css";
@@ -13,8 +13,12 @@ const Layout: React.FC<LayoutProps> = (props) => {
   const { cartCount, children } = props;
   const headerRef: React.RefObject<HTMLElement | null> = useRef<HTMLElement | null>(null);
 
-  // favorites count for navbar badge
   const { favorites } = useFavorites();
+  const location: ReturnType<typeof useLocation> = useLocation();
+  const urlQuery: string = new URLSearchParams(location.search).get("q") ?? "";
+
+  const [searchQuery, setSearchQuery] = useState<string>("");
+  const [isEditing, setIsEditing] = useState<boolean>(false);
   const favCount: number = Object.keys(favorites || {}).length;
 
   const updateHeaderOffset: () => void = useCallback(() => {
@@ -31,13 +35,14 @@ const Layout: React.FC<LayoutProps> = (props) => {
     window.addEventListener("resize", updateHeaderOffset);
     return (): void => window.removeEventListener("resize", updateHeaderOffset);
   }, [updateHeaderOffset]);
+
   return (
     <div className="layout">
       <header className="header site-header" ref={headerRef}>
         <nav className="navbar navbar-expand-lg navbar-dark bg-primary">
           <div className="container">
             <Link className="navbar-brand" to="/">
-              E-commerce
+              Adhe.E-commerce
             </Link>
             <button
               aria-controls="navbarNav"
@@ -71,14 +76,131 @@ const Layout: React.FC<LayoutProps> = (props) => {
 
               <form
                 className="d-none d-md-flex ms-3 me-auto search-form"
-                onSubmit={(e) => e.preventDefault()}
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  const form: HTMLFormElement = e.currentTarget;
+                  const inputEl: HTMLInputElement | null = form.querySelector(
+                    'input[name="q"]',
+                  ) as HTMLInputElement | null;
+                  const domVal: string = inputEl ? inputEl.value.trim() : "";
+  
+                  let valueToSubmit: string;
+                  if (!domVal) {
+                    valueToSubmit = "";
+                  } else if (!isEditing && domVal === urlQuery) {
+                    valueToSubmit = "";
+                  } else if (isEditing && searchQuery && searchQuery.trim()) {
+                    valueToSubmit = searchQuery.trim();
+                  } else {
+                    valueToSubmit = domVal;
+                  }
+                  const sp: URLSearchParams = new URLSearchParams(location.search);
+                  if (valueToSubmit.length > 0) {
+                    sp.set("q", valueToSubmit);
+                  } else {
+                    sp.delete("q");
+                  }
+                  const target: string = `/productos${sp.toString() ? `?${sp.toString()}` : ""}`;
+                  // use full navigation to ensure query is applied reliably
+                  window.location.href = target;
+                }}
                 role="search"
               >
                 <input
                   aria-label="Buscar productos"
                   className="form-control form-control-sm search-input"
+                  name="q"
+                  onBlur={() => {
+                    setIsEditing(false);
+                    // trim edges on blur so value shown is normalized
+                    setSearchQuery((s) => (s ? s.trim() : ""));
+                  }}
+                  onChange={(e) => {
+                    const v: string = e.target.value;
+                    // disallow whitespace-only values: treat them as empty
+                    if (v.trim() === "") {
+                      setSearchQuery("");
+                    } else {
+                      setSearchQuery(v);
+                    }
+                    setIsEditing(true);
+                  }}
+                  onFocus={() => {
+                    setSearchQuery(urlQuery);
+                    setIsEditing(true);
+                  }}
                   placeholder="Buscar productos..."
+                  value={isEditing ? searchQuery : urlQuery}
                 />
+                <button
+                  aria-label="Buscar"
+                  className="search-btn"
+                  onClick={(ev) => {
+                    // fallback navigation on click to avoid subtle submit race
+                    try {
+                      ev.preventDefault();
+                      const formEl: HTMLFormElement | null = (ev.currentTarget as HTMLElement).closest(
+                        "form",
+                      ) as HTMLFormElement | null;
+                      const inputEl: HTMLInputElement | null = formEl
+                        ? (formEl.querySelector('input[name="q"]') as HTMLInputElement | null)
+                        : null;
+                      const domVal: string = inputEl ? inputEl.value.trim() : "";
+                      const captured: string = (ev.currentTarget as HTMLElement).getAttribute("data-qvalue") || "";
+                      // prefer captured (mousedown) value, then React state, then DOM; do NOT reuse previous URL param
+                      let rawVal: string = "";
+                      const cap: string = captured && captured.trim() ? captured.trim() : "";
+                      if (!cap) {
+                        if (!domVal) {
+                          rawVal = "";
+                        } else if (!isEditing && domVal === urlQuery) {
+                          rawVal = "";
+                        } else if (isEditing && searchQuery && searchQuery.trim()) {
+                          rawVal = searchQuery.trim();
+                        } else {
+                          rawVal = domVal;
+                        }
+                      } else {
+                        // captured present
+                        if (!isEditing && cap === urlQuery) {
+                          rawVal = "";
+                        } else {
+                          rawVal = cap;
+                        }
+                      }
+                      const sp: URLSearchParams = new URLSearchParams(location.search);
+                      if (rawVal.length > 0) {
+                        sp.set("q", rawVal);
+                      } else {
+                        sp.delete("q");
+                      }
+                      const target: string = `/productos${sp.toString() ? `?${sp.toString()}` : ""}`;
+                      // use full navigation to ensure query is applied reliably
+                      window.location.href = target;
+                    } catch {
+                      // ignore
+                    }
+                  }}
+                  onMouseDown={(ev) => {
+                    try {
+                      const formEl: HTMLFormElement | null = (ev.currentTarget as HTMLElement).closest(
+                        "form",
+                      ) as HTMLFormElement | null;
+                      const inputEl: HTMLInputElement | null = formEl
+                        ? (formEl.querySelector('input[name="q"]') as HTMLInputElement | null)
+                        : null;
+                      const captured: string = (inputEl && inputEl.value) || searchQuery || "";
+                      (ev.currentTarget as HTMLElement).setAttribute("data-qvalue", captured);
+                    } catch {
+                      // ignore
+                    }
+                  }}
+                  type="submit"
+                >
+                  <svg aria-hidden className="nav-icon" fill="currentColor" height="20" viewBox="0 0 24 24" width="20">
+                    <path d="M10 2a8 8 0 1 0 4.9 14.32l4.38 4.38 1.41-1.41-4.38-4.38A8 8 0 0 0 10 2zm0 2a6 6 0 1 1 0 12 6 6 0 0 1 0-12z" />
+                  </svg>
+                </button>
               </form>
 
               <ul className="navbar-nav ms-auto align-items-center nav-tools">
@@ -93,8 +215,15 @@ const Layout: React.FC<LayoutProps> = (props) => {
                     className="btn btn-ghost btn-sm position-relative me-2"
                     to="/productos?filter=favorites"
                   >
-                    <svg aria-hidden fill="currentColor" height="18" viewBox="0 0 24 24" width="18">
-                      <path d="M12 21s-7-4.35-9-6.35C1.1 12.6 2 7.9 6 6c1.7-.8 3.3-.1 4 1 0 0 .3.5.9.5s.9-.5.9-.5c.7-1.1 2.3-1.8 4-1 4 1.9 4.9 6.6 3 8.65C19 16.65 12 21 12 21z" />
+                    <svg
+                      aria-hidden
+                      className="nav-icon nav-fav-icon"
+                      fill="currentColor"
+                      height="22"
+                      viewBox="0 0 24 24"
+                      width="22"
+                    >
+                      <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06A5.5 5.5 0 1 0 2.3 12.39L12 22l9.7-9.61a5.5 5.5 0 0 0-1.86-7.78z" />
                     </svg>
                     {favCount > 0 && (
                       <span className="cart-badge position-absolute top-0 start-100 translate-middle">{favCount}</span>
@@ -103,8 +232,21 @@ const Layout: React.FC<LayoutProps> = (props) => {
                 </li>
                 <li className="nav-item">
                   <Link aria-label="Carrito" className="btn btn-ghost btn-sm position-relative" to="/carrito">
-                    <svg aria-hidden fill="currentColor" height="18" viewBox="0 0 24 24" width="18">
-                      <path d="M7 4h-2l-1 2h2l3.6 7.59-1.35 2.45C9.16 16.37 9 16.68 9 17a2 2 0 1 0 2 2 2 2 0 0 0 2-2c0-.32-.16-.63-.25-.96L19 6H7z" />
+                    <svg
+                      aria-hidden
+                      className="nav-icon nav-cart-icon"
+                      fill="none"
+                      height="22"
+                      stroke="currentColor"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={1.9}
+                      viewBox="0 0 24 24"
+                      width="22"
+                    >
+                      <circle cx="9" cy="19" r="1.6" />
+                      <circle cx="17" cy="19" r="1.6" />
+                      <path d="M3 3h2l2.68 10.39a2 2 0 001.96 1.35H19a2 2 0 001.94-1.44L23 6H6" />
                     </svg>
                     {typeof cartCount === "number" && cartCount > 0 && (
                       <span className="cart-badge position-absolute top-0 start-100 translate-middle">{cartCount}</span>
@@ -127,7 +269,7 @@ const Layout: React.FC<LayoutProps> = (props) => {
                 <Link className="footer-brand h5 d-inline-block mb-2" to="/">
                   E-commerce
                 </Link>
-                <p className="footer-desc text-muted mb-2">Tienda demo con diseño moderno y enfoque UX.</p>
+                <p className="footer-desc text-muted mb-2">Tienda demo para proyecto educativo TalentoTech!.</p>
                 <div aria-hidden className="social-icons d-flex gap-2">
                   <a aria-label="Twitter" className="btn btn-ghost btn-sm" href="/">
                     <svg fill="currentColor" height="16" viewBox="0 0 24 24" width="16">

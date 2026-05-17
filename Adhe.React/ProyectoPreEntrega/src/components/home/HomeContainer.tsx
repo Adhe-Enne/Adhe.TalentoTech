@@ -1,9 +1,10 @@
-import React, { useCallback } from "react";
-import { useNavigate, type NavigateFunction } from "react-router-dom";
+import React, { useCallback, useMemo } from "react";
+import { useNavigate, useLocation, type NavigateFunction } from "react-router-dom";
 
 import type { Product } from "../../models";
 
 import { useCart } from "../../hooks/useCart";
+import useFavorites from "../../hooks/useFavorites";
 import { useNotification } from "../../hooks/useNotification";
 import { useProducts } from "../../hooks/useProducts";
 import Home from "./Home";
@@ -11,6 +12,14 @@ import Home from "./Home";
 const HomeContainer: React.FC = () => {
   const { setNotification } = useNotification();
   const { products, loading } = useProducts();
+  const { favorites } = useFavorites();
+
+  // read query params
+  const location: ReturnType<typeof useLocation> = useLocation();
+  const params: URLSearchParams = new URLSearchParams(location.search);
+  const q: string = (params.get("q") ?? "").toLowerCase();
+  const filter: string | null = params.get("filter");
+
   const backNavigate: NavigateFunction = useNavigate();
   const { addToCart } = useCart();
 
@@ -29,7 +38,30 @@ const HomeContainer: React.FC = () => {
     [backNavigate],
   );
 
-  return <Home loading={loading} onAddToCart={handleAddWithNotification} onSelect={handleSelect} products={products} />;
+  const filteredProducts: Product[] = useMemo(() => {
+    let list: Product[] = products ?? [];
+    if (q) {
+      list = list.filter((p) => {
+        const name: string = p.nombre?.toLowerCase() ?? "";
+        const desc: string = p.descripcion?.toLowerCase() ?? "";
+        return name.includes(q) || desc.includes(q);
+      });
+    }
+    if (filter === "favorites") {
+      list = list.filter((p) => Boolean(favorites?.[p.id]));
+    }
+    return list;
+  }, [products, q, filter, favorites]);
+
+  return (
+    <Home
+      emptyMessage={filter === "favorites" ? "No tienes productos favoritos aún." : undefined}
+      loading={loading}
+      onAddToCart={handleAddWithNotification}
+      onSelect={handleSelect}
+      products={filteredProducts}
+    />
+  );
 };
 
 export default HomeContainer;

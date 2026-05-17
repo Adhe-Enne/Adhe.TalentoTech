@@ -1,3 +1,97 @@
-.form {
-  max-width: 640px;
+.formCard {
+  max-width: 900px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+  align-items: start;
+}
+
+@media (min-width: 768px) {
+  .formCard {
+    grid-template-columns: 360px 1fr;
+  }
+}
+
+.preview {
+  background: linear-gradient(180deg, #f8fafb, #ffffff);
+  border-radius: 12px;
+  padding: 12px;
+  min-height: 260px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  border: 1px solid rgba(33, 53, 71, 0.04);
+}
+
+.preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.placeholder {
+  color: var(--muted);
+  font-size: 0.95rem;
+  text-align: center;
+  padding: 8px;
+}
+
+.hiddenInput {
+  display: none;
+}
+
+.uploadGroup {
+  position: absolute;
+  bottom: 12px;
+  left: 12px;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.previewMeta {
+  position: absolute;
+  bottom: 12px;
+  right: 12px;
+  font-size: 0.85rem;
+  color: var(--muted);
+  background: rgba(255, 255, 255, 0.9);
+  padding: 6px 8px;
+  border-radius: 6px;
+  box-shadow: var(--shadow-soft);
+}
+
+.fields {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.fieldRow {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.priceInput {
+  max-width: 180px;
+}
+
+.actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 0.5rem;
+  justify-content: flex-end;
+}
+
+.uploadLabel {
+  cursor: pointer;
+}
+
+.clearBtn {
+  background: transparent;
+  border: 1px solid rgba(0, 0, 0, 0.06);
 }

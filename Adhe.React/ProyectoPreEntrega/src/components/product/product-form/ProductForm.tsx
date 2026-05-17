@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 
 import styles from "./ProductForm.module.css";
 
@@ -27,64 +27,104 @@ const ProductForm: React.FC<ProductFormProps> = (props) => {
     onSubmit({ nombre: nombre.trim(), precio: Number.parseFloat(precio) || 0, descripcion: descripcion.trim(), file });
   }
 
+  const previewUrl: string | undefined = useMemo(() => (file ? URL.createObjectURL(file) : undefined), [file]);
+
   return (
-    <form className={styles.form} onSubmit={handleSubmit}>
-      <div className="mb-3">
-        <label className="form-label" htmlFor="nombre">
-          Nombre
-        </label>
-        <input
-          className="form-control"
-          id="nombre"
-          onChange={(e) => setNombre(e.target.value)}
-          required
-          value={nombre}
-        />
+    <form className={styles.formCard} onSubmit={handleSubmit}>
+      <div className={styles.preview}>
+        {previewUrl ? (
+          <img alt="preview" src={previewUrl} />
+        ) : (
+          <div className={styles.placeholder}>Previsualización de imagen</div>
+        )}
+
+        <div className={styles.uploadGroup}>
+          <label className={`btn btn-sm btn-outline-primary ${styles.uploadLabel}`}>
+            <span>Seleccionar</span>
+            <input
+              accept="image/*"
+              className={styles.hiddenInput}
+              onChange={(e) => setFile(e.target.files?.[0] ?? null)}
+              type="file"
+            />
+          </label>
+          {file && (
+            <button
+              className={`btn btn-sm clearBtn`}
+              onClick={() => {
+                setFile(null);
+              }}
+              type="button"
+            >
+              Limpiar
+            </button>
+          )}
+        </div>
+
+        <div className={styles.previewMeta}>{file ? file.name : "Sin imagen"}</div>
       </div>
 
-      <div className="mb-3">
-        <label className="form-label" htmlFor="precio">
-          Precio
-        </label>
-        <input
-          className="form-control"
-          id="precio"
-          onChange={(e) => setPrecio(e.target.value)}
-          required
-          step="0.01"
-          type="number"
-          value={precio}
-        />
-      </div>
+      <div className={styles.fields}>
+        <div>
+          <label className="form-label" htmlFor="nombre">
+            Nombre
+          </label>
+          <input
+            className="form-control"
+            id="nombre"
+            onChange={(e) => setNombre(e.target.value)}
+            required
+            value={nombre}
+          />
+        </div>
 
-      <div className="mb-3">
-        <label className="form-label" htmlFor="descripcion">
-          Descripción
-        </label>
-        <textarea
-          className="form-control"
-          id="descripcion"
-          onChange={(e) => setDescripcion(e.target.value)}
-          value={descripcion}
-        />
-      </div>
+        <div className={styles.fieldRow}>
+          <div className={styles.priceInput}>
+            <label className="form-label" htmlFor="precio">
+              Precio
+            </label>
+            <input
+              className="form-control"
+              id="precio"
+              onChange={(e) => setPrecio(e.target.value)}
+              required
+              step="0.01"
+              type="number"
+              value={precio}
+            />
+          </div>
+        </div>
 
-      <div className="mb-3">
-        <label className="form-label" htmlFor="imagen">
-          Imagen
-        </label>
-        <input
-          accept="image/*"
-          className="form-control"
-          id="imagen"
-          onChange={(e) => setFile(e.target.files?.[0] ?? null)}
-          type="file"
-        />
-      </div>
+        <div>
+          <label className="form-label" htmlFor="descripcion">
+            Descripción
+          </label>
+          <textarea
+            className="form-control"
+            id="descripcion"
+            onChange={(e) => setDescripcion(e.target.value)}
+            value={descripcion}
+          />
+        </div>
 
-      <button className="btn btn-primary" disabled={!!loading} type="submit">
-        {loading ? "Subiendo..." : "Subir producto"}
-      </button>
+        <div className={styles.actions}>
+          <button
+            className="btn btn-ghost"
+            onClick={() => {
+              setNombre("");
+              setPrecio("");
+              setDescripcion("");
+              setFile(null);
+            }}
+            type="button"
+          >
+            Cancelar
+          </button>
+          <button className="btn btn-cta" disabled={!!loading} type="submit">
+            {loading ? "Subiendo..." : "Subir producto"}
+          </button>
+        </div>
+      </div>
     </form>
   );
 };
