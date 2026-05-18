@@ -56,7 +56,8 @@
 
 .nav-tools .btn-ghost {
   color: #fff;
-  background: rgba(255, 255, 255, 0.02);
+  /* usar un overlay oscuro para asegurar contraste con texto blanco */
+  background: rgba(0, 0, 0, 0.12);
   border: 1px solid rgba(255, 255, 255, 0.12);
   padding: 8px 12px;
   margin-left: 6px;
@@ -112,8 +113,9 @@
   padding: 0;
   border-radius: 999px;
   border: none;
-  background: rgba(23, 162, 184, 0.12);
-  color: rgba(255, 255, 255, 0.95);
+  /* usar color sólido oscuro para garantizar contraste con texto blanco */
+  background: #0f6670;
+  color: #ffffff;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -205,7 +207,8 @@
 }
 
 .social-icons .btn-ghost {
-  background: rgba(255, 255, 255, 0.02);
+  /* fondo oscuro sutil para mejorar contraste con el color de marca */
+  background: rgba(0, 0, 0, 0.08);
   color: var(--brand);
 }
 

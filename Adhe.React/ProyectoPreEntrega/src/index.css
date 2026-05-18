@@ -17,7 +17,7 @@ body,
   --muted: #6c757d;
   --text: #213547;
   --brand: #223746; /* top navbar */
-  --accent: #17a2b8; /* primary accent */
+  --accent: #0f6670; /* primary accent (darkened for accessibility) */
   --cta: #007bff;
   --radius: 12px;
   --shadow-soft: 0 6px 18px rgba(33, 53, 71, 0.08);
@@ -74,15 +74,16 @@ h3 {
 }
 .site-header .navbar .navbar-brand {
   font-weight: 700;
-  color: #fff;
+  color: #ffffff;
   letter-spacing: 0.4px;
 }
 .site-header .navbar .nav-link {
-  color: rgba(255, 255, 255, 0.9);
+  /* use fully opaque white to ensure contrast against navbar background */
+  color: #ffffff;
   margin-left: 0.6rem;
 }
 .site-header .navbar .nav-link:hover {
-  color: #fff;
+  color: #e6f7f7;
 }
 .site-header .btn {
   border-radius: 8px;
@@ -90,8 +91,9 @@ h3 {
 
 /* Buttons / CTAs */
 .btn-cta {
-  background: linear-gradient(180deg, var(--accent), #0fa3a6);
-  color: #fff;
+  /* darker CTA gradient to ensure white text meets contrast requirements */
+  background: linear-gradient(180deg, #0f6670, #084c4d);
+  color: #ffffff;
   border: none;
   padding: 0.45rem 0.9rem;
   border-radius: 8px;

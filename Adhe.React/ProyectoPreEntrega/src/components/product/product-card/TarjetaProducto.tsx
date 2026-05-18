@@ -19,13 +19,12 @@ const TarjetaProducto: React.FC<TarjetaProductoProps> = (props) => {
 
   return (
     <div className={`card h-100 ${styles.tarjetaProducto}`}>
-      <button
-        aria-label={`Ver detalles de ${product.nombre}`}
-        className={styles.imageWrapper}
-        onClick={() => onClick?.(product)}
-        type="button"
-      >
-        <img alt={product.nombre} className={styles.imagen} src={product.imagen} />
+      <div style={{ position: "relative", width: "100%", height: "100%" }}>
+        <button aria-label={`Ver detalles de ${product.nombre}`} className={styles.imageWrapper} onClick={() => onClick?.(product)} type="button">
+          <img alt={product.nombre} className={styles.imagen} src={product.imagen} />
+          <span className={"badge-price " + styles.priceBadge}>${product.precio.toFixed(2)}</span>
+        </button>
+
         <button
           aria-label={fav ? "Eliminar favorito" : "Marcar favorito"}
           aria-pressed={fav}
@@ -39,8 +38,7 @@ const TarjetaProducto: React.FC<TarjetaProductoProps> = (props) => {
         >
           <span aria-hidden="true">{fav ? "♥" : "♡"}</span>
         </button>
-        <span className={"badge-price " + styles.priceBadge}>${product.precio.toFixed(2)}</span>
-      </button>
+      </div>
 
       <div className="card-body d-flex flex-column">
         <h5 className="card-title">{product.nombre}</h5>

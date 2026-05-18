@@ -1,13 +1,8 @@
 import React from "react";
 
-import ProductForm from "./ProductForm";
+import type { FormPayload } from "../Product.Types";
 
-type FormPayload = {
-  nombre: string;
-  precio: number;
-  descripcion?: string;
-  file?: File | null;
-};
+import ProductForm from "./ProductForm";
 
 interface Props {
   loading?: boolean;
