@@ -26,6 +26,9 @@ La carpeta [`Adhe.React`](./Adhe.React/) contiene los ejercicios incrementales d
 - Proyecto incremental: Una aplicación en **React** con **TypeScript** y **Vite**, construida de manera evolutiva a través de 16 ejercicios consecutivos.
   - 📖 Más detalles: [`README`](./Adhe.React/React-EjerciciosIncrementales/README.md).
 
+- **ProyectoPreEntrega — Adhe.E-commerce**: Mini tienda demo construida con React + TypeScript (Vite). Incluye datos simulados (`json, img, svg`) para el uso inmediato, providers (`Products`, `Cart`, `Favorites`, `Notification`) para una gestión completa del estado de la aplicación, y componentes para listado, detalle, creación de producto y carrito de compras.
+  - 📖 Más detalles: [`README`](./Adhe.React/ProyectoPreEntrega/README.md).
+
 ---
 
 ## 🏗️ Estructura general del repositorio
@@ -42,7 +45,10 @@ La carpeta [`Adhe.React`](./Adhe.React/) contiene los ejercicios incrementales d
 ┃ ┃ ┣ 📂 techlab-frontend/
 ┃ ┃ ┃ ┣ 📜 README.md
 ┣ 📂 Adhe.React
-┃ ┣ 📜 README.md
+┃ ┣ 📂 React-EjerciciosIncrementales
+┃ ┃ ┣ 📜 README.md
+┃ ┣ 📂 ProyectoPreEntrega
+┃ ┃ ┣ 📜 README.md
 ┣ 📜 README.md
 ```
 

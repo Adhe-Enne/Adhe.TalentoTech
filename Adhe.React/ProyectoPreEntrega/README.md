@@ -125,6 +125,46 @@ Si quieres, puedo:
 
 **_ Fin del README generado automáticamente por el asistente. _**
 
+## Estructura general de carpetas
+
+A continuación se muestra la estructura general del proyecto. Se omite el contenido de carpetas en niveles inferiores; entre paréntesis se indica brevemente su propósito.
+
+```
+/ (raíz del proyecto)
+├─ package.json                (dependencias y scripts npm)
+├─ vite.config.ts              (configuración de Vite)
+├─ tsconfig.json               (configuración TypeScript)
+├─ tsconfig.app.json           (configuración TS para la app)
+├─ tsconfig.node.json          (configuración TS para node tooling)
+├─ eslint.config.js            (configuración ESLint)
+├─ index.html                  (HTML base)
+├─ public/                     (archivos estáticos servidos por Vite)
+│  ├─ productos.json           (datos iniciales de productos)
+│  ├─ images/                  (imágenes de productos y assets)
+│  └─ screenshots/             (capturas usadas en README / docs)
+├─ src/                        (código fuente de la aplicación)
+│  ├─ main.tsx                 (entrypoint React + mounting)
+│  ├─ index.css, App.tsx       (estilos/global y componente raíz)
+│  ├─ assets/                  (recursos estáticos del app)
+│  ├─ components/              (componentes UI organizados por dominio)
+│  │  ├─ layout/               (header, navbar, layout general)
+│  │  ├─ home/                 (pantalla principal y containers)
+│  │  ├─ product/              (tarjetas, detalle y formulario de producto)
+│  │  ├─ cart/                 (componentes del carrito)
+│  │  └─ contact/              (contacto y directorio)
+│  ├─ contexts/                (Providers: Products, Cart, Favorites, Notification)
+│  ├─ hooks/                   (hooks reutilizables: useCart, useFavorites, etc.)
+│  ├─ models/                  (tipos e interfaces TypeScript)
+│  └─ utils/                   (helpers y utilidades, p.ej. navigation)
+└─ README.md                   (documentación del proyecto)
+```
+
+Notas rápidas:
+
+- Los componentes y providers están organizados por dominio para facilitar la navegación y el testing.
+- `public/productos.json` contiene los datos de ejemplo que carga la app al inicio.
+- Favoritos se gestionan a través de `localStorage` y el `FavoritesProvider` en `src/contexts/Favorites/`.
+
 ## 📸 Capturas (placeholders)
 
 A continuación hay capturas de ejemplo que puedes reemplazar por screenshots reales. Si prefieres, súbelas a `public/screenshots/` con los mismos nombres para que se muestren automáticamente.
