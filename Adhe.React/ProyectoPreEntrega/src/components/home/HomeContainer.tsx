@@ -14,7 +14,6 @@ const HomeContainer: React.FC = () => {
   const { products, loading } = useProducts();
   const { favorites } = useFavorites();
 
-  // read query params
   const location: ReturnType<typeof useLocation> = useLocation();
   const params: URLSearchParams = new URLSearchParams(location.search);
   const q: string = (params.get("q") ?? "").toLowerCase();

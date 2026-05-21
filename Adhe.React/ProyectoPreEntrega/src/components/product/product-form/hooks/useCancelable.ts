@@ -10,5 +10,6 @@ export const useCancelable: () => UseCancelableReturn = (): UseCancelableReturn 
   const ref: RefObject<StateRefType> = useCancelableRef();
   const fileToDataUrl: (file: File) => Promise<string> = useAbortableFileReader(ref);
   const simulateDelay: (ms: number) => Promise<void> = useAbortableTimeout(ref);
+
   return { ref, fileToDataUrl, simulateDelay };
 };

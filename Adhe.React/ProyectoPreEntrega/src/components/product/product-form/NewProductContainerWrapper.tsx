@@ -42,7 +42,7 @@ const NewProductContainerWrapper: React.FC = () => {
         };
 
         createProduct(created);
-        setNotification(`${created.nombre ?? "Producto"} creado (simulado)`, 3000, "info");
+        setNotification(`${created.nombre ?? "Producto"} creado!`, 3000, "info");
         navigate("/");
       } catch (err: unknown) {
         if (err instanceof DOMException && err.name === "AbortError") {

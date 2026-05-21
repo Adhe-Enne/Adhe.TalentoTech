@@ -89,9 +89,64 @@
 
 .uploadLabel {
   cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.45rem 0.8rem;
+  border-radius: 10px;
+  background: rgba(15, 102, 112, 0.06);
+  color: var(--accent);
+  border: 1px solid rgba(15, 102, 112, 0.12);
+  box-shadow: var(--shadow-soft);
+  transition:
+    transform 120ms ease,
+    box-shadow 120ms ease,
+    background 120ms ease;
 }
 
 .clearBtn {
   background: transparent;
-  border: 1px solid rgba(0, 0, 0, 0.06);
+  border: 1px solid rgba(33, 53, 71, 0.06);
+  color: var(--text);
+  padding: 0.35rem 0.65rem;
+  border-radius: 8px;
+  transition:
+    transform 120ms ease,
+    background 120ms ease,
+    box-shadow 120ms ease;
+  box-shadow: none;
+}
+
+.uploadLabel:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px rgba(15, 102, 112, 0.08);
+  background: rgba(15, 102, 112, 0.09);
+  /* asegurar que el texto mantiene contraste al hacer hover (bootstrap puede aplicar su propio color) */
+  color: var(--accent);
+}
+
+.clearBtn:hover {
+  transform: translateY(-2px);
+  background: rgba(0, 0, 0, 0.03);
+  box-shadow: 0 6px 18px rgba(33, 53, 71, 0.06);
+}
+
+/* estilo para el botón Cancelar en el formulario */
+.cancelBtn {
+  background: transparent;
+  border: 1px solid rgba(33, 53, 71, 0.06);
+  color: var(--text);
+  padding: 0.35rem 0.65rem;
+  border-radius: 8px;
+  transition:
+    transform 120ms ease,
+    background 120ms ease,
+    box-shadow 120ms ease;
+  box-shadow: none;
+}
+
+.cancelBtn:hover {
+  transform: translateY(-2px);
+  background: rgba(0, 0, 0, 0.03);
+  box-shadow: 0 6px 18px rgba(33, 53, 71, 0.06);
 }

@@ -27,8 +27,7 @@ const Contacto: React.FC = () => {
           <div className="card p-3">
             <h2 className="mb-2">Contacto</h2>
             <p>
-              Estamos para ayudarte, envía un email a <a href="mailto:soporte@example.com">soporte@example.com</a> y te
-              responderemos a la brevedad.
+              Estamos para ayudarte, envía un email a <a href="mailto:soporte@example.com">soporte@example.com</a> y te responderemos a la brevedad.
             </p>
             <p>Tel: +54 9 11 1234 5678</p>
             <form onSubmit={handleSubmit}>
@@ -36,25 +35,13 @@ const Contacto: React.FC = () => {
                 <label className="form-label" htmlFor="email">
                   Email
                 </label>
-                <input
-                  className="form-control"
-                  id="email"
-                  onChange={(e) => setEmail(e.target.value)}
-                  type="email"
-                  value={email}
-                />
+                <input className="form-control" id="email" onChange={(e) => setEmail(e.target.value)} type="email" value={email} />
               </div>
               <div className="mb-2">
                 <label className="form-label" htmlFor="message">
                   Mensaje
                 </label>
-                <textarea
-                  className="form-control"
-                  id="message"
-                  onChange={(e) => setMessage(e.target.value)}
-                  rows={4}
-                  value={message}
-                />
+                <textarea className="form-control" id="message" onChange={(e) => setMessage(e.target.value)} rows={4} value={message} />
               </div>
               <div className="d-flex gap-2">
                 <button className="btn btn-cta" type="submit">

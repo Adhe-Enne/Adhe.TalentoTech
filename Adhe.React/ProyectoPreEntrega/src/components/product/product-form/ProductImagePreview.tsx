@@ -15,7 +15,7 @@ const ProductImagePreview: React.FC<ImagePreviewProps> = (props) => {
           <input accept="image/*" className={styles.hiddenInput} onChange={(e) => onFileChange(e.target.files?.[0] ?? null)} type="file" />
         </label>
         {name && (
-          <button className={`btn btn-sm clearBtn`} onClick={onClear} type="button">
+          <button className={`btn btn-sm ${styles.clearBtn}`} onClick={onClear} type="button">
             Limpiar
           </button>
         )}

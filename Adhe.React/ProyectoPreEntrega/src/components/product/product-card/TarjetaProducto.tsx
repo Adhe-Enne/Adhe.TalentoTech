@@ -3,6 +3,7 @@ import React, { useMemo } from "react";
 import type { Product } from "../../../models";
 
 import useFavorites from "../../../hooks/useFavorites";
+import Plus from "../../icons/Plus";
 import styles from "./TarjetaProducto.module.css";
 
 interface TarjetaProductoProps {
@@ -45,13 +46,14 @@ const TarjetaProducto: React.FC<TarjetaProductoProps> = (props) => {
 
         <div className={`d-flex gap-2 ${styles.actions}`}>
           {onClick && (
-            <button className="btn btn-outline-primary btn-sm" onClick={() => onClick(product)}>
+            <button className={`btn btn-outline-primary btn-sm ${styles.btnOutline}`} onClick={() => onClick(product)}>
               Ver detalle
             </button>
           )}
 
           {onAddToCart && (
-            <button className="btn btn-primary btn-sm" onClick={() => onAddToCart(product)}>
+            <button className={`btn btn-primary btn-sm ${styles.btnPrimary} btn-icon`} onClick={() => onAddToCart(product)}>
+              <Plus style={{ width: 16, height: 16 }} />
               Añadir
             </button>
           )}

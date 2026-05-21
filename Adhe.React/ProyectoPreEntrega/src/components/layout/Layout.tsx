@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, useCallback } from "react";
-import { Link, Outlet, useLocation } from "react-router-dom";
+import { NavLink, Outlet, useLocation } from "react-router-dom";
 
 import useFavorites from "../../hooks/useFavorites";
 import "./Layout.css";
@@ -36,9 +36,9 @@ const Layout: React.FC<LayoutProps> = (props) => {
       <header className="header site-header" ref={headerRef}>
         <nav className="navbar navbar-expand-lg navbar-dark bg-primary">
           <div className="container">
-            <Link className="navbar-brand" to="/">
+            <NavLink className={(navData) => (navData.isActive ? "navbar-brand active" : "navbar-brand")} end to="/">
               Adhe.E-commerce
-            </Link>
+            </NavLink>
             <button
               aria-controls="navbarNav"
               aria-expanded="false"
@@ -53,19 +53,19 @@ const Layout: React.FC<LayoutProps> = (props) => {
             <div className="collapse navbar-collapse" id="navbarNav">
               <ul className="navbar-nav">
                 <li className="nav-item">
-                  <Link className="nav-link" to="/">
+                  <NavLink className={(navData) => (navData.isActive ? "nav-link active" : "nav-link")} end to="/">
                     Inicio
-                  </Link>
+                  </NavLink>
                 </li>
                 <li className="nav-item">
-                  <Link className="nav-link" to="/productos">
+                  <NavLink className={(navData) => (navData.isActive ? "nav-link active" : "nav-link")} to="/productos">
                     Productos
-                  </Link>
+                  </NavLink>
                 </li>
                 <li className="nav-item">
-                  <Link className="nav-link" to="/contacto">
+                  <NavLink className={(navData) => (navData.isActive ? "nav-link active" : "nav-link")} to="/contacto">
                     Contacto
-                  </Link>
+                  </NavLink>
                 </li>
               </ul>
 

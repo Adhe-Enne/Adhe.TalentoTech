@@ -107,6 +107,60 @@
   min-width: 96px;
 }
 
+/* Custom button variants for the product card */
+.btnPrimary {
+  background: linear-gradient(180deg, #0f6670, #084c4d);
+  color: #fff;
+  border: none;
+  padding: 0.45rem 0.9rem;
+  border-radius: 10px;
+  box-shadow: 0 8px 20px rgba(15, 102, 112, 0.12);
+  transition:
+    transform 120ms ease,
+    box-shadow 140ms ease,
+    filter 120ms ease;
+  font-weight: 600;
+}
+
+.btnPrimary:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 20px 44px rgba(15, 102, 112, 0.16);
+}
+
+.btnPrimary:active {
+  transform: translateY(0) scale(0.995);
+}
+
+.btnPrimary:focus-visible {
+  outline: 3px solid rgba(15, 102, 112, 0.14);
+  outline-offset: 3px;
+}
+
+.btnOutline {
+  background: transparent;
+  border: 1px solid rgba(15, 102, 112, 0.14);
+  color: var(--accent);
+  padding: 0.42rem 0.8rem;
+  border-radius: 10px;
+  transition:
+    transform 120ms ease,
+    background 140ms ease,
+    box-shadow 140ms ease;
+}
+
+.btnOutline:hover {
+  /* Ensure text remains legible even if Bootstrap outline rules try to invert color */
+  background: rgba(15, 102, 112, 0.08);
+  color: var(--accent) !important;
+  border-color: rgba(15, 102, 112, 0.22) !important;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(15, 102, 112, 0.06);
+}
+
+.btnOutline:active {
+  transform: translateY(0) scale(0.997);
+}
+
 @media (max-width: 576px) {
   .actions {
     flex-direction: column;

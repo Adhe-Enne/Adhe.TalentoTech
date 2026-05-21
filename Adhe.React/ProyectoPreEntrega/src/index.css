@@ -104,6 +104,18 @@ h3 {
   color: var(--brand);
 }
 
+/* helper for buttons with an icon */
+.btn-icon {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.btn-icon svg {
+  width: 18px;
+  height: 18px;
+  display: block;
+}
+
 /* Cards */
 .card {
   border-radius: var(--radius);

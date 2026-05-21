@@ -2,6 +2,7 @@ import React from "react";
 
 import type { FormPayload } from "../Product.Types";
 
+import CloudUpload from "../../icons/CloudUpload";
 import { useProductForm } from "./hooks/useProductForm";
 import styles from "./Product.module.css";
 import ProductImagePreview from "./ProductImagePreview";
@@ -50,10 +51,11 @@ const ProductForm: React.FC<ProductFormProps> = (props) => {
         </div>
 
         <div className={styles.actions}>
-          <button className="btn btn-ghost" onClick={reset} type="button">
+          <button className={`btn btn-ghost ${styles.cancelBtn}`} onClick={reset} type="button">
             Cancelar
           </button>
-          <button className="btn btn-cta" disabled={!!loading} type="submit">
+          <button className="btn btn-cta btn-icon" disabled={!!loading} type="submit">
+            <CloudUpload style={{ width: 18, height: 18 }} />
             {loading ? "Subiendo..." : "Subir producto"}
           </button>
         </div>

@@ -48,7 +48,7 @@ const DetalleProducto: React.FC<DetalleProductoProps> = (props) => {
 
           {onBack && (
             <div className="mt-3">
-              <button className="btn btn-ghost" onClick={onBack}>
+              <button className="btn btn-cta" onClick={onBack}>
                 Volver
               </button>
             </div>

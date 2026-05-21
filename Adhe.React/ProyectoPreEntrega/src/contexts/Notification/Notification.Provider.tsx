@@ -1,12 +1,7 @@
 import React, { useState, useRef, useEffect, useCallback, useMemo } from "react";
 
 import type { ProviderProps } from "../../models/ProviderProps";
-import type {
-  NotificationContextType,
-  NotificationItem,
-  NotificationVariant,
-  SetNotificationFn,
-} from "./Notification.Types";
+import type { NotificationContextType, NotificationItem, NotificationVariant, SetNotificationFn } from "./Notification.Types";
 
 import NotificationContext from "./NotificationContext";
 
@@ -44,26 +39,22 @@ export const NotificationProvider: React.FC<ProviderProps> = (props) => {
     timersRef.current.delete(id);
   };
 
-  const setNotification: SetNotificationFn = useCallback(
-    (message: string | null, duration = 3000, variant?: NotificationVariant): void => {
-      if (message === null) {
-        return;
-      }
+  const setNotification: SetNotificationFn = useCallback((message: string | null, duration = 3000, variant?: NotificationVariant): void => {
+    if (message === null) {
+      return;
+    }
 
-      const id: number = idRef.current++;
-      const item: NotificationItem = { id, message, variant };
+    const id: number = idRef.current++;
+    const item: NotificationItem = { id, message, variant };
 
-      // add to top of stack (newest first)
-      setNotifs((prev) => [item, ...prev]);
+    setNotifs((prev) => [item, ...prev]);
 
-      const timer: number = globalThis.setTimeout((): void => {
-        removeNotification(id);
-      }, duration) as unknown as number;
+    const timer: number = globalThis.setTimeout((): void => {
+      removeNotification(id);
+    }, duration) as unknown as number;
 
-      timersRef.current.set(id, timer);
-    },
-    [],
-  );
+    timersRef.current.set(id, timer);
+  }, []);
 
   function clearTimers(): void {
     const timers: Map<number, number> = timersRef.current;
@@ -73,15 +64,11 @@ export const NotificationProvider: React.FC<ProviderProps> = (props) => {
 
   useEffect(() => {
     return (): void => {
-      // Capturar el valor actual de timersRef.current en una variable local
       clearTimers();
     };
   }, []);
 
-  const value: NotificationContextType = useMemo(
-    () => ({ notifications: notifs, setNotification, dismiss }),
-    [notifs, setNotification, dismiss],
-  );
+  const value: NotificationContextType = useMemo(() => ({ notifications: notifs, setNotification, dismiss }), [notifs, setNotification, dismiss]);
 
   return <NotificationContext.Provider value={value}>{children}</NotificationContext.Provider>;
 };

@@ -1,6 +1,8 @@
 import React, { type JSX } from "react";
 import { Link } from "react-router-dom";
 
+import PlusCircle from "../../icons/PlusCircle";
+
 interface NavLinksProps {
   cartCount?: number;
   favCount?: number;
@@ -19,7 +21,8 @@ const NavLinks: React.FC<NavLinksProps> = (props) => {
   return (
     <ul className="navbar-nav ms-auto align-items-center nav-tools">
       <li className="nav-item d-none d-lg-block">
-        <Link className="btn btn-sm btn-success ms-2" to="/new">
+        <Link aria-label="Nuevo producto" className="btn btn-sm btn-success ms-2 btn-new-product btn-icon" to="/new">
+          <PlusCircle className="nav-icon" />
           Nuevo producto
         </Link>
       </li>
