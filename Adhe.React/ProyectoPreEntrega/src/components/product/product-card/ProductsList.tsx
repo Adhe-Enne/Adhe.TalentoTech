@@ -1,15 +1,15 @@
 import React from "react";
 
 import { type Product } from "../../../models";
-import TarjetaProducto from "./TarjetaProducto";
+import TarjetaProducto from "./ProductCard";
 
-interface ListaProductosProps {
+interface ProductsListProps {
   products: Product[];
   onAddToCart?: (product: Product) => void;
   onSelect?: (product: Product) => void;
 }
 
-const ListaProductos: React.FC<ListaProductosProps> = (props) => {
+const ProductsList: React.FC<ProductsListProps> = (props) => {
   const { products, onAddToCart, onSelect } = props;
 
   return (
@@ -25,4 +25,4 @@ const ListaProductos: React.FC<ListaProductosProps> = (props) => {
   );
 };
 
-export default ListaProductos;
+export default ProductsList;

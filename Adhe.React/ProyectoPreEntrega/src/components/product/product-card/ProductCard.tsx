@@ -4,15 +4,15 @@ import type { Product } from "../../../models";
 
 import useFavorites from "../../../hooks/useFavorites";
 import Plus from "../../icons/Plus";
-import styles from "./TarjetaProducto.module.css";
+import styles from "./ProductCard.module.css";
 
-interface TarjetaProductoProps {
+interface ProductCardProps {
   product: Product;
   onAddToCart?: (product: Product) => void;
   onClick?: (product: Product) => void;
 }
 
-const TarjetaProducto: React.FC<TarjetaProductoProps> = (props) => {
+const ProductCard: React.FC<ProductCardProps> = (props) => {
   const { product, onAddToCart, onClick } = props;
 
   const { isFavorite, toggleFavorite } = useFavorites();
@@ -21,9 +21,9 @@ const TarjetaProducto: React.FC<TarjetaProductoProps> = (props) => {
   return (
     <div className={`card h-100 ${styles.tarjetaProducto}`}>
       <div style={{ position: "relative", width: "100%", height: "100%" }}>
-        <button aria-label={`Ver detalles de ${product.nombre}`} className={styles.imageWrapper} onClick={() => onClick?.(product)} type="button">
-          <img alt={product.nombre} className={styles.imagen} src={product.imagen} />
-          <span className={"badge-price " + styles.priceBadge}>${product.precio.toFixed(2)}</span>
+        <button aria-label={`Ver detalles de ${product.name}`} className={styles.imageWrapper} onClick={() => onClick?.(product)} type="button">
+          <img alt={product.name} className={styles.imagen} src={product.image} />
+          <span className={"badge-price " + styles.priceBadge}>${product.price.toFixed(2)}</span>
         </button>
 
         <button
@@ -42,7 +42,7 @@ const TarjetaProducto: React.FC<TarjetaProductoProps> = (props) => {
       </div>
 
       <div className="card-body d-flex flex-column">
-        <h5 className="card-title">{product.nombre}</h5>
+        <h5 className="card-title">{product.name}</h5>
 
         <div className={`d-flex gap-2 ${styles.actions}`}>
           {onClick && (
@@ -63,4 +63,4 @@ const TarjetaProducto: React.FC<TarjetaProductoProps> = (props) => {
   );
 };
 
-export default TarjetaProducto;
+export default ProductCard;

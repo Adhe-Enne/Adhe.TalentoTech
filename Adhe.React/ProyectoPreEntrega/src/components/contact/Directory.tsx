@@ -1,16 +1,16 @@
 import React from "react";
 
 import { type Person } from "../../models";
-import TarjetaContacto from "./contact-card/TarjetaContacto";
-import styles from "./Directorio.module.css";
+import CardContact from "./contact-card/CardContact";
+import styles from "./Directory.module.css";
 
-interface DirectorioProps {
+interface DirectoryProps {
   loading: boolean;
   people: Person[];
   error?: string | null;
 }
 
-const Directorio: React.FC<DirectorioProps> = (props) => {
+const Directory: React.FC<DirectoryProps> = (props) => {
   const { loading, error, people } = props;
 
   if (loading) {
@@ -25,11 +25,11 @@ const Directorio: React.FC<DirectorioProps> = (props) => {
       <h3 className={styles.title}>Equipo</h3>
       <div className={styles.grid}>
         {people.map((p) => (
-          <TarjetaContacto key={p.id} person={p} />
+          <CardContact key={p.id} person={p} />
         ))}
       </div>
     </div>
   );
 };
 
-export default Directorio;
+export default Directory;

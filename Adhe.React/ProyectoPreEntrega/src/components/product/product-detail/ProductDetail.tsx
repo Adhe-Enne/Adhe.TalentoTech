@@ -2,13 +2,13 @@ import React, { useState } from "react";
 
 import { type Product } from "../../../models";
 
-interface DetalleProductoProps {
+interface ProductDetailProps {
   product: Product;
   onAddToCart: (product: Product, cantidad: number) => void;
   onBack?: () => void;
 }
 
-const DetalleProducto: React.FC<DetalleProductoProps> = (props) => {
+const ProductDetail: React.FC<ProductDetailProps> = (props) => {
   const { product, onAddToCart, onBack } = props;
   const [cantidad, setCantidad] = useState<number>(1);
 
@@ -17,15 +17,15 @@ const DetalleProducto: React.FC<DetalleProductoProps> = (props) => {
       <div className="row gx-4 gy-3 justify-content-center product-detail">
         <div className="col-12 col-md-5">
           <div className="card">
-            <img alt={product.nombre} className="img-fluid rounded-top" src={product.imagen} />
+            <img alt={product.name} className="img-fluid rounded-top" src={product.image} />
           </div>
         </div>
         <div className="col-12 col-md-5">
-          <h2>{product.nombre}</h2>
-          <div className="mb-3 text-muted">{product.descripcion ?? "Sin descripción"}</div>
+          <h2>{product.name}</h2>
+          <div className="mb-3 text-muted">{product.description ?? "Sin descripción"}</div>
 
           <div className="mb-3">
-            <span className="badge-price">${product.precio.toFixed(2)}</span>
+            <span className="badge-price">${product.price.toFixed(2)}</span>
           </div>
 
           <div className="d-flex align-items-center gap-2 mt-3">
@@ -59,4 +59,4 @@ const DetalleProducto: React.FC<DetalleProductoProps> = (props) => {
   );
 };
 
-export default DetalleProducto;
+export default ProductDetail;

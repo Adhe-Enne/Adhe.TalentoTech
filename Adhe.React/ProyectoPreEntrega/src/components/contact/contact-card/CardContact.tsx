@@ -1,15 +1,15 @@
 import React from "react";
 
 import { type Person } from "../../../models";
-import styles from "./TarjetaContacto.module.css";
+import styles from "./CardContact.module.css";
 
-interface TarjetaContactoProps {
+interface CardContactProps {
   person: Person;
 }
 
-const TarjetaContacto: React.FC<TarjetaContactoProps> = (props) => {
+const CardContact: React.FC<CardContactProps> = (props) => {
   const { person } = props;
-  const { nombre, puesto, email, foto } = person;
+  const { name: nombre, position: puesto, email, foto } = person;
 
   return (
     <div className={`card p-2 ${styles.card}`}>
@@ -27,4 +27,4 @@ const TarjetaContacto: React.FC<TarjetaContactoProps> = (props) => {
   );
 };
 
-export default TarjetaContacto;
+export default CardContact;

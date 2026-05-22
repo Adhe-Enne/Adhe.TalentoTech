@@ -1,7 +1,7 @@
 import React, { type JSX } from "react";
 
 import { type Product } from "../../models";
-import ListaProductos from "../product/product-card/ListaProductos";
+import ProductsList from "../product/product-card/ProductsList";
 
 interface HomeProps {
   products: Product[];
@@ -18,7 +18,7 @@ const Home: React.FC<HomeProps> = (props) => {
     return products.length === 0 ? (
       <div className="alert alert-info">{emptyMessage ?? "No hay productos disponibles."}</div>
     ) : (
-      <ListaProductos onAddToCart={(p: Product) => onAddToCart(p, 1)} onSelect={onSelect} products={products} />
+      <ProductsList onAddToCart={(p: Product) => onAddToCart(p, 1)} onSelect={onSelect} products={products} />
     );
   };
 

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 
-import { buildProductosUrl } from "../hooks/useBuildProductosUrl";
+import { buildProductsUrl } from "../hooks/useBuildProductsUrl";
 
 interface SearchFormProps {
   baseSearch: string;
@@ -14,7 +14,7 @@ const SearchForm: React.FC<SearchFormProps> = (props) => {
 
   const submit: (raw?: string) => void = (raw?: string) => {
     const v: string = (raw ?? (editing ? value : initialQ) ?? "").trim();
-    const target: string = buildProductosUrl(baseSearch, v && !(editing === false && v === initialQ) ? v : "");
+    const target: string = buildProductsUrl(baseSearch, v && !(editing === false && v === initialQ) ? v : "");
     globalThis.location.href = target;
   };
 

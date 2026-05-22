@@ -35,14 +35,14 @@ const NewProductContainerWrapper: React.FC = () => {
         }
 
         const created: Partial<Product> = {
-          nombre: p.nombre,
-          precio: p.precio,
-          descripcion: p.descripcion,
-          imagen: imageUrl,
+          name: p.nombre,
+          price: p.precio,
+          description: p.descripcion,
+          image: imageUrl,
         };
 
         createProduct(created);
-        setNotification(`${created.nombre ?? "Producto"} creado!`, 3000, "info");
+        setNotification(`${created.name ?? "Producto"} creado!`, 3000, "info");
         navigate("/");
       } catch (err: unknown) {
         if (err instanceof DOMException && err.name === "AbortError") {

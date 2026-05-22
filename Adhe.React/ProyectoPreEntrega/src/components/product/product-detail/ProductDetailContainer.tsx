@@ -6,7 +6,7 @@ import type { Product } from "../../../models";
 import { useCart } from "../../../hooks/useCart";
 import { useNotification } from "../../../hooks/useNotification";
 import { useProducts } from "../../../hooks/useProducts";
-import DetalleProducto from "./DetalleProducto";
+import ProductDetail from "./ProductDetail";
 
 const ProductDetailContainer: React.FC = () => {
   const { addToCart } = useCart();
@@ -18,7 +18,7 @@ const ProductDetailContainer: React.FC = () => {
   const handleAdd: (p: Product, cantidad?: number) => void = useCallback(
     (p: Product, cantidad = 1) => {
       addToCart(p, cantidad);
-      setNotification(`${p.nombre} fue agregado al carrito`, 3000, "success");
+      setNotification(`${p.name} fue agregado al carrito`, 3000, "success");
     },
     [addToCart, setNotification],
   );
@@ -37,7 +37,7 @@ const ProductDetailContainer: React.FC = () => {
     );
   }
 
-  return <DetalleProducto onAddToCart={handleAdd} onBack={handleBack} product={product} />;
+  return <ProductDetail onAddToCart={handleAdd} onBack={handleBack} product={product} />;
 };
 
 export default ProductDetailContainer;

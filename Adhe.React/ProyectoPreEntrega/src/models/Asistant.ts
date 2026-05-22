@@ -1,4 +1,4 @@
-export interface Asistente {
+export interface Asistant {
   emoji: string;
   id: number;
   nombre: string;

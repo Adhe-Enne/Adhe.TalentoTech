@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 
 import { type Person } from "../../models";
-import Directorio from "./Directorio";
+import Directory from "./Directory";
 
-const DirectorioContainer: React.FC = () => {
+const DirectoryContainer: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [people, setPeople] = useState<Person[]>([]);
@@ -36,7 +36,7 @@ const DirectorioContainer: React.FC = () => {
     };
   }, []);
 
-  return <Directorio error={error} loading={loading} people={people} />;
+  return <Directory error={error} loading={loading} people={people} />;
 };
 
-export default DirectorioContainer;
+export default DirectoryContainer;

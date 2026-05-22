@@ -5,19 +5,19 @@ import { useNotification } from "../../hooks/useNotification";
 import { type CartItem } from "../../models";
 import CreditCard from "../icons/CreditCard";
 
-interface CarritoProps {
+interface CartProps {
   items: CartItem[];
   onBack?: () => void;
-  onChangeCantidad: (productId: number, cantidad: number) => void;
+  onChangeQty: (productId: number, cantidad: number) => void;
   onRemove: (productId: number) => void;
 }
 
-const Carrito: React.FC<CarritoProps> = (props) => {
-  const { items, onBack, onChangeCantidad, onRemove } = props;
+const Cart: React.FC<CartProps> = (props) => {
+  const { items, onBack, onChangeQty, onRemove } = props;
   const { setNotification } = useNotification();
   const { clearCart } = useCart();
 
-  const total: number = items.reduce((acc, it) => acc + it.product.precio * it.cantidad, 0);
+  const total: number = items.reduce((acc, it) => acc + it.product.price * it.quantity, 0);
 
   function handlePurchase(): void {
     setNotification(`¡Compra realizada con éxito! (Carrito se limpiará y será redirigido a Home)`, 3000, "success");
@@ -37,21 +37,21 @@ const Carrito: React.FC<CarritoProps> = (props) => {
           <div className="list-group">
             {items.map((it) => (
               <div className="list-group-item d-flex align-items-center gap-3" key={it.product.id}>
-                <img alt={it.product.nombre} className="rounded" src={it.product.imagen} style={{ width: 96, height: 96, objectFit: "cover" }} />
+                <img alt={it.product.name} className="rounded" src={it.product.image} style={{ width: 96, height: 96, objectFit: "cover" }} />
                 <div className="flex-grow-1">
-                  <strong>{it.product.nombre}</strong>
-                  <div className="text-muted">${it.product.precio.toFixed(2)}</div>
+                  <strong>{it.product.name}</strong>
+                  <div className="text-muted">${it.product.price.toFixed(2)}</div>
                 </div>
                 <div className="d-flex align-items-center gap-2">
-                  <button className="btn btn-outline-secondary btn-sm" onClick={() => onChangeCantidad(it.product.id, Math.max(1, it.cantidad - 1))}>
+                  <button className="btn btn-outline-secondary btn-sm" onClick={() => onChangeQty(it.product.id, Math.max(1, it.quantity - 1))}>
                     -
                   </button>
-                  <span>{it.cantidad}</span>
-                  <button className="btn btn-outline-secondary btn-sm" onClick={() => onChangeCantidad(it.product.id, it.cantidad + 1)}>
+                  <span>{it.quantity}</span>
+                  <button className="btn btn-outline-secondary btn-sm" onClick={() => onChangeQty(it.product.id, it.quantity + 1)}>
                     +
                   </button>
                 </div>
-                <div style={{ width: 140, textAlign: "right" }}>${(it.product.precio * it.cantidad).toFixed(2)}</div>
+                <div style={{ width: 140, textAlign: "right" }}>${(it.product.price * it.quantity).toFixed(2)}</div>
                 <div>
                   <button className="btn btn-danger btn-sm" onClick={() => onRemove(it.product.id)}>
                     Eliminar
@@ -89,4 +89,4 @@ const Carrito: React.FC<CarritoProps> = (props) => {
   );
 };
 
-export default Carrito;
+export default Cart;

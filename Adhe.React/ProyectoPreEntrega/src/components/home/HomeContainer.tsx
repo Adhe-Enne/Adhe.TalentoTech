@@ -25,7 +25,7 @@ const HomeContainer: React.FC = () => {
   const handleAddWithNotification: (p: Product) => void = useCallback(
     (p: Product) => {
       addToCart(p, 1);
-      setNotification(`${p.nombre} fue agregado al carrito`, 3000, "success");
+      setNotification(`${p.name} fue agregado al carrito`, 3000, "success");
     },
     [addToCart, setNotification],
   );
@@ -41,8 +41,8 @@ const HomeContainer: React.FC = () => {
     let list: Product[] = products ?? [];
     if (q) {
       list = list.filter((p) => {
-        const name: string = p.nombre?.toLowerCase() ?? "";
-        const desc: string = p.descripcion?.toLowerCase() ?? "";
+        const name: string = p.name?.toLowerCase() ?? "";
+        const desc: string = p.description?.toLowerCase() ?? "";
         return name.includes(q) || desc.includes(q);
       });
     }

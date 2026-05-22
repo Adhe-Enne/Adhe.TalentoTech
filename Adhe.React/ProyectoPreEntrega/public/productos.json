@@ -1,44 +1,44 @@
 [
   {
     "id": 101,
-    "imagen": "/images/products/minimal.jpg",
-    "nombre": "Camiseta Minimal",
-    "precio": 19.99,
-    "descripcion": "Camiseta de algodón, corte clásico. Disponible en varios colores."
+    "image": "/images/products/minimal.jpg",
+    "name": "Camiseta Minimal",
+    "price": 19.99,
+    "description": "Camiseta de algodón, corte clásico. Disponible en varios colores."
   },
   {
     "id": 102,
-    "imagen": "/images/products/taza_ceramica.jpg",
-    "nombre": "Taza Cerámica",
-    "precio": 9.5,
-    "descripcion": "Taza blanca con acabado mate. Apta para microondas."
+    "image": "/images/products/taza_ceramica.jpg",
+    "name": "Taza Cerámica",
+    "price": 9.5,
+    "description": "Taza blanca con acabado mate. Apta para microondas."
   },
   {
     "id": 103,
-    "imagen": "/images/products/libreta_a5.jpg",
-    "nombre": "Libreta A5",
-    "precio": 6.75,
-    "descripcion": "Libreta de tapa dura, 120 páginas, papel reciclado."
+    "image": "/images/products/libreta_a5.jpg",
+    "name": "Libreta A5",
+    "price": 6.75,
+    "description": "Libreta de tapa dura, 120 páginas, papel reciclado."
   },
   {
     "id": 104,
-    "imagen": "/images/products/mochila_urbana.jpg",
-    "nombre": "Mochila Urbana",
-    "precio": 49.99,
-    "descripcion": "Mochila resistente al agua con compartimento para laptop."
+    "image": "/images/products/mochila_urbana.jpg",
+    "name": "Mochila Urbana",
+    "price": 49.99,
+    "description": "Mochila resistente al agua con compartimento para laptop."
   },
   {
     "id": 105,
-    "imagen": "/images/products/auris.jpg",
-    "nombre": "Auriculares Bluetooth",
-    "precio": 79.9,
-    "descripcion": "Sonido estéreo, cancelación pasiva y batería de larga duración."
+    "image": "/images/products/auris.jpg",
+    "name": "Auriculares Bluetooth",
+    "price": 79.9,
+    "description": "Sonido estéreo, cancelación pasiva y batería de larga duración."
   },
   {
     "id": 106,
-    "imagen": "/images/products/lampara.jpg",
-    "nombre": "Lámpara de Mesa",
-    "precio": 34.0,
-    "descripcion": "Lámpara LED con regulador de intensidad y brazo flexible."
+    "image": "/images/products/lampara.jpg",
+    "name": "Lámpara de Mesa",
+    "price": 34.0,
+    "description": "Lámpara LED con regulador de intensidad y brazo flexible."
   }
 ]

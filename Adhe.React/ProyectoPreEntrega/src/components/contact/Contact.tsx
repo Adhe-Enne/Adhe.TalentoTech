@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 
 import { useNotification } from "../../hooks/useNotification";
-import DirectorioContainer from "./DirectorioContainer";
+import DirectorioContainer from "./DirectoryContainer";
 
 const Contacto: React.FC = () => {
   const { setNotification } = useNotification();

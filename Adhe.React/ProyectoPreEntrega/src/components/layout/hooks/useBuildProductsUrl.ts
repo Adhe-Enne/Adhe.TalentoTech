@@ -1,4 +1,4 @@
-export const buildProductosUrl: (baseSearch: string, q: string) => string = (baseSearch, q) => {
+export const buildProductsUrl: (baseSearch: string, q: string) => string = (baseSearch, q) => {
   const sp: URLSearchParams = new URLSearchParams(baseSearch);
   if (q) {
     sp.set("q", q);

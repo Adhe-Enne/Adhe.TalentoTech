@@ -17,10 +17,10 @@ export const ProductsProvider: React.FC<ProviderProps> = (props) => {
     const id: number = Date.now();
     const newProduct: Product = {
       id,
-      nombre: p.nombre ?? "Sin nombre",
-      descripcion: p.descripcion,
-      precio: p.precio ?? 0,
-      imagen: p.imagen ?? "/images/avatar1.svg",
+      name: p.name ?? "Sin nombre",
+      description: p.description,
+      price: p.price ?? 0,
+      image: p.image ?? "/images/avatar1.svg",
     };
     setProducts((prev) => [newProduct, ...prev]);
   }, []);
@@ -29,6 +29,7 @@ export const ProductsProvider: React.FC<ProviderProps> = (props) => {
     async (signal?: AbortSignal): Promise<void> => {
       try {
         setLoading(true);
+
         const res: Response = await fetch("/productos.json", { signal });
 
         if (!res.ok) {
@@ -50,10 +51,7 @@ export const ProductsProvider: React.FC<ProviderProps> = (props) => {
     [setNotification],
   );
 
-  const findById: (id: number) => Product | undefined = useCallback(
-    (id: number): Product | undefined => products.find((p) => p.id === id),
-    [products],
-  );
+  const findById: (id: number) => Product | undefined = useCallback((id: number): Product | undefined => products.find((p) => p.id === id), [products]);
 
   const reload: () => void = useCallback((): void => {
     void fetchProducts();
@@ -66,10 +64,7 @@ export const ProductsProvider: React.FC<ProviderProps> = (props) => {
     return (): void => controller.abort();
   }, [fetchProducts]);
 
-  const value: ProductsContextType = useMemo(
-    () => ({ products, loading, createProduct, findById, reload }),
-    [products, loading, createProduct, findById, reload],
-  );
+  const value: ProductsContextType = useMemo(() => ({ products, loading, createProduct, findById, reload }), [products, loading, createProduct, findById, reload]);
 
   return <ProductsContext.Provider value={value}>{children}</ProductsContext.Provider>;
 };
