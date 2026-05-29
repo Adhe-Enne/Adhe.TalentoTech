@@ -1,0 +1,30 @@
+[
+  {
+    "id": 1,
+    "nombre": "Ana López",
+    "email": "ana.lopez@example.com",
+    "puesto": "CEO",
+    "foto": "/images/avatar1.svg"
+  },
+  {
+    "id": 2,
+    "nombre": "Brian Gómez",
+    "email": "brian.gomez@example.com",
+    "puesto": "CTO",
+    "foto": "/images/avatar2.svg"
+  },
+  {
+    "id": 3,
+    "nombre": "Carla Ruiz",
+    "email": "carla.ruiz@example.com",
+    "puesto": "Head of Design",
+    "foto": "/images/avatar3.svg"
+  },
+  {
+    "id": 4,
+    "nombre": "Diego Pérez",
+    "email": "diego.perez@example.com",
+    "puesto": "Product Manager",
+    "foto": "/images/avatar4.svg"
+  }
+]

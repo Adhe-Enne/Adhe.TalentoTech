@@ -1,0 +1,395 @@
+.layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.main-content {
+  flex: 1;
+  padding: 3rem 1rem;
+}
+
+.header .navbar .container {
+  align-items: center;
+}
+
+.header .navbar {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  transition:
+    background 220ms ease,
+    box-shadow 220ms ease;
+  position: sticky;
+  top: 0;
+  z-index: 1050;
+  backdrop-filter: blur(6px) saturate(120%);
+  background: linear-gradient(180deg, rgba(34, 55, 70, 0.92), rgba(34, 55, 70, 0.9));
+}
+
+.site-header .navbar-brand {
+  color: #fff !important;
+}
+
+.search-form {
+  min-width: 260px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0;
+  overflow: visible;
+}
+
+.search-input {
+  flex: 1 1 auto;
+  min-width: 0; /* allow shrinking inside flex container */
+  height: 38px;
+  box-sizing: border-box;
+  border-radius: 999px;
+  padding: 0 46px 0 14px; /* top right bottom left */
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(0, 0, 0, 0.18);
+  color: #fff;
+}
+
+.search-input::placeholder {
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.nav-tools .btn-ghost {
+  color: #fff;
+  /* usar un overlay oscuro para asegurar contraste con texto blanco */
+  background: rgba(0, 0, 0, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  padding: 8px 12px;
+  margin-left: 6px;
+  border-radius: 999px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+  transition:
+    transform 120ms ease,
+    box-shadow 120ms ease,
+    background 120ms ease;
+}
+
+.nav-tools svg {
+  vertical-align: middle;
+}
+
+/* standardized nav icon size */
+.nav-icon {
+  width: 22px;
+  height: 22px;
+  display: inline-block;
+}
+
+.nav-fav-icon {
+  color: var(--accent);
+}
+
+.nav-cart-icon {
+  color: #fff;
+}
+
+.cart-badge {
+  background: var(--accent);
+  color: #fff;
+  font-weight: 600;
+  border-radius: 999px;
+  padding: 4px 9px;
+  font-size: 0.8rem;
+}
+
+.nav-tools .btn-ghost:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+/* Nuevo producto button in navbar (compact CTA) */
+.btn-new-product {
+  /* darker gradient to ensure accessible contrast against white text */
+  background: linear-gradient(180deg, #0f7f79, #0f6670);
+  color: #ffffff;
+  border: none;
+  padding: 0.35rem 0.75rem;
+  border-radius: 999px;
+  box-shadow: 0 8px 22px rgba(15, 102, 112, 0.12);
+  transition:
+    transform 120ms ease,
+    box-shadow 140ms ease,
+    filter 120ms ease;
+}
+
+.btn-new-product:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 18px 40px rgba(15, 102, 112, 0.16);
+}
+
+.btn-new-product:active {
+  transform: translateY(0) scale(0.995);
+}
+
+.btn-new-product:focus-visible {
+  outline: 3px solid rgba(15, 102, 112, 0.12);
+  outline-offset: 3px;
+}
+
+/* NAVBAR LINK / BRAND ENHANCEMENTS */
+.navbar .navbar-brand,
+.navbar .nav-link {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  padding: 0.4rem 0.7rem;
+  /* color delegated to more specific site-header rules to avoid duplicate contrast warnings */
+  border-radius: 0.375rem;
+  transition:
+    color 0.16s ease,
+    transform 0.12s ease,
+    background 0.12s ease;
+  min-width: 44px;
+  min-height: 40px;
+}
+
+.navbar .nav-link::after {
+  content: "";
+  position: absolute;
+  left: 12%;
+  right: 12%;
+  bottom: 6px;
+  height: 2px;
+  background: transparent;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition:
+    transform 0.18s ease,
+    background 0.18s ease;
+}
+
+/* subtle hover: soft background + lift */
+.navbar .navbar-brand:hover,
+.navbar .nav-link:hover {
+  background: rgba(255, 255, 255, 0.04);
+  transform: translateY(-2px);
+}
+
+/* pressed (tactile) */
+.navbar .navbar-brand:active,
+.navbar .nav-link:active {
+  transform: translateY(0) scale(0.99);
+  transition-duration: 0.06s;
+}
+
+/* active page indicator */
+.navbar .nav-link.active,
+.navbar .navbar-brand.active {
+  color: var(--bs-warning, #ffd54d);
+  font-weight: 600;
+}
+
+.navbar .nav-link.active::after {
+  background: var(--bs-warning, #ffd54d);
+  transform: scaleX(1);
+}
+
+/* focus for keyboard users */
+.navbar .nav-link:focus-visible,
+.navbar .navbar-brand:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.85);
+  outline-offset: 3px;
+  border-radius: 0.25rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .navbar .navbar-brand,
+  .navbar .nav-link,
+  .navbar .nav-link::after {
+    transition: none !important;
+    transform: none !important;
+  }
+}
+
+/* Search button inside the input: fixed size circle, centered vertically */
+.search-form .search-btn {
+  /* overlay the button on the input using negative margin to remove right gap */
+  position: relative;
+  margin-left: -36px; /* overlay amount: match button width to flush to input edge */
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border-radius: 999px;
+  border: none;
+  /* usar color sólido oscuro para garantizar contraste con texto blanco */
+  background: #0f6670;
+  color: #ffffff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 3; /* sit above the input so no visual seam */
+  transition:
+    background 160ms ease,
+    color 160ms ease,
+    box-shadow 160ms ease,
+    transform 120ms ease;
+}
+
+.search-form .search-btn svg {
+  width: 18px;
+  height: 18px;
+  display: block;
+  color: inherit;
+  fill: currentColor;
+}
+
+/* when the search input is focused, make the search button stand out */
+.search-form:focus-within .search-btn {
+  background: var(--accent);
+  color: #fff;
+  box-shadow: 0 8px 22px rgba(23, 162, 184, 0.18);
+  border-color: rgba(23, 162, 184, 0.9);
+}
+
+.search-form:focus-within .search-input {
+  background: #fff;
+  color: var(--text);
+  border-color: rgba(23, 162, 184, 0.9);
+}
+
+.footer {
+  text-align: center;
+  padding: 2rem 1rem;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.02), transparent);
+}
+
+.footer .footer-directory {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: flex-start;
+}
+
+.footer .footer-directory > * {
+  flex: 1 1 0;
+}
+
+/* Modern footer styles */
+.site-footer {
+  background-color: #f8f9fa; /* Color de fondo para el footer */
+  color: #212529;
+}
+
+.footer-top {
+  background-color: #ffffff; /* Color de fondo para la primera área */
+  padding: 2rem 0;
+  border-bottom: 1px solid #dee2e6; /* Línea divisoria */
+}
+
+.footer-bottom {
+  background-color: #f1f3f5; /* Color de fondo para la segunda área */
+  padding: 1rem 0;
+  text-align: center;
+}
+
+.footer-links a {
+  color: #495057;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.footer-links a:hover {
+  color: var(--bs-primary);
+}
+
+.footer-newsletter .form-control {
+  border-radius: 999px;
+  padding-left: 12px;
+}
+
+.footer-newsletter .btn-cta {
+  border-radius: 999px;
+}
+
+.social-icons .btn-ghost {
+  /* fondo oscuro sutil para mejorar contraste con el color de marca */
+  background: rgba(0, 0, 0, 0.08);
+  color: var(--brand);
+}
+
+.social-icons .btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  border: 2px solid var(--bs-primary);
+  transition: all 0.3s ease;
+}
+
+.social-icons .btn:hover {
+  background-color: var(--bs-primary);
+  color: #fff;
+  transform: scale(1.1);
+}
+
+.btn.btn-cta {
+  background-color: var(--bs-primary);
+  color: #fff;
+  font-weight: bold;
+  text-transform: uppercase;
+  transition:
+    background-color 0.3s ease,
+    transform 0.3s ease;
+}
+
+.btn.btn-cta:hover {
+  background-color: var(--bs-danger);
+  transform: scale(1.05);
+}
+
+@media (max-width: 576px) {
+  .site-footer .footer-top .col-12 {
+    text-align: center;
+  }
+  .site-footer .footer-newsletter {
+    flex-direction: column;
+    gap: 8px;
+  }
+  .site-footer .footer-newsletter .btn-cta {
+    width: 100%;
+  }
+}
+
+/* Icon buttons: ensure icons and text are vertically centered and consistently sized */
+.btn-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  line-height: 1;
+  vertical-align: middle;
+}
+
+.btn-icon svg,
+.btn-icon .nav-icon {
+  width: 20px;
+  height: 20px;
+  display: inline-block;
+  flex-shrink: 0;
+  vertical-align: middle;
+}
+
+/* Improve SVG rendering sharpness */
+.btn-icon svg {
+  shape-rendering: geometricPrecision;
+  -webkit-font-smoothing: antialiased;
+  backface-visibility: hidden;
+  transform: translateZ(0);
+}
+
+/* Slightly larger icons for prominent CTAs */
+.btn-cta.btn-icon svg,
+.btn-new-product.btn-icon svg,
+.btn-new-product .nav-icon {
+  width: 22px;
+  height: 22px;
+}

@@ -1,0 +1,152 @@
+.formCard {
+  max-width: 900px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+  align-items: start;
+}
+
+@media (min-width: 768px) {
+  .formCard {
+    grid-template-columns: 360px 1fr;
+  }
+}
+
+.preview {
+  background: linear-gradient(180deg, #f8fafb, #ffffff);
+  border-radius: 12px;
+  padding: 12px;
+  min-height: 260px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  border: 1px solid rgba(33, 53, 71, 0.04);
+}
+
+.preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.placeholder {
+  color: var(--muted);
+  font-size: 0.95rem;
+  text-align: center;
+  padding: 8px;
+}
+
+.hiddenInput {
+  display: none;
+}
+
+.uploadGroup {
+  position: absolute;
+  bottom: 12px;
+  left: 12px;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.previewMeta {
+  position: absolute;
+  bottom: 12px;
+  right: 12px;
+  font-size: 0.85rem;
+  color: var(--muted);
+  background: rgba(255, 255, 255, 0.9);
+  padding: 6px 8px;
+  border-radius: 6px;
+  box-shadow: var(--shadow-soft);
+}
+
+.fields {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.fieldRow {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.priceInput {
+  max-width: 180px;
+}
+
+.actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 0.5rem;
+  justify-content: flex-end;
+}
+
+.uploadLabel {
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.45rem 0.8rem;
+  border-radius: 10px;
+  background: rgba(15, 102, 112, 0.06);
+  color: var(--accent);
+  border: 1px solid rgba(15, 102, 112, 0.12);
+  box-shadow: var(--shadow-soft);
+  transition:
+    transform 120ms ease,
+    box-shadow 120ms ease,
+    background 120ms ease;
+}
+
+.clearBtn {
+  background: transparent;
+  border: 1px solid rgba(33, 53, 71, 0.06);
+  color: var(--text);
+  padding: 0.35rem 0.65rem;
+  border-radius: 8px;
+  transition:
+    transform 120ms ease,
+    background 120ms ease,
+    box-shadow 120ms ease;
+  box-shadow: none;
+}
+
+.uploadLabel:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px rgba(15, 102, 112, 0.08);
+  background: rgba(15, 102, 112, 0.09);
+  /* asegurar que el texto mantiene contraste al hacer hover (bootstrap puede aplicar su propio color) */
+  color: var(--accent);
+}
+
+.clearBtn:hover {
+  transform: translateY(-2px);
+  background: rgba(0, 0, 0, 0.03);
+  box-shadow: 0 6px 18px rgba(33, 53, 71, 0.06);
+}
+
+/* estilo para el botón Cancelar en el formulario */
+.cancelBtn {
+  background: transparent;
+  border: 1px solid rgba(33, 53, 71, 0.06);
+  color: var(--text);
+  padding: 0.35rem 0.65rem;
+  border-radius: 8px;
+  transition:
+    transform 120ms ease,
+    background 120ms ease,
+    box-shadow 120ms ease;
+  box-shadow: none;
+}
+
+.cancelBtn:hover {
+  transform: translateY(-2px);
+  background: rgba(0, 0, 0, 0.03);
+  box-shadow: 0 6px 18px rgba(33, 53, 71, 0.06);
+}

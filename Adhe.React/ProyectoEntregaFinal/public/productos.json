@@ -1,0 +1,44 @@
+[
+  {
+    "id": 101,
+    "image": "/images/products/minimal.jpg",
+    "name": "Camiseta Minimal",
+    "price": 19.99,
+    "description": "Camiseta de algodón, corte clásico. Disponible en varios colores."
+  },
+  {
+    "id": 102,
+    "image": "/images/products/taza_ceramica.jpg",
+    "name": "Taza Cerámica",
+    "price": 9.5,
+    "description": "Taza blanca con acabado mate. Apta para microondas."
+  },
+  {
+    "id": 103,
+    "image": "/images/products/libreta_a5.jpg",
+    "name": "Libreta A5",
+    "price": 6.75,
+    "description": "Libreta de tapa dura, 120 páginas, papel reciclado."
+  },
+  {
+    "id": 104,
+    "image": "/images/products/mochila_urbana.jpg",
+    "name": "Mochila Urbana",
+    "price": 49.99,
+    "description": "Mochila resistente al agua con compartimento para laptop."
+  },
+  {
+    "id": 105,
+    "image": "/images/products/auris.jpg",
+    "name": "Auriculares Bluetooth",
+    "price": 79.9,
+    "description": "Sonido estéreo, cancelación pasiva y batería de larga duración."
+  },
+  {
+    "id": 106,
+    "image": "/images/products/lampara.jpg",
+    "name": "Lámpara de Mesa",
+    "price": 34.0,
+    "description": "Lámpara LED con regulador de intensidad y brazo flexible."
+  }
+]

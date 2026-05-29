@@ -1,0 +1,137 @@
+.notification-wrapper {
+  position: fixed;
+  top: calc(var(--header-offset, 64px) + 12px);
+  left: 0;
+  right: 0;
+  z-index: 1100;
+  pointer-events: none; /* allow clicks only on the notifications themselves */
+}
+
+.notification-wrapper .container {
+  pointer-events: none;
+}
+
+.notification-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: flex-end;
+}
+
+.notification {
+  position: relative;
+  /* dejar espacio a la derecha para el botón de cierre */
+  padding: 10px 40px 10px 20px;
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  color: #fff;
+  pointer-events: auto;
+  display: inline-block;
+  animation: slideInDown 180ms ease-out;
+}
+
+.notification--success {
+  background-color: #4caf50;
+}
+
+.notification--info {
+  background-color: #2196f3;
+}
+
+.notification--warning {
+  background-color: #ff9800;
+  color: #000;
+}
+
+.notification--danger {
+  background-color: #f44336;
+}
+
+.notification--primary {
+  background-color: #007bff;
+}
+
+.notification--secondary {
+  background-color: #6c757d;
+}
+
+.notification__close {
+  position: absolute;
+  /* centrar verticalmente la X respecto al contenedor */
+  top: 50%;
+  right: 12px;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  color: inherit;
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 4px; /* área táctil mínima */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.notification__close:focus {
+  outline: 2px solid rgba(255, 255, 255, 0.6);
+}
+
+@keyframes slideInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* App-wide refinements for e-commerce look */
+:root {
+  --brand-accent: #17a2b8; /* accent color */
+  --card-radius: 12px;
+}
+
+.main-wrapper {
+  padding: 2.5rem 1rem;
+}
+
+.site-header {
+  box-shadow: 0 4px 14px rgba(39, 62, 81, 0.06);
+}
+
+.product-grid-row {
+  gap: 1.25rem;
+}
+
+.footer {
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.02), transparent);
+}
+
+/* Cart list specific styles */
+.cart-list .list-group {
+  margin-top: 1rem;
+  border: none;
+}
+
+.cart-list .list-group-item {
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 8px;
+  margin-bottom: 0.75rem;
+  padding: 0.85rem 1rem;
+  background: #ffffff;
+}
+
+.cart-list .list-group-item img {
+  width: 64px;
+  height: 64px;
+  object-fit: cover;
+  border-radius: 6px;
+}
+
+.cart-list .d-flex.justify-content-between.mt-3 {
+  border-top: 1px dashed rgba(0, 0, 0, 0.06);
+  padding-top: 12px;
+}
