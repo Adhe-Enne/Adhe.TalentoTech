@@ -1,7 +1,7 @@
 import React, { type JSX } from "react";
 
 import { type Product } from "../../models";
-import ProductsList from "../product/product-card/ProductsList";
+import ProductsList from "../product/ProductsList";
 
 interface HomeProps {
   products: Product[];

@@ -6,6 +6,7 @@ import type { CreatePayload } from "../Product.Types";
 
 import { useNotification } from "../../../hooks/useNotification";
 import { useProducts } from "../../../hooks/useProducts";
+import { uploadImageToImgbb } from "../../../services/imageUploader";
 import { useCancelable } from "./hooks/useCancelable";
 import NewProductContainer from "./NewProductContainer";
 
@@ -30,8 +31,15 @@ const NewProductContainerWrapper: React.FC = () => {
       try {
         let imageUrl: string = "/images/avatar1.svg";
         if (p.file) {
-          await simulateDelay(1500);
-          imageUrl = await fileToDataUrl(p.file);
+          // If an Imgbb API key is configured, upload to Imgbb and get a public URL.
+          // Otherwise keep the previous behavior (simulate + data URL) as a fallback.
+          const imgbbKey: string | undefined = import.meta.env.VITE_IMGBB_API_KEY;
+          if (imgbbKey) {
+            imageUrl = await uploadImageToImgbb(p.file);
+          } else {
+            await simulateDelay(1500);
+            imageUrl = await fileToDataUrl(p.file);
+          }
         }
 
         const created: Partial<Product> = {

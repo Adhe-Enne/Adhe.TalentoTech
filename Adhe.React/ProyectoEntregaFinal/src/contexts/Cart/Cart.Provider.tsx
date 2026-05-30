@@ -28,11 +28,11 @@ export const CartProvider: React.FC<ProviderProps> = (props) => {
 
   const getCartTotal: () => number = useCallback((): number => cart.reduce((s, it) => s + it.product.price * it.quantity, 0), [cart]);
 
-  const removeFromCart: (productId: number) => void = useCallback((productId: number) => {
+  const removeFromCart: (productId: string) => void = useCallback((productId: string) => {
     setCart((prev) => prev.filter((it) => it.product.id !== productId));
   }, []);
 
-  const updateQuantity: (productId: number, cantidad: number) => void = useCallback((productId: number, cantidad: number) => {
+  const updateQuantity: (productId: string, cantidad: number) => void = useCallback((productId: string, cantidad: number) => {
     setCart((prev) => prev.map((it) => (it.product.id === productId ? { ...it, quantity: cantidad } : it)));
   }, []);
 

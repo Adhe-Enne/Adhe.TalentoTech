@@ -1,0 +1,25 @@
+.container {
+  padding: 16px;
+}
+
+.title {
+  margin: 0 0 12px 0;
+  font-size: 1.25rem;
+  color: #343a40;
+}
+
+.list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 12px;
+}
+
+.item {
+  width: 100%;
+}
+
+.loading,
+.error {
+  color: #6c757d;
+  font-style: italic;
+}

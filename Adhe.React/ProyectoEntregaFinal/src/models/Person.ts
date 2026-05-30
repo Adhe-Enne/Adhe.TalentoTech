@@ -1,7 +1,10 @@
 export interface Person {
-  email: string;
-  foto: string;
-  id: number;
+  id: string; // Firestore document id (string)
   name: string;
-  position: string;
+  bio?: string;
+  email?: string;
+  linkedin?: string;
+  order?: number;
+  photo?: string; // legacy field name used in project
+  position?: string;
 }

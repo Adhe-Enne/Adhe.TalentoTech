@@ -22,8 +22,8 @@ const Contacto: React.FC = () => {
 
   return (
     <div className="container py-4">
-      <div className="row gx-4 gy-4 justify-content-center">
-        <div className="col-12 col-md-7">
+      <div className="row gx-4 gy-4 justify-content-center align-items-start">
+        <div className="col-12 col-md-6">
           <div className="card p-3">
             <h2 className="mb-2">Contacto</h2>
             <p>
@@ -55,8 +55,7 @@ const Contacto: React.FC = () => {
           </div>
         </div>
 
-        <div className="col-12 col-md-5">
-          <h3 className="mb-2">Equipo</h3>
+        <div className="col-12 col-md-6">
           <DirectorioContainer />
         </div>
       </div>

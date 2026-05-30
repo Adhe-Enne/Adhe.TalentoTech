@@ -4,8 +4,8 @@ import type { ProviderProps } from "../../models/ProviderProps";
 import type { FavoritesContextType } from "./Favorites.Types";
 
 import { useNotification } from "../../hooks/useNotification";
+import { parseFavorites } from "../../hooks/useParseFavorites";
 import FavoritesContext from "./FavoritesContext";
-import { parseFavorites } from "./useParseFavorites";
 
 const FAVORITES_KEY: string = "tt_favorites";
 
@@ -13,14 +13,14 @@ export const FavoritesProvider: React.FC<ProviderProps> = (props) => {
   const { children } = props;
   const { setNotification } = useNotification();
 
-  const [store, setStore] = useState<Set<number>>(() => parseFavorites(globalThis.window === undefined ? null : localStorage.getItem(FAVORITES_KEY)));
+  const [store, setStore] = useState<Set<string>>(() => parseFavorites(globalThis.window === undefined ? null : localStorage.getItem(FAVORITES_KEY)));
 
-  const toggleFavorite: (id: number) => void = useCallback(
-    (id: number) => {
+  const toggleFavorite: (id: string) => void = useCallback(
+    (id: string) => {
       const willAdd: boolean = !store.has(id);
 
       setStore((prev) => {
-        const next: Set<number> = new Set(prev);
+        const next: Set<string> = new Set(prev);
         willAdd ? next.add(id) : next.delete(id);
         return next;
       });
@@ -49,9 +49,9 @@ export const FavoritesProvider: React.FC<ProviderProps> = (props) => {
     return (): void => globalThis.window.removeEventListener("storage", onStorage);
   }, []);
 
-  const favorites: Record<number, boolean> = useMemo(() => Object.fromEntries([...store].map((id) => [id, true])), [store]);
+  const favorites: Record<string, boolean> = useMemo(() => Object.fromEntries([...store].map((id) => [id, true])), [store]);
 
-  const isFavorite: (id: number) => boolean = useCallback((id: number) => store.has(id), [store]);
+  const isFavorite: (id: string) => boolean = useCallback((id: string) => store.has(id), [store]);
 
   const count: number = store.size;
 

@@ -1,7 +1,7 @@
 import React from "react";
 
-import { type Product } from "../../../models";
-import TarjetaProducto from "./ProductCard";
+import { type Product } from "../../models";
+import ProductCard from "./product-card/ProductCard";
 
 interface ProductsListProps {
   products: Product[];
@@ -17,7 +17,7 @@ const ProductsList: React.FC<ProductsListProps> = (props) => {
       <div className="row g-3 product-grid-row">
         {products.map((p) => (
           <div className="col-12 col-sm-6 col-md-4 col-lg-3" key={p.id}>
-            <TarjetaProducto onAddToCart={onAddToCart} onClick={onSelect} product={p} />
+            <ProductCard onAddToCart={onAddToCart} onClick={onSelect} product={p} />
           </div>
         ))}
       </div>

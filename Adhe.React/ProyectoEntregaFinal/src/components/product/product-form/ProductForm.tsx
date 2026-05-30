@@ -1,4 +1,5 @@
 import React from "react";
+import { useNavigate, type NavigateFunction } from "react-router-dom";
 
 import type { FormPayload } from "../Product.Types";
 
@@ -15,7 +16,12 @@ interface ProductFormProps {
 const ProductForm: React.FC<ProductFormProps> = (props) => {
   const { loading, onSubmit } = props;
   const { fields, setField, setFile, reset, previewUrl, handleSubmit } = useProductForm();
+  const navigate: NavigateFunction = useNavigate();
 
+  const onCancel: () => void = (): void => {
+    reset();
+    navigate("/");
+  };
   function _onSubmit(e: React.SyntheticEvent): void {
     handleSubmit(onSubmit)(e);
   }
@@ -51,7 +57,7 @@ const ProductForm: React.FC<ProductFormProps> = (props) => {
         </div>
 
         <div className={styles.actions}>
-          <button className={`btn btn-ghost ${styles.cancelBtn}`} onClick={reset} type="button">
+          <button className={`btn btn-ghost ${styles.cancelBtn}`} onClick={onCancel} type="button">
             Cancelar
           </button>
           <button className="btn btn-cta btn-icon" disabled={!!loading} type="submit">

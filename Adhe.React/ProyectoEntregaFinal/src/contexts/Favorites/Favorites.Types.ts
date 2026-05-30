@@ -1,6 +1,6 @@
 export type FavoritesContextType = {
-  favorites: Record<number, boolean>;
-  isFavorite: (id: number) => boolean;
-  toggleFavorite: (id: number) => void;
+  favorites: Record<string, boolean>;
+  isFavorite: (id: string) => boolean;
+  toggleFavorite: (id: string) => void;
   count: number;
 };

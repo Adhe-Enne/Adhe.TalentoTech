@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
 import { type Person } from "../../models";
 import CardContact from "./contact-card/CardContact";
@@ -22,7 +23,12 @@ const Directory: React.FC<DirectoryProps> = (props) => {
 
   return (
     <div className={styles.container}>
-      <h3 className={styles.title}>Equipo</h3>
+      <div className="d-flex justify-content-between align-items-center mb-2">
+        <h3 className={styles.title}>Equipo</h3>
+        <Link className="btn btn-ghost btn-sm" to="/equipo">
+          Ver todos
+        </Link>
+      </div>
       <div className={styles.grid}>
         {people.map((p) => (
           <CardContact key={p.id} person={p} />
