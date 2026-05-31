@@ -5,4 +5,5 @@ export type CategoriesContextType = {
   loading: boolean;
   findById: (id: string) => Category | undefined;
   reload: () => void;
+  createCategory: (name: string, slug?: string) => Promise<Category | undefined>;
 };

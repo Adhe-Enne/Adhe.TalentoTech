@@ -1,6 +1,6 @@
 import { useContext } from "react";
 
-import type { ProductsContextType } from "../contexts/Products/Products.Types";
+import type { ProductsContextType } from "../contexts/Products/ProductsTypes";
 
 import ProductsContext from "../contexts/Products/ProductsContext";
 

@@ -4,8 +4,8 @@ import { Routes, Route } from "react-router-dom";
 import CategoriesProvider from "../contexts/Categories/Categories.Provider";
 import { FavoritesProvider } from "../contexts/Favorites/Favorites.Provider";
 import { NotificationProvider } from "../contexts/Notification/Notification.Provider";
-import { ProductsProvider } from "../contexts/Products/Products.Provider";
-import TagsProvider from "../contexts/Tags/Tags.Provider";
+import { ProductsProvider } from "../contexts/Products/ProductsProvider";
+import TagsProvider from "../contexts/Tags/TagsProvider";
 import { useCart } from "../hooks/useCart";
 import CartContainer from "./cart/CartContainer";
 import Contacto from "./contact/Contact";
@@ -13,10 +13,10 @@ import DirectoryFullContainer from "./contact/full-view/DirectoryFullContainer";
 import HomeContainer from "./home/HomeContainer";
 import NotificationBar from "./home/NotificationBar";
 import Layout from "./layout/Layout";
+import NewProductContainerWrapper from "./product/new-product/NewProductContainerWrapper";
 import ProductDetailContainer from "./product/product-detail/ProductDetailContainer";
-import NewProductContainerWrapper from "./product/product-form/NewProductContainerWrapper";
 
-const Inicio: React.FC = (): JSX.Element => {
+const AppRoutes: React.FC = (): JSX.Element => {
   const { getCartQuantity } = useCart();
 
   return (
@@ -49,4 +49,4 @@ const Inicio: React.FC = (): JSX.Element => {
   );
 };
 
-export default Inicio;
+export default AppRoutes;

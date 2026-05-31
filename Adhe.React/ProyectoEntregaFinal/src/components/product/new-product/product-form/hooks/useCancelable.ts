@@ -1,6 +1,6 @@
 import type { RefObject } from "react";
 
-import type { UseCancelableReturn, StateRefType } from "../../Product.Types";
+import type { UseCancelableReturn, StateRefType } from "../../NewProductTypes";
 
 import { useAbortableFileReader } from "./useAbortableFileReader";
 import { useAbortableTimeout } from "./useAbortableTimeout";

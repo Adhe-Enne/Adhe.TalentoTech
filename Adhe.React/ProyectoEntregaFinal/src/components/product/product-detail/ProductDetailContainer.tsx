@@ -29,7 +29,7 @@ const ProductDetailContainer: React.FC = () => {
   );
 
   const navigate: NavigateFunction = useNavigate();
-  const handleBack: () => void | Promise<void> = useCallback(() => navigate(-1), [navigate]);
+  const handleBack: () => void | Promise<void> = useCallback(() => navigate("/"), [navigate]);
 
   const pid: string | undefined = id;
   const product: Product | undefined = pid ? findById(pid) : undefined;

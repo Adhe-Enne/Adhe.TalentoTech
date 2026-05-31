@@ -1,6 +1,6 @@
 import { useCallback, type RefObject } from "react";
 
-import type { StateRefType } from "../../Product.Types";
+import type { StateRefType } from "../../NewProductTypes";
 
 export const useAbortableTimeout: (stateRef: RefObject<StateRefType>) => (ms: number) => Promise<void> = (stateRef: RefObject<StateRefType>) => {
   return useCallback(

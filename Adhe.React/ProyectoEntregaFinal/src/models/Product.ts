@@ -3,7 +3,7 @@ import type { Category } from "./Category";
 import type { Tag } from "./Tag";
 
 export interface Product extends BaseEntity {
-  category: Category;
+  category: Category | null;
   categoryId: string; // doc id
   currency: string;
   description: string;
@@ -16,10 +16,3 @@ export interface Product extends BaseEntity {
   tagIds?: string[]; // optional array of tag document IDs for easier querying
   tags?: Tag[];
 }
-
-/**
- *     "camiseta",
-    "minimal",
-    "algodón",
-    "unisex"
-*/

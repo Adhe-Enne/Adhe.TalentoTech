@@ -1,18 +1,18 @@
 import React from "react";
 
-import type { FormPayload } from "../Product.Types";
+import type { ProductFormPayload } from "./NewProductTypes";
 
-import ProductForm from "./ProductForm";
+import ProductForm from "./product-form/ProductForm";
 
 interface Props {
   loading?: boolean;
-  onCreated?: (p: FormPayload) => void;
+  onCreated?: (p: ProductFormPayload) => void;
 }
 
 const NewProductContainer: React.FC<Props> = (props) => {
   const { onCreated, loading = false } = props;
 
-  function handleFormSubmit(payload: FormPayload): void {
+  function handleFormSubmit(payload: ProductFormPayload): void {
     onCreated?.(payload);
   }
 

@@ -1,32 +1,53 @@
 import React, { useCallback, useState } from "react";
 import { useNavigate, type NavigateFunction } from "react-router-dom";
 
-import type { Product } from "../../../models";
-import type { CreatePayload } from "../Product.Types";
+import type { Product } from "../../../../models";
+import type { Tag } from "../../../../models/Tag";
+import type { ProductFormPayload } from "../NewProductTypes";
 
-import { useNotification } from "../../../hooks/useNotification";
-import { useProducts } from "../../../hooks/useProducts";
-import { uploadImageToImgbb } from "../../../services/imageUploader";
+import { useNotification } from "../../../../hooks/useNotification";
+import { useProducts } from "../../../../hooks/useProducts";
+import useTags from "../../../../hooks/useTags";
+import { uploadImageToImgbb } from "../../../../services/imageService";
+import NewProductContainer from "../NewProductContainer";
 import { useCancelable } from "./hooks/useCancelable";
-import NewProductContainer from "./NewProductContainer";
 
 const NewProductContainerWrapper: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const { createProduct } = useProducts();
+  const { createTag } = useTags();
   const { setNotification } = useNotification();
   const navigate: NavigateFunction = useNavigate();
+
+  const resolveTagIds: (tags?: string[] | undefined, categoryId?: string | undefined) => Promise<string[]> = useCallback(
+    async (tags?: string[] | undefined, categoryId?: string | undefined): Promise<string[]> => {
+      const ids: string[] = [];
+      if (!tags?.length) {
+        return ids;
+      }
+      for (const name of tags) {
+        const createdTag: Tag | undefined = await createTag(name, categoryId ?? "");
+        if (createdTag) {
+          ids.push(createdTag.id);
+        }
+      }
+      return ids;
+    },
+    [createTag],
+  );
 
   const { fileToDataUrl, simulateDelay } = useCancelable();
 
   const mountedRef: { current: boolean } = React.useRef<boolean>(true) as { current: boolean };
+
   React.useEffect((): (() => void) => {
     return (): void => {
       mountedRef.current = false;
     };
   }, []);
 
-  const onCreated: (p: CreatePayload) => Promise<void> = useCallback(
-    async (p: CreatePayload): Promise<void> => {
+  const onCreated: (p: ProductFormPayload) => Promise<void> = useCallback(
+    async (p: ProductFormPayload): Promise<void> => {
       setLoading(true);
       try {
         let imageUrl: string = "/images/avatar1.svg";
@@ -41,17 +62,26 @@ const NewProductContainerWrapper: React.FC = () => {
             imageUrl = await fileToDataUrl(p.file);
           }
         }
+        debugger;
+
+        const images: string[] = p.file ? [imageUrl] : [];
+        const tagIds: string[] = await resolveTagIds(p.tags, p.categoriaId);
 
         const created: Partial<Product> = {
           name: p.nombre,
           price: p.precio,
           description: p.descripcion,
-          image: imageUrl,
+          image: images[0] ?? imageUrl,
+          images,
+          categoryId: p.categoriaId,
+          tagIds,
         };
 
-        createProduct(created);
+        const newId: string | undefined = await createProduct(created);
         setNotification(`${created.name ?? "Producto"} creado!`, 3000, "info");
-        navigate("/");
+        if (newId) {
+          navigate(`/producto/${newId}`);
+        }
       } catch (err: unknown) {
         if (err instanceof DOMException && err.name === "AbortError") {
           return;
@@ -63,7 +93,7 @@ const NewProductContainerWrapper: React.FC = () => {
         }
       }
     },
-    [createProduct, fileToDataUrl, navigate, setNotification, simulateDelay],
+    [createProduct, resolveTagIds, fileToDataUrl, navigate, setNotification, simulateDelay],
   );
 
   return <NewProductContainer loading={loading} onCreated={onCreated} />;

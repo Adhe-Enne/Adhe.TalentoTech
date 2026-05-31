@@ -1,6 +1,6 @@
 import { useContext } from "react";
 
-import type { TagsContextType } from "../contexts/Tags/Tags.Types";
+import type { TagsContextType } from "../contexts/Tags/TagsTypes";
 
 import TagsContext from "../contexts/Tags/TagsContext";
 

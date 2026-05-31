@@ -3,12 +3,12 @@ import "./App.css";
 import { type JSX } from "react";
 import { BrowserRouter } from "react-router-dom";
 
-import Inicio from "./components/AppRoutes";
+import AppRoutes from "./components/AppRoutes";
 
 function App(): JSX.Element {
   return (
     <BrowserRouter>
-      <Inicio />
+      <AppRoutes />
     </BrowserRouter>
   );
 }

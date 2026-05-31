@@ -5,4 +5,5 @@ export type TagsContextType = {
   loading: boolean;
   findById: (id: string) => Tag | undefined;
   reload: () => void;
+  createTag: (name: string, categoryId: string) => Promise<Tag | undefined>;
 };

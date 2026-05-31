@@ -10,7 +10,7 @@ interface Props {
 const ProductImageCarousel: React.FC<Props> = (props) => {
   const { images, alt = "Imagen del producto" } = props;
 
-  const imgs: string[] = images && images.length ? images : ["/images/avatar1.svg"];
+  const imgs: string[] = images?.length ? images : ["/images/avatar1.svg"];
 
   const [index, setIndex] = useState<number>(0);
 
@@ -34,7 +34,9 @@ const ProductImageCarousel: React.FC<Props> = (props) => {
       {imgs.length > 1 && (
         <div className={styles.thumbnails}>
           {imgs.map((s, i) => (
-            <img alt={`${alt} ${i + 1}`} className={`${styles.thumb} ${i === index ? styles.thumbActive : ""}`} key={i} onClick={() => setIndex(i)} src={s} />
+            <button aria-label={`${alt} ${i + 1}`} className={styles.thumbBtn} key={s} onClick={() => setIndex(i)} type="button">
+              <img alt={`${alt} ${i + 1}`} className={`${styles.thumb} ${i === index ? styles.thumbActive : ""}`} src={s} />
+            </button>
           ))}
         </div>
       )}

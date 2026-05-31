@@ -1,6 +1,6 @@
 import { useEffect, useRef, type RefObject } from "react";
 
-import type { StateRefType } from "../../Product.Types";
+import type { StateRefType } from "../../NewProductTypes";
 
 export const useCancelableRef: () => RefObject<StateRefType> = (): RefObject<StateRefType> => {
   const stateRef: RefObject<StateRefType> = useRef<StateRefType>({

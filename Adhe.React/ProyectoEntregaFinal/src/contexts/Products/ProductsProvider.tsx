@@ -1,10 +1,10 @@
-import { collection, getDocs, query, orderBy, type DocumentData, Query, QuerySnapshot } from "firebase/firestore";
+import { collection, getDocs, query, orderBy, addDoc, type DocumentData, Query, QuerySnapshot, DocumentReference } from "firebase/firestore";
 import React, { useEffect, useState, useCallback, useMemo } from "react";
 
 import type { Product } from "../../models";
 import type { Category } from "../../models/Category";
 import type { ProviderProps } from "../../models/ProviderProps";
-import type { ProductsContextType } from "./Products.Types";
+import type { ProductsContextType } from "./ProductsTypes";
 
 import { PRODUCTS_COLLECTION } from "../../App.Constants";
 import { db } from "../../firebase";
@@ -18,15 +18,52 @@ export const ProductsProvider: React.FC<ProviderProps> = (props) => {
   const [loading, setLoading] = useState<boolean>(true);
   const [products, setProducts] = useState<Product[]>([]);
 
-  const createProduct: (p: Partial<Product>) => void = useCallback((p: Partial<Product>): void => {
-    const newProduct: Partial<Product> = {
-      name: p.name ?? "Sin nombre",
-      description: p.description ?? "",
-      price: p.price ?? 0,
-      image: p.image ?? "/images/avatar1.svg",
-    };
-    setProducts((prev) => [newProduct as Product, ...prev]);
-  }, []);
+  const createProduct: (p: Partial<Product>) => Promise<string | undefined> = useCallback(
+    async (p: Partial<Product>): Promise<string | undefined> => {
+      try {
+        const payload: Partial<Product> = {
+          name: p.name,
+          description: p.description,
+          price: Number(p.price ?? 0),
+          image: p.image ?? (Array.isArray(p.images) ? p.images[0] : null) ?? "/images/avatar1.svg",
+          images: p.images ?? [],
+          categoryId: p.categoryId,
+          tagIds: p.tagIds ?? [],
+          isEnabled: p.isEnabled ?? true,
+          createdAt: new Date().toISOString(),
+          updatedAt: null,
+        };
+
+        const ref: DocumentReference = await addDoc(collection(db, PRODUCTS_COLLECTION), payload);
+        const createdId: string = ref.id;
+
+        const createdProduct: Product = {
+          id: createdId,
+          name: payload.name ?? "Sin nombre",
+          description: payload.description ?? "",
+          price: payload.price ?? 0,
+          stock: payload.stock ?? 0,
+          image: payload.image ?? "/images/avatar1.svg",
+          images: payload.images,
+          currency: payload.currency ?? "USD",
+          categoryId: payload.categoryId ? String(payload.categoryId) : "",
+          tagIds: payload.tagIds,
+          isEnabled: payload.isEnabled ?? true,
+          createdAt: new Date().toISOString(),
+          updatedAt: null,
+          category: null,
+        };
+
+        setProducts((prev) => [createdProduct, ...prev]);
+        return createdId;
+      } catch (err) {
+        console.error(err);
+        setNotification("Error creando producto", 3000, "danger");
+        return undefined;
+      }
+    },
+    [setNotification],
+  );
 
   const fetchProducts: () => Promise<void> = useCallback(async () => {
     try {
@@ -43,11 +80,11 @@ export const ProductsProvider: React.FC<ProviderProps> = (props) => {
           description: data.description,
           price: Number(data.price ?? 0),
           stock: data.stock ?? data.quantity ?? 0,
-          image: data.image ?? Array.isArray(data.images) ?? data.images[0] ?? "/images/avatar1.svg",
+          image: data.image ?? (Array.isArray(data.images) ? data.images[0] : undefined) ?? "/images/avatar1.svg",
           images: Array.isArray(data.images) ? data.images : undefined,
           currency: data.currency,
           categoryId: data.categoryId ?? data.category?.id,
-          category: data.category ?? (null as Category | null),
+          category: (data.category as Category) ?? (null as Category | null),
           tagIds: Array.isArray(data.tagIds) ? data.tagIds : undefined,
           isEnabled: data.isEnabled ?? true,
           createdAt: tsToIso(data.createdAt) ?? "",

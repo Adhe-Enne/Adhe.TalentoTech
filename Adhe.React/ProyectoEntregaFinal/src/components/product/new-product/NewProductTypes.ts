@@ -1,10 +1,12 @@
-import React from "react";
+import type { SyntheticEvent, RefObject } from "react";
 
-export type CreatePayload = {
+export type ProductFormPayload = {
   nombre: string;
   precio: number;
   descripcion?: string;
   file?: File | null;
+  categoriaId?: string;
+  tags?: string[]; // tag names
 };
 
 export type StateRefType = {
@@ -13,18 +15,13 @@ export type StateRefType = {
   controllers: Set<AbortController>;
 };
 
-export type FormPayload = {
-  nombre: string;
-  precio: number;
-  descripcion?: string;
-  file?: File | null;
-};
-
 export type Fields = {
   nombre: string;
   precio: string;
   descripcion: string;
   file: File | null;
+  categoriaId: string;
+  tags: string[];
 };
 
 export type UseProductFormReturn = {
@@ -33,12 +30,12 @@ export type UseProductFormReturn = {
   setFile: (f: File | null) => void;
   reset: () => void;
   previewUrl?: string;
-  getPayload: () => FormPayload;
-  handleSubmit: (onSubmit: (p: FormPayload) => void) => (e: React.SyntheticEvent) => void;
+  getPayload: () => ProductFormPayload;
+  handleSubmit: (onSubmit: (p: ProductFormPayload) => void) => (e: SyntheticEvent) => void;
 };
 
 export type UseCancelableReturn = {
-  ref: React.RefObject<StateRefType>;
+  ref: RefObject<StateRefType>;
   fileToDataUrl: (file: File) => Promise<string>;
   simulateDelay: (ms: number) => Promise<void>;
 };
