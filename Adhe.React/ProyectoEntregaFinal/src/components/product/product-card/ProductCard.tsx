@@ -1,8 +1,9 @@
-import React, { useMemo } from "react";
+import React from "react";
 
 import type { Product } from "../../../models";
 
 import useFavorites from "../../../hooks/useFavorites";
+import useIsFavorite from "../../../hooks/useIsFavorite";
 import Plus from "../../icons/Plus";
 import styles from "./ProductCard.module.css";
 
@@ -15,8 +16,8 @@ interface ProductCardProps {
 const ProductCard: React.FC<ProductCardProps> = (props) => {
   const { product, onAddToCart, onClick } = props;
 
-  const { isFavorite, toggleFavorite } = useFavorites();
-  const fav: boolean = useMemo(() => isFavorite(product.id), [isFavorite, product.id]);
+  const { toggleFavorite } = useFavorites();
+  const fav: boolean = useIsFavorite(product.id);
 
   return (
     <div className={`card h-100 ${styles.tarjetaProducto}`}>

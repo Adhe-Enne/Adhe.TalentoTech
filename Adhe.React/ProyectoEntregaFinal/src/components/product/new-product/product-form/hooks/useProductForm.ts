@@ -8,8 +8,11 @@ export const useProductForm: (initial?: Partial<Fields>) => UseProductFormReturn
     precio: initial?.precio ?? "",
     descripcion: initial?.descripcion ?? "",
     file: initial?.file ?? null,
+    images: initial?.images ?? [],
     categoriaId: initial?.categoriaId ?? "",
+    currency: initial?.currency ?? "USD",
     tags: initial?.tags ?? [],
+    tagIds: initial?.tagIds ?? [],
   });
 
   const setField: <K extends keyof Fields>(k: K, v: Fields[K]) => void = useCallback(<K extends keyof Fields>(k: K, v: Fields[K]) => {
@@ -17,7 +20,21 @@ export const useProductForm: (initial?: Partial<Fields>) => UseProductFormReturn
   }, []);
 
   const setFile: (f: File | null) => void = useCallback((f: File | null) => setField("file", f), [setField]);
-  const reset: () => void = useCallback(() => setFields({ nombre: "", precio: "", descripcion: "", file: null, categoriaId: "", tags: [] }), []);
+  const reset: () => void = useCallback(
+    () =>
+      setFields({
+        nombre: "",
+        precio: "",
+        descripcion: "",
+        file: null,
+        images: [],
+        categoriaId: "",
+        currency: "USD",
+        tags: [],
+        tagIds: [],
+      }),
+    [],
+  );
   const previewUrl: string | undefined = useMemo(() => (fields.file ? URL.createObjectURL(fields.file) : undefined), [fields.file]);
 
   const getPayload: () => ProductFormPayload = useCallback((): ProductFormPayload => {
@@ -26,8 +43,11 @@ export const useProductForm: (initial?: Partial<Fields>) => UseProductFormReturn
       precio: Number.parseFloat(fields.precio) || 0,
       descripcion: fields.descripcion.trim(),
       file: fields.file,
+      images: fields.images ?? [],
       categoriaId: fields.categoriaId || undefined,
+      currency: fields.currency ?? "USD",
       tags: fields.tags ?? [],
+      tagIds: fields.tagIds ?? [],
     };
   }, [fields]);
 

@@ -1,9 +1,7 @@
-import React, { createContext } from "react";
+import { createContext, type Context } from "use-context-selector";
 
-import type { NotificationContextType } from "./Notification.Types";
+import type { NotificationContextType } from "./NotificationTypes";
 
-const NotificationContext: React.Context<NotificationContextType | undefined> = createContext<
-  NotificationContextType | undefined
->(undefined);
+const NotificationContext: Context<NotificationContextType | undefined> = createContext<NotificationContextType | undefined>(undefined);
 
 export default NotificationContext;

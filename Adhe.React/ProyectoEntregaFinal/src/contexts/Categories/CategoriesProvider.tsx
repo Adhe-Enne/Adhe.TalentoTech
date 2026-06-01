@@ -3,7 +3,7 @@ import React, { useEffect, useState, useCallback, useMemo } from "react";
 
 import type { Category } from "../../models/Category";
 import type { ProviderProps } from "../../models/ProviderProps";
-import type { CategoriesContextType } from "./Categories.Types";
+import type { CategoriesContextType } from "./CategoriesTypes";
 
 import { CATEGORIES_COLLECTION } from "../../App.Constants";
 import { db } from "../../firebase";

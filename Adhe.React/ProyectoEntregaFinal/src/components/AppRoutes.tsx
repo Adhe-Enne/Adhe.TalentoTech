@@ -1,12 +1,11 @@
 import React, { type JSX } from "react";
 import { Routes, Route } from "react-router-dom";
 
-import CategoriesProvider from "../contexts/Categories/Categories.Provider";
-import { FavoritesProvider } from "../contexts/Favorites/Favorites.Provider";
-import { NotificationProvider } from "../contexts/Notification/Notification.Provider";
+import CategoriesProvider from "../contexts/Categories/CategoriesProvider";
+import { FavoritesProvider } from "../contexts/Favorites/FavoritesProvider";
+import { NotificationProvider } from "../contexts/Notification/NotificationProvider";
 import { ProductsProvider } from "../contexts/Products/ProductsProvider";
 import TagsProvider from "../contexts/Tags/TagsProvider";
-import { useCart } from "../hooks/useCart";
 import CartContainer from "./cart/CartContainer";
 import Contacto from "./contact/Contact";
 import DirectoryFullContainer from "./contact/full-view/DirectoryFullContainer";
@@ -17,8 +16,6 @@ import NewProductContainerWrapper from "./product/new-product/NewProductContaine
 import ProductDetailContainer from "./product/product-detail/ProductDetailContainer";
 
 const AppRoutes: React.FC = (): JSX.Element => {
-  const { getCartQuantity } = useCart();
-
   return (
     <div>
       <NotificationProvider>
@@ -28,7 +25,7 @@ const AppRoutes: React.FC = (): JSX.Element => {
               <ProductsProvider>
                 <NotificationBar />
                 <Routes>
-                  <Route element={<Layout cartCount={getCartQuantity()} />}>
+                  <Route element={<Layout />}>
                     <Route element={<HomeContainer />} index />
                     <Route element={<HomeContainer />} path="home" />
                     <Route element={<HomeContainer />} path="/" />

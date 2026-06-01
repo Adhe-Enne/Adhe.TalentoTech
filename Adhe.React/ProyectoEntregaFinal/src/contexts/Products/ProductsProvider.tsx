@@ -99,14 +99,6 @@ export const ProductsProvider: React.FC<ProviderProps> = (props) => {
     }
   }, [setNotification]);
 
-  const findById: (id: string | number) => Product | undefined = useCallback(
-    (id: string | number): Product | undefined => {
-      const sid: string = String(id);
-      return products.find((p) => p.id === sid || String(p.id) === sid);
-    },
-    [products],
-  );
-
   const reload: () => void = useCallback((): void => {
     void fetchProducts();
   }, [fetchProducts]);
@@ -120,7 +112,28 @@ export const ProductsProvider: React.FC<ProviderProps> = (props) => {
     return (): void => controller.abort();
   }, [fetchProducts]);
 
-  const value: ProductsContextType = useMemo(() => ({ products, loading, createProduct, findById, reload }), [products, loading, createProduct, findById, reload]);
+  const productById: Record<string, Product> = useMemo(() => {
+    return products.reduce<Record<string, Product>>(
+      (acc, p) => {
+        acc[String(p.id)] = p;
+        return acc;
+      },
+      {} as Record<string, Product>,
+    );
+  }, [products]);
+
+  const findByIdMemoized: (id: string | number) => Product | undefined = useCallback(
+    (id: string | number): Product | undefined => {
+      const sid: string = String(id);
+      return productById[sid];
+    },
+    [productById],
+  );
+
+  const value: ProductsContextType = useMemo(
+    () => ({ products, loading, productById, createProduct, findById: findByIdMemoized, reload }),
+    [products, loading, productById, createProduct, findByIdMemoized, reload],
+  );
 
   return <ProductsContext.Provider value={value}>{children}</ProductsContext.Provider>;
 };

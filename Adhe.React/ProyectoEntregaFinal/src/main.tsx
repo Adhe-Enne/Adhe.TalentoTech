@@ -4,7 +4,7 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 
 import App from "./App.tsx";
-import { CartProvider } from "./contexts/Cart/Cart.Provider.tsx";
+import { CartProvider } from "./contexts/Cart/CartProvider.tsx";
 
 const rootElement: HTMLElement | null = document.getElementById("root");
 if (rootElement) {

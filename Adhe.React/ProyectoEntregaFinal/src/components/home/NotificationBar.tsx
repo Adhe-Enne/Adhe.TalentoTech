@@ -1,6 +1,6 @@
 import React from "react";
 
-import type { NotificationItem } from "../../contexts/Notification/Notification.Types";
+import type { NotificationItem } from "../../contexts/Notification/NotificationTypes";
 
 import { useNotification } from "../../hooks/useNotification";
 

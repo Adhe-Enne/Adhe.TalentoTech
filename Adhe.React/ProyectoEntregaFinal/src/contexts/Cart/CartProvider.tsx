@@ -2,7 +2,7 @@ import React, { useState, useCallback, useMemo } from "react";
 
 import type { CartItem, Product } from "../../models";
 import type { ProviderProps } from "../../models/ProviderProps";
-import type { CartContextType } from "./Cart.Type";
+import type { CartContextType } from "./CartType";
 
 import CartContext from "./CartContext";
 

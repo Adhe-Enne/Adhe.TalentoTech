@@ -1,25 +1,19 @@
 import React, { type JSX } from "react";
 
-import { type Product } from "../../models";
+import type { Product } from "../../models";
+
 import ProductsList from "../product/ProductsList";
 
 interface HomeProps {
   products: Product[];
   emptyMessage?: string;
   loading?: boolean;
-  onAddToCart: (product: Product, cantidad?: number) => void;
-  onSelect: (product: Product) => void;
 }
 
 const Home: React.FC<HomeProps> = (props) => {
-  const { loading, emptyMessage, products, onAddToCart, onSelect } = props;
-
+  const { products, emptyMessage, loading } = props;
   const renderProductList: () => JSX.Element = () => {
-    return products.length === 0 ? (
-      <div className="alert alert-info">{emptyMessage ?? "No hay productos disponibles."}</div>
-    ) : (
-      <ProductsList onAddToCart={(p: Product) => onAddToCart(p, 1)} onSelect={onSelect} products={products} />
-    );
+    return products.length === 0 ? <div className="alert alert-info">{emptyMessage ?? "No hay productos disponibles."}</div> : <ProductsList products={products} />;
   };
 
   return (

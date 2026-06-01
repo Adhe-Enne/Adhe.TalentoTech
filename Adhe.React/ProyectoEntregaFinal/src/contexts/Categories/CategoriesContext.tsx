@@ -1,7 +1,7 @@
-import React, { createContext } from "react";
+import { createContext, type Context } from "use-context-selector";
 
-import type { CategoriesContextType } from "./Categories.Types";
+import type { CategoriesContextType } from "./CategoriesTypes";
 
-const CategoriesContext: React.Context<CategoriesContextType | undefined> = createContext<CategoriesContextType | undefined>(undefined);
+const CategoriesContext: Context<CategoriesContextType | undefined> = createContext<CategoriesContextType | undefined>(undefined);
 
 export default CategoriesContext;

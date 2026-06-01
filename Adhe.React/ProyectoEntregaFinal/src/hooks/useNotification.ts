@@ -1,15 +1,17 @@
-import { useContext } from "react";
+import { useContextSelector } from "use-context-selector";
 
-import type { NotificationContextType } from "../contexts/Notification/Notification.Types";
+import type { NotificationContextType } from "../contexts/Notification/NotificationTypes";
 
 import NotificationContext from "../contexts/Notification/NotificationContext";
 
 export const useNotification: () => NotificationContextType = (): NotificationContextType => {
-  const ctx: NotificationContextType | undefined = useContext(NotificationContext);
+  const notifications: NotificationContextType["notifications"] | undefined = useContextSelector(NotificationContext, (c) => c?.notifications);
+  const setNotification: NotificationContextType["setNotification"] | undefined = useContextSelector(NotificationContext, (c) => c?.setNotification);
+  const dismiss: NotificationContextType["dismiss"] | undefined = useContextSelector(NotificationContext, (c) => c?.dismiss);
 
-  if (!ctx) {
+  if (notifications === undefined || setNotification === undefined || dismiss === undefined) {
     throw new Error("useNotification must be used within NotificationProvider");
   }
 
-  return ctx;
+  return { notifications, setNotification, dismiss };
 };

@@ -60,17 +60,31 @@ const NewProductContainerWrapper: React.FC = () => {
             imageUrl = await fileToDataUrl(p.file);
           }
         }
-        debugger;
+        // upload additional images (if any)
+        const additionalImages: string[] = [];
+        if (p.images && p.images.length > 0) {
+          const imgbbKey: string | undefined = import.meta.env.VITE_IMGBB_API_KEY;
+          const uploads: Promise<string>[] = p.images.map(async (f) => {
+            if (imgbbKey) {
+              return await uploadImageToImgbb(f);
+            }
+            await simulateDelay(800);
+            return await fileToDataUrl(f);
+          });
+          const urls: string[] = await Promise.all(uploads);
+          additionalImages.push(...urls);
+        }
 
-        const images: string[] = p.file ? [imageUrl] : [];
-        const tagIds: string[] = await resolveTagIds(p.tags, p.categoriaId);
+        const images: string[] = additionalImages;
+        const tagIds: string[] = p.tagIds?.length === (p.tags?.length ?? 0) ? p.tagIds : await resolveTagIds(p.tags, p.categoriaId);
 
         const created: Partial<Product> = {
           name: p.nombre,
           price: p.precio,
           description: p.descripcion,
-          image: images[0] ?? imageUrl,
+          image: imageUrl,
           images,
+          currency: p.currency,
           categoryId: p.categoriaId,
           tagIds,
         };

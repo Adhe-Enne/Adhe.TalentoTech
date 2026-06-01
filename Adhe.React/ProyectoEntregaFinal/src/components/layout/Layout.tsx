@@ -1,20 +1,17 @@
 import React, { useRef, useEffect, useCallback } from "react";
 import { NavLink, Outlet, useLocation } from "react-router-dom";
 
-import useFavorites from "../../hooks/useFavorites";
 import "./Layout.css";
 import Footer from "./body/Footer";
 import NavLinks from "./body/NavLinks";
 import SearchForm from "./body/SearchForm";
 
 interface LayoutProps {
-  cartCount?: number;
   children?: React.ReactNode;
 }
 
 const Layout: React.FC<LayoutProps> = (props) => {
-  const { cartCount, children } = props;
-  const { count: favCount } = useFavorites();
+  const { children } = props;
 
   const headerRef: React.RefObject<HTMLElement | null> = useRef<HTMLElement | null>(null);
   const location: ReturnType<typeof useLocation> = useLocation();
@@ -70,7 +67,7 @@ const Layout: React.FC<LayoutProps> = (props) => {
               </ul>
 
               <SearchForm baseSearch={location.search} initialQ={urlQuery} />
-              <NavLinks cartCount={cartCount} favCount={favCount} />
+              <NavLinks />
             </div>
           </div>
         </nav>

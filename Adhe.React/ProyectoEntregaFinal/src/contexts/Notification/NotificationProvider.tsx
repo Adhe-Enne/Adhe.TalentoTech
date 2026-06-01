@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect, useCallback, useMemo } from "react";
 
 import type { ProviderProps } from "../../models/ProviderProps";
-import type { NotificationContextType, NotificationItem, NotificationVariant, SetNotificationFn } from "./Notification.Types";
+import type { NotificationContextType, NotificationItem, NotificationVariant, SetNotificationFn } from "./NotificationTypes";
 
 import NotificationContext from "./NotificationContext";
 

@@ -1,12 +1,17 @@
 import type { SyntheticEvent, RefObject } from "react";
 
+export type Currency = "USD" | "ARS" | "BTC";
+
 export type ProductFormPayload = {
   nombre: string;
   precio: number;
   descripcion?: string;
-  file?: File | null;
+  file?: File | null; // main image
+  images?: File[]; // additional images
   categoriaId?: string;
   tags?: string[]; // tag names
+  tagIds?: string[]; // persisted tag ids
+  currency?: Currency;
 };
 
 export type StateRefType = {
@@ -20,8 +25,11 @@ export type Fields = {
   precio: string;
   descripcion: string;
   file: File | null;
+  images: File[]; // additional images selected
   categoriaId: string;
+  currency: Currency;
   tags: string[];
+  tagIds: string[];
 };
 
 export type UseProductFormReturn = {

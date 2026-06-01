@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 
 import type { ProviderProps } from "../../models/ProviderProps";
-import type { FavoritesContextType } from "./Favorites.Types";
+import type { FavoritesContextType } from "./FavoritesTypes";
 
 import { useNotification } from "../../hooks/useNotification";
 import { parseFavorites } from "../../hooks/useParseFavorites";
@@ -53,16 +53,16 @@ export const FavoritesProvider: React.FC<ProviderProps> = (props) => {
 
   const isFavorite: (id: string) => boolean = useCallback((id: string) => store.has(id), [store]);
 
-  const count: number = store.size;
+  const favCount: number = store.size;
 
   const value: FavoritesContextType = useMemo(
     () => ({
       favorites,
-      count,
+      favCount,
       isFavorite,
       toggleFavorite,
     }),
-    [favorites, isFavorite, toggleFavorite, count],
+    [favorites, isFavorite, toggleFavorite, favCount],
   );
 
   return <FavoritesContext.Provider value={value}>{children}</FavoritesContext.Provider>;

@@ -1,23 +1,21 @@
 import React from "react";
 
-import { type Product } from "../../models";
-import ProductCard from "./product-card/ProductCard";
+import type { Product } from "../../models";
+
+import ProductCardContainer from "./product-card/ProductCardContainer";
 
 interface ProductsListProps {
   products: Product[];
-  onAddToCart?: (product: Product) => void;
-  onSelect?: (product: Product) => void;
 }
 
 const ProductsList: React.FC<ProductsListProps> = (props) => {
-  const { products, onAddToCart, onSelect } = props;
-
+  const { products } = props;
   return (
     <div className="container">
       <div className="row g-3 product-grid-row">
         {products.map((p) => (
           <div className="col-12 col-sm-6 col-md-4 col-lg-3" key={p.id}>
-            <ProductCard onAddToCart={onAddToCart} onClick={onSelect} product={p} />
+            <ProductCardContainer product={p} />
           </div>
         ))}
       </div>

@@ -1,7 +1,7 @@
-import React, { createContext } from "react";
+import { createContext, type Context } from "use-context-selector";
 
-import type { CartContextType } from "./Cart.Type";
+import type { CartContextType } from "./CartType";
 
-const CartContext: React.Context<CartContextType | undefined> = createContext<CartContextType | undefined>(undefined);
+const CartContext: Context<CartContextType | undefined> = createContext<CartContextType | undefined>(undefined);
 
 export default CartContext;

@@ -1,15 +1,14 @@
 import React, { type JSX } from "react";
 import { Link } from "react-router-dom";
 
+import { useCart } from "../../../hooks/useCart";
+import useFavorites from "../../../hooks/useFavorites";
 import PlusCircle from "../../icons/PlusCircle";
 
-interface NavLinksProps {
-  cartCount?: number;
-  favCount?: number;
-}
-
-const NavLinks: React.FC<NavLinksProps> = (props) => {
-  const { cartCount, favCount } = props;
+const NavLinks: React.FC = () => {
+  const { favCount } = useFavorites();
+  const { getCartQuantity } = useCart();
+  const cartCount: number = getCartQuantity();
 
   const showFavCount: () => JSX.Element = () => {
     if (favCount && favCount > 0) {
@@ -52,7 +51,7 @@ const NavLinks: React.FC<NavLinksProps> = (props) => {
             <circle cx="17" cy="19" r="1.6" />
             <path d="M3 3h2l2.68 10.39a2 2 0 001.96 1.35H19a2 2 0 001.94-1.44L23 6H6" />
           </svg>
-          {typeof cartCount === "number" && cartCount > 0 && <span className="cart-badge position-absolute top-0 start-100 translate-middle">{cartCount}</span>}
+          {cartCount > 0 && <span className="cart-badge position-absolute top-0 start-100 translate-middle">{cartCount}</span>}
         </Link>
       </li>
     </ul>

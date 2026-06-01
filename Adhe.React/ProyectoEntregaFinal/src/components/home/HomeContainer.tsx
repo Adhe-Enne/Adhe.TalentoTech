@@ -1,16 +1,13 @@
-import React, { useCallback, useMemo } from "react";
-import { useNavigate, useLocation, type NavigateFunction } from "react-router-dom";
+import React, { useMemo } from "react";
+import { useLocation } from "react-router-dom";
 
 import type { Product } from "../../models";
 
-import { useCart } from "../../hooks/useCart";
 import useFavorites from "../../hooks/useFavorites";
-import { useNotification } from "../../hooks/useNotification";
 import { useProducts } from "../../hooks/useProducts";
 import Home from "./Home";
 
 const HomeContainer: React.FC = () => {
-  const { setNotification } = useNotification();
   const { products, loading } = useProducts();
   const { favorites } = useFavorites();
 
@@ -18,24 +15,6 @@ const HomeContainer: React.FC = () => {
   const params: URLSearchParams = new URLSearchParams(location.search);
   const q: string = (params.get("q") ?? "").toLowerCase();
   const filter: string | null = params.get("filter");
-
-  const backNavigate: NavigateFunction = useNavigate();
-  const { addToCart } = useCart();
-
-  const handleAddWithNotification: (p: Product) => void = useCallback(
-    (p: Product) => {
-      addToCart(p, 1);
-      setNotification(`${p.name} fue agregado al carrito`, 3000, "success");
-    },
-    [addToCart, setNotification],
-  );
-
-  const handleSelect: (p: Product) => void = useCallback(
-    (p: Product) => {
-      backNavigate(`/producto/${p.id}`);
-    },
-    [backNavigate],
-  );
 
   const filteredProducts: Product[] = useMemo(() => {
     let list: Product[] = products ?? [];
@@ -52,15 +31,7 @@ const HomeContainer: React.FC = () => {
     return list;
   }, [products, q, filter, favorites]);
 
-  return (
-    <Home
-      emptyMessage={filter === "favorites" ? "No tienes productos favoritos aún." : undefined}
-      loading={loading}
-      onAddToCart={handleAddWithNotification}
-      onSelect={handleSelect}
-      products={filteredProducts}
-    />
-  );
+  return <Home emptyMessage={filter === "favorites" ? "No tienes productos favoritos aún." : undefined} loading={loading} products={filteredProducts} />;
 };
 
 export default HomeContainer;

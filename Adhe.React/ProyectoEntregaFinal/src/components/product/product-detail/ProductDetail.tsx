@@ -1,7 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
+import { useNavigate, type NavigateFunction } from "react-router-dom";
 
 import type { Tag } from "../../../models/Tag";
 
+import { useCart } from "../../../hooks/useCart";
+import { useNotification } from "../../../hooks/useNotification";
 import { type Product } from "../../../models";
 import ProductImageCarousel from "./ProductImageCarousel";
 
@@ -9,14 +12,25 @@ interface ProductDetailProps {
   product: Product;
   categoryName?: string;
   tags?: Tag[];
-  onAddToCart: (product: Product, cantidad: number) => void;
-  onBack?: () => void;
 }
 
 const ProductDetail: React.FC<ProductDetailProps> = (props) => {
-  const { product, onAddToCart, onBack, categoryName, tags } = props;
+  const { product, categoryName, tags } = props;
   const [cantidad, setCantidad] = useState<number>(1);
   const { images } = product;
+
+  const { addToCart } = useCart();
+  const { setNotification } = useNotification();
+  const navigate: NavigateFunction = useNavigate();
+
+  const handleAdd: () => void = useCallback(() => {
+    addToCart(product, cantidad);
+    setNotification(`${product.name} fue agregado al carrito`, 3000, "success");
+  }, [addToCart, cantidad, product, setNotification]);
+
+  const handleBack: () => void = useCallback(() => {
+    navigate("/");
+  }, [navigate]);
 
   return (
     <div className="container">
@@ -62,18 +76,16 @@ const ProductDetail: React.FC<ProductDetailProps> = (props) => {
               type="number"
               value={cantidad}
             />
-            <button className="btn btn-cta" onClick={() => onAddToCart(product, cantidad)}>
+            <button className="btn btn-cta" onClick={handleAdd}>
               Añadir al carrito
             </button>
           </div>
 
-          {onBack && (
-            <div className="mt-3">
-              <button className="btn btn-cta" onClick={onBack}>
-                Volver
-              </button>
-            </div>
-          )}
+          <div className="mt-3">
+            <button className="btn btn-cta" onClick={handleBack}>
+              Volver
+            </button>
+          </div>
         </div>
       </div>
     </div>
