@@ -4,11 +4,11 @@ import type { Product } from "../../models";
 
 import ProductCardContainer from "./product-card/ProductCardContainer";
 
-interface ProductsListProps {
+interface ProductGridProps {
   products: Product[];
 }
 
-const ProductsList: React.FC<ProductsListProps> = (props) => {
+const ProductGrid: React.FC<ProductGridProps> = (props) => {
   const { products } = props;
   return (
     <div className="container">
@@ -23,4 +23,4 @@ const ProductsList: React.FC<ProductsListProps> = (props) => {
   );
 };
 
-export default ProductsList;
+export default ProductGrid;

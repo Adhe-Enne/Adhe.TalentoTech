@@ -1,7 +1,7 @@
 import React, { type JSX } from "react";
 import { Link } from "react-router-dom";
 
-import { useCart } from "../../../hooks/useCart";
+import useCart from "../../../hooks/useCart";
 import useFavorites from "../../../hooks/useFavorites";
 import PlusCircle from "../../icons/PlusCircle";
 

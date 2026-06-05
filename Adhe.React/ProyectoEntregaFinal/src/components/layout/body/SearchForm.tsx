@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate, type NavigateFunction } from "react-router-dom";
 
-import { buildProductsUrl } from "../hooks/useBuildProductsUrl";
+import { buildProductsUrl } from "../hooks/buildProductsUrl";
 
 interface SearchFormProps {
   baseSearch: string;
@@ -9,13 +10,14 @@ interface SearchFormProps {
 
 const SearchForm: React.FC<SearchFormProps> = (props) => {
   const { baseSearch, initialQ } = props;
+  const navigate: NavigateFunction = useNavigate();
   const [value, setValue] = useState<string>(initialQ);
   const [editing, setEditing] = useState(false);
 
   const submit: (raw?: string) => void = (raw?: string) => {
     const v: string = (raw ?? (editing ? value : initialQ) ?? "").trim();
     const target: string = buildProductsUrl(baseSearch, v && !(editing === false && v === initialQ) ? v : "");
-    globalThis.location.href = target;
+    navigate(target);
   };
 
   useEffect((): (() => void) => {

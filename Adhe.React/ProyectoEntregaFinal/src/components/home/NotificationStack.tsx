@@ -2,9 +2,9 @@ import React from "react";
 
 import type { NotificationItem } from "../../contexts/Notification/NotificationTypes";
 
-import { useNotification } from "../../hooks/useNotification";
+import useNotification from "../../hooks/useNotification";
 
-const NotificationBar: React.FC = () => {
+const NotificationStack: React.FC = () => {
   const { notifications, dismiss } = useNotification();
 
   if (!notifications || notifications.length === 0) {
@@ -32,4 +32,4 @@ const NotificationBar: React.FC = () => {
   );
 };
 
-export default NotificationBar;
+export default NotificationStack;

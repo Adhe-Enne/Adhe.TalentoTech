@@ -1,13 +1,13 @@
 import React from "react";
 
 import { type Person } from "../../../models";
-import styles from "./CardContact.module.css";
+import styles from "./TeamMemberCard.module.css";
 
-interface CardContactProps {
+interface TeamMemberCardProps {
   person: Person;
 }
 
-const CardContact: React.FC<CardContactProps> = (props) => {
+const TeamMemberCard: React.FC<TeamMemberCardProps> = (props) => {
   const { person } = props;
   const { name: nombre, position: puesto, email, photo, linkedin } = person;
 
@@ -36,4 +36,4 @@ const CardContact: React.FC<CardContactProps> = (props) => {
   );
 };
 
-export default CardContact;
+export default TeamMemberCard;

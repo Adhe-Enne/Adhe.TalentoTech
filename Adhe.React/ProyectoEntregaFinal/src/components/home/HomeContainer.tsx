@@ -4,7 +4,7 @@ import { useLocation } from "react-router-dom";
 import type { Product } from "../../models";
 
 import useFavorites from "../../hooks/useFavorites";
-import { useProducts } from "../../hooks/useProducts";
+import useProducts from "../../hooks/useProducts";
 import Home from "./Home";
 
 const HomeContainer: React.FC = () => {

@@ -3,8 +3,8 @@ import { useNavigate, type NavigateFunction } from "react-router-dom";
 
 import type { Product } from "../../../models";
 
-import { useCart } from "../../../hooks/useCart";
-import { useNotification } from "../../../hooks/useNotification";
+import useCart from "../../../hooks/useCart";
+import useNotification from "../../../hooks/useNotification";
 import ProductCard from "./ProductCard";
 
 interface ProductCardContainerProps {

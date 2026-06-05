@@ -9,18 +9,18 @@ export interface Image {
 export interface ImageData {
   delete_url: string;
   display_url: string;
-  expiration: string;
-  height: string;
+  expiration: number;
+  height: number;
   id: string;
   image: Image;
   medium: Image;
-  size: string;
+  size: number;
   thumb: Image;
-  time: string;
+  time: number;
   title: string;
   url: string;
   url_viewer: string;
-  width: string;
+  width: number;
 }
 export interface ImgbbResponse {
   data: ImageData;

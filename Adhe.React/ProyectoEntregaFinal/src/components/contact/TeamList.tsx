@@ -2,17 +2,17 @@ import React from "react";
 import { Link } from "react-router-dom";
 
 import { type Person } from "../../models";
-import CardContact from "./contact-card/CardContact";
-import styles from "./Directory.module.css";
+import TeamMemberCard from "./team-card/TeamMemberCard";
+import styles from "./TeamList.module.css";
 
-interface DirectoryProps {
+interface TeamListProps {
   loading: boolean;
-  people: Person[];
+  team: Person[];
   error?: string | null;
 }
 
-const Directory: React.FC<DirectoryProps> = (props) => {
-  const { loading, error, people } = props;
+const TeamList: React.FC<TeamListProps> = (props) => {
+  const { loading, error, team } = props;
 
   if (loading) {
     return <div className={styles.loading}>Cargando equipo...</div>;
@@ -30,12 +30,12 @@ const Directory: React.FC<DirectoryProps> = (props) => {
         </Link>
       </div>
       <div className={styles.grid}>
-        {people.map((p) => (
-          <CardContact key={p.id} person={p} />
+        {team.map((p) => (
+          <TeamMemberCard key={p.id} person={p} />
         ))}
       </div>
     </div>
   );
 };
 
-export default Directory;
+export default TeamList;

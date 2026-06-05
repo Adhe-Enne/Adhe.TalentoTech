@@ -1,14 +1,14 @@
 import React from "react";
 
 import { type Person } from "../../../models";
-import styles from "./CardContactFull.module.css";
+import styles from "./TeamMemberCardExpanded.module.css";
 
-interface CardContactFullProps {
+interface TeamMemberCardExpandedProps {
   person: Person;
   onShowMore?: (p: Person) => void;
 }
 
-const CardContactFull: React.FC<CardContactFullProps> = (props) => {
+const TeamMemberCardExpanded: React.FC<TeamMemberCardExpandedProps> = (props) => {
   const { person, onShowMore } = props;
   const { name, position, email, linkedin, bio, photo } = person;
 
@@ -54,4 +54,4 @@ const CardContactFull: React.FC<CardContactFullProps> = (props) => {
   );
 };
 
-export default CardContactFull;
+export default TeamMemberCardExpanded;

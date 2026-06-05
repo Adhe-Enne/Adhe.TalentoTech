@@ -1,21 +1,18 @@
-/* Styles isolated for ContactBioModal to avoid leaking into other components */
 .modalOverlay {
   position: fixed;
   inset: 0;
-  /* fully transparent overlay so nothing darkens the page */
   background: transparent;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 24px;
-  z-index: 2147483647; /* ensure above most UI */
+  z-index: 2147483647;
   -webkit-overflow-scrolling: touch;
   box-shadow: none;
   border: none;
   outline: none;
 }
 
-/* Keep native backdrop transparent so only our overlay color shows */
 .modalOverlay::backdrop {
   background: transparent;
   border: none;
@@ -27,16 +24,14 @@
   max-width: 720px;
   width: min(92%, 720px);
   padding: 20px;
-  /* remove strong border/shadow so modal looks clean */
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
   border: none;
   margin: 0 auto;
-  position: relative; /* normal flow inside flex overlay */
+  position: relative;
   max-height: calc(100vh - 120px);
   overflow: auto;
 }
 
-/* remove focus outline for dialog overlay */
 .modalOverlay:focus {
   outline: none;
 }

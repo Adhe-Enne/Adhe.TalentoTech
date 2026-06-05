@@ -3,8 +3,8 @@ import { useNavigate, type NavigateFunction } from "react-router-dom";
 
 import type { Tag } from "../../../models/Tag";
 
-import { useCart } from "../../../hooks/useCart";
-import { useNotification } from "../../../hooks/useNotification";
+import useCart from "../../../hooks/useCart";
+import useNotification from "../../../hooks/useNotification";
 import { type Product } from "../../../models";
 import ProductImageCarousel from "./ProductImageCarousel";
 

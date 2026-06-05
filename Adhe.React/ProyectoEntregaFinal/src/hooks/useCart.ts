@@ -4,7 +4,7 @@ import type { CartContextType } from "../contexts/Cart/CartType";
 
 import CartContext from "../contexts/Cart/CartContext";
 
-export const useCart: () => CartContextType = (): CartContextType => {
+const useCart: () => CartContextType = (): CartContextType => {
   const cart: CartContextType["cart"] | undefined = useContextSelector(CartContext, (c) => c?.cart);
   const addToCart: CartContextType["addToCart"] | undefined = useContextSelector(CartContext, (c) => c?.addToCart);
   const removeFromCart: CartContextType["removeFromCart"] | undefined = useContextSelector(CartContext, (c) => c?.removeFromCart);
@@ -27,3 +27,5 @@ export const useCart: () => CartContextType = (): CartContextType => {
 
   return { cart, addToCart, removeFromCart, updateQuantity, clearCart, getCartQuantity, getCartTotal };
 };
+
+export default useCart;

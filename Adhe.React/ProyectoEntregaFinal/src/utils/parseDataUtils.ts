@@ -3,7 +3,7 @@ type GenericObject = {
   _seconds?: number;
 };
 
-export const tsToIso: (val: undefined) => string | undefined = (val: undefined): string | undefined => {
+export const tsToIso: (val: unknown) => string | undefined = (val: unknown): string | undefined => {
   if (!val) {
     return undefined;
   }

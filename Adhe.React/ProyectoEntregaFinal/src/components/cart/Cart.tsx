@@ -1,31 +1,20 @@
 import React from "react";
 
-import { useCart } from "../../hooks/useCart";
-import { useNotification } from "../../hooks/useNotification";
 import { type CartItem } from "../../models";
 import CreditCard from "../icons/CreditCard";
 
 interface CartProps {
   items: CartItem[];
   onBack?: () => void;
-  onChangeQty: (productId: number, cantidad: number) => void;
-  onRemove: (productId: number) => void;
+  onChangeQty: (productId: string, cantidad: number) => void;
+  onPurchase: () => void;
+  onRemove: (productId: string) => void;
 }
 
 const Cart: React.FC<CartProps> = (props) => {
-  const { items, onBack, onChangeQty, onRemove } = props;
-  const { setNotification } = useNotification();
-  const { clearCart } = useCart();
+  const { items, onBack, onChangeQty, onPurchase, onRemove } = props;
 
   const total: number = items.reduce((acc, it) => acc + it.product.price * it.quantity, 0);
-
-  function handlePurchase(): void {
-    setNotification(`¡Compra realizada con éxito! (Carrito se limpiará y será redirigido a Home)`, 3000, "success");
-    setTimeout(() => {
-      clearCart();
-      onBack?.();
-    }, 3000);
-  }
 
   return (
     <div className="container py-4">
@@ -67,7 +56,7 @@ const Cart: React.FC<CartProps> = (props) => {
               <div className="text-end">
                 <strong className="d-block">${total.toFixed(2)}</strong>
                 <div className="mt-2">
-                  <button className="btn btn-cta btn-icon" onClick={handlePurchase}>
+                  <button className="btn btn-cta btn-icon" onClick={onPurchase}>
                     <CreditCard style={{ width: 18, height: 18 }} />
                     Proceder al pago
                   </button>

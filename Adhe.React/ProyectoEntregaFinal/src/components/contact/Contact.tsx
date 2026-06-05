@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 
-import { useNotification } from "../../hooks/useNotification";
-import DirectorioContainer from "./DirectoryContainer";
+import useNotification from "../../hooks/useNotification";
+import TeamListContainer from "./TeamListContainer";
 
-const Contacto: React.FC = () => {
+const ContactPage: React.FC = () => {
   const { setNotification } = useNotification();
   const [email, setEmail] = useState<string>("");
   const [message, setMessage] = useState<string>("");
@@ -56,11 +56,11 @@ const Contacto: React.FC = () => {
         </div>
 
         <div className="col-12 col-md-6">
-          <DirectorioContainer />
+          <TeamListContainer />
         </div>
       </div>
     </div>
   );
 };
 
-export default Contacto;
+export default ContactPage;

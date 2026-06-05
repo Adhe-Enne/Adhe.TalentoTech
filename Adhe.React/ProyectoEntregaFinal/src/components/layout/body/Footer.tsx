@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
-import { useNotification } from "../../../hooks/useNotification";
+import useNotification from "../../../hooks/useNotification";
 
 const Footer: React.FC = () => {
   const { setNotification } = useNotification();

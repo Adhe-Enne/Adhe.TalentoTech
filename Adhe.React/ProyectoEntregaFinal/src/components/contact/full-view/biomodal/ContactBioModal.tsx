@@ -63,7 +63,7 @@ const ContactBioModal: React.FC<Props> = (props) => {
   );
 
   if (typeof document === "undefined") {
-    return modal as React.ReactElement;
+    return modal as React.ReactElement | null;
   }
 
   return createPortal(modal, document.body);

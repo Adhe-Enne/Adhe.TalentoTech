@@ -4,7 +4,7 @@ import type { NotificationContextType } from "../contexts/Notification/Notificat
 
 import NotificationContext from "../contexts/Notification/NotificationContext";
 
-export const useNotification: () => NotificationContextType = (): NotificationContextType => {
+const useNotification: () => NotificationContextType = (): NotificationContextType => {
   const notifications: NotificationContextType["notifications"] | undefined = useContextSelector(NotificationContext, (c) => c?.notifications);
   const setNotification: NotificationContextType["setNotification"] | undefined = useContextSelector(NotificationContext, (c) => c?.setNotification);
   const dismiss: NotificationContextType["dismiss"] | undefined = useContextSelector(NotificationContext, (c) => c?.dismiss);
@@ -15,3 +15,5 @@ export const useNotification: () => NotificationContextType = (): NotificationCo
 
   return { notifications, setNotification, dismiss };
 };
+
+export default useNotification;

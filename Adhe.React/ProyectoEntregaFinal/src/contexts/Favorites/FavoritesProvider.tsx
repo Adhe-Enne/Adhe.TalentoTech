@@ -3,8 +3,8 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import type { ProviderProps } from "../../models/ProviderProps";
 import type { FavoritesContextType } from "./FavoritesTypes";
 
-import { useNotification } from "../../hooks/useNotification";
-import { parseFavorites } from "../../hooks/useParseFavorites";
+import useNotification from "../../hooks/useNotification";
+import { parseFavorites } from "../../utils/parseFavorites";
 import FavoritesContext from "./FavoritesContext";
 
 const FAVORITES_KEY: string = "tt_favorites";

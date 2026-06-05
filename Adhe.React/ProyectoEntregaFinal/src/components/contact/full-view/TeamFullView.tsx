@@ -2,18 +2,18 @@ import React, { useState } from "react";
 
 import type { Person } from "../../../models";
 
-import ContactBioModal from "./biomodal/ContactBioModal";
-import CardContactFull from "./CardContactFull";
-import styles from "./DirectoryFullView.module.css";
+import ContactBioModal from "./bioModal/ContactBioModal";
+import styles from "./TeamFullView.module.css";
+import TeamMemberCardExpanded from "./TeamMemberCardExpanded";
 
 interface Props {
   loading: boolean;
-  people: Person[];
+  team: Person[];
   error?: string | null;
 }
 
-const DirectoryFullView: React.FC<Props> = (props) => {
-  const { loading, error, people } = props;
+const TeamFullView: React.FC<Props> = (props) => {
+  const { loading, error, team } = props;
   const [selected, setSelected] = useState<Person | null>(null);
   const [showModal, setShowModal] = useState<boolean>(false);
 
@@ -38,9 +38,9 @@ const DirectoryFullView: React.FC<Props> = (props) => {
     <div className={styles.container}>
       <h2 className={styles.title}>Equipo completo</h2>
       <div className={styles.list}>
-        {people.map((p) => (
+        {team.map((p) => (
           <div className={styles.item} key={p.id}>
-            <CardContactFull onShowMore={handleShowMore} person={p} />
+            <TeamMemberCardExpanded onShowMore={handleShowMore} person={p} />
           </div>
         ))}
       </div>
@@ -50,4 +50,4 @@ const DirectoryFullView: React.FC<Props> = (props) => {
   );
 };
 
-export default DirectoryFullView;
+export default TeamFullView;
