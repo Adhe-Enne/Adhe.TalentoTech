@@ -14,6 +14,8 @@ export const ProductsProvider: React.FC<ProviderProps> = (props) => {
   const { setNotification } = useNotification();
   const { data: products, loading, setData, reload } = useAsyncCollection(() => productService.fetchProducts());
 
+  const enabledProducts: Product[] = useMemo(() => products.filter((p) => p.isEnabled !== false), [products]);
+
   const createProduct: (p: Partial<Product>) => Promise<string | undefined> = useCallback(
     async (p: Partial<Product>): Promise<string | undefined> => {
       try {
@@ -51,13 +53,12 @@ export const ProductsProvider: React.FC<ProviderProps> = (props) => {
         await productService.updateProduct(id, clean);
 
         setData((prevProducts) => prevProducts.map((product) => (product.id === id ? { ...product, ...clean, updatedAt: new Date().toISOString() } : product)));
-        setNotification("Producto actualizado exitosamente", 3000, "success");
       } catch (err) {
         console.error(err);
-        setNotification("Error actualizando producto", 3000, "danger");
+        throw err;
       }
     },
-    [setData, setNotification],
+    [setData],
   );
 
   const productById: Record<string, Product> = useMemo(() => {
@@ -79,8 +80,8 @@ export const ProductsProvider: React.FC<ProviderProps> = (props) => {
   );
 
   const value: ProductsContextType = useMemo(
-    () => ({ products, loading, productById, createProduct, deleteProduct, updateProduct, findById: findByIdMemoized, reload }),
-    [products, loading, productById, createProduct, deleteProduct, updateProduct, findByIdMemoized, reload],
+    () => ({ products, enabledProducts, loading, productById, createProduct, deleteProduct, updateProduct, findById: findByIdMemoized, reload }),
+    [products, enabledProducts, loading, productById, createProduct, deleteProduct, updateProduct, findByIdMemoized, reload],
   );
 
   return <ProductsContext.Provider value={value}>{children}</ProductsContext.Provider>;

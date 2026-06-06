@@ -2,6 +2,7 @@ import type { Product } from "../../models";
 
 export type ProductsContextType = {
   products: Product[];
+  enabledProducts: Product[];
   loading: boolean;
   productById: Record<string, Product>;
   createProduct: (p: Partial<Product>) => Promise<string | undefined>;

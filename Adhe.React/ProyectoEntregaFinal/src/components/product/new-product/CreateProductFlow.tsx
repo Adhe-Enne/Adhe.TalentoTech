@@ -80,6 +80,7 @@ const CreateProductFlow: React.FC = () => {
         const created: Partial<Product> = {
           name: p.nombre,
           price: p.precio,
+          stock: p.stock,
           description: p.descripcion,
           image: imageUrl,
           images,

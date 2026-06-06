@@ -5,26 +5,35 @@ import type { Product } from "../../../models";
 import useFavorites from "../../../hooks/useFavorites";
 import useIsFavorite from "../../../hooks/useIsFavorite";
 import Plus from "../../icons/Plus";
+import QuantityStepper from "../../ui/QuantityStepper";
 import styles from "./ProductCard.module.css";
 
 interface ProductCardProps {
   product: Product;
+  cantidadActual?: number;
   onAddToCart?: (product: Product) => void;
   onClick?: (product: Product) => void;
+  onDecrement?: () => void;
+  onIncrement?: () => void;
 }
 
 const ProductCard: React.FC<ProductCardProps> = (props) => {
-  const { product, onAddToCart, onClick } = props;
+  const { product, onAddToCart, onClick, onIncrement, onDecrement, cantidadActual = 0 } = props;
 
   const { toggleFavorite } = useFavorites();
   const fav: boolean = useIsFavorite(product.id);
+  const outOfStock: boolean = product.stock <= 0;
+  const inCart: boolean = cantidadActual > 0;
 
   return (
-    <div className={`card h-100 ${styles.tarjetaProducto}`}>
+    <div className={`card h-100 ${styles.tarjetaProducto} ${outOfStock ? styles.outOfStockCard : ""}`}>
       <div style={{ position: "relative", width: "100%", height: "100%" }}>
         <button aria-label={`Ver detalles de ${product.name}`} className={styles.imageWrapper} onClick={() => onClick?.(product)} type="button">
           <img alt={product.name} className={styles.imagen} src={product.image} />
           <span className={"badge-price " + styles.priceBadge}>${product.price.toFixed(2)}</span>
+          {outOfStock && (
+            <span className={styles.outOfStockOverlay}>Sin stock</span>
+          )}
         </button>
 
         <button
@@ -44,6 +53,13 @@ const ProductCard: React.FC<ProductCardProps> = (props) => {
 
       <div className="card-body d-flex flex-column">
         <h5 className="card-title">{product.name}</h5>
+        <div className="d-flex justify-content-center mb-2">
+          {outOfStock ? (
+            <span className={`badge ${styles.outOfStockBadge}`}>Sin stock</span>
+          ) : (
+            <span className={`badge ${styles.stockBadge}`}>{product.stock} en stock</span>
+          )}
+        </div>
 
         <div className={`d-flex gap-2 ${styles.actions}`}>
           {onClick && (
@@ -52,11 +68,21 @@ const ProductCard: React.FC<ProductCardProps> = (props) => {
             </button>
           )}
 
-          {onAddToCart && (
+          {!outOfStock && !inCart && onAddToCart && (
             <button className={`btn btn-primary btn-sm ${styles.btnPrimary} btn-icon`} onClick={() => onAddToCart(product)}>
               <Plus style={{ width: 16, height: 16 }} />
               Añadir
             </button>
+          )}
+
+          {!outOfStock && inCart && onIncrement && onDecrement && (
+            <QuantityStepper
+              max={product.stock}
+              onDecrement={onDecrement}
+              onIncrement={onIncrement}
+              size="sm"
+              value={cantidadActual}
+            />
           )}
         </div>
       </div>

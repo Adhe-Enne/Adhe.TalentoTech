@@ -6,6 +6,7 @@ import styles from "./Product.module.css";
 
 interface TagAutocompleteProps {
   allTags: Tag[];
+  categoriaId?: string;
   selectedTags: string[];
   showSuggestions: boolean;
   suggestionsRef: React.RefObject<HTMLUListElement | null>;
@@ -17,15 +18,19 @@ interface TagAutocompleteProps {
 }
 
 const TagAutocomplete: React.FC<TagAutocompleteProps> = (props) => {
-  const { allTags, selectedTags, tagQuery, onAdd, onQueryChange, onRemove, showSuggestions, onShowSuggestions, suggestionsRef } = props;
+  const { allTags, categoriaId, selectedTags, tagQuery, onAdd, onQueryChange, onRemove, showSuggestions, onShowSuggestions, suggestionsRef } = props;
 
   const queryLower: string = tagQuery.trim().toLowerCase();
   const suggestions: Tag[] = useMemo((): Tag[] => {
     if (!queryLower) {
       return [];
     }
-    return allTags.filter((t) => !selectedTags.includes(t.name) && (t.name.toLowerCase().startsWith(queryLower) || t.name.toLowerCase().includes(queryLower))).slice(0, 10);
-  }, [allTags, selectedTags, queryLower]);
+    return allTags
+      .filter((t) => !selectedTags.includes(t.name))
+      .filter((t) => !categoriaId || t.categoryId === categoriaId)
+      .filter((t) => t.name.toLowerCase().startsWith(queryLower) || t.name.toLowerCase().includes(queryLower))
+      .slice(0, 10);
+  }, [allTags, selectedTags, queryLower, categoriaId]);
 
   return (
     <div style={{ position: "relative" }}>

@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useCallback, useState } from "react";
 import { useNavigate, type NavigateFunction } from "react-router-dom";
 
 import type { Tag } from "../../../models/Tag";
@@ -6,6 +6,7 @@ import type { Tag } from "../../../models/Tag";
 import useCart from "../../../hooks/useCart";
 import useNotification from "../../../hooks/useNotification";
 import { type Product } from "../../../models";
+import QuantityStepper from "../../ui/QuantityStepper";
 import ProductImageCarousel from "./ProductImageCarousel";
 
 interface ProductDetailProps {
@@ -17,16 +18,34 @@ interface ProductDetailProps {
 const ProductDetail: React.FC<ProductDetailProps> = (props) => {
   const { product, categoryName, tags } = props;
   const [cantidad, setCantidad] = useState<number>(1);
-  const { images } = product;
+  const { images, stock } = product;
 
   const { addToCart } = useCart();
   const { setNotification } = useNotification();
   const navigate: NavigateFunction = useNavigate();
 
   const handleAdd: () => void = useCallback(() => {
+    if (stock <= 0) {
+      setNotification("Producto sin stock", 3000, "warning");
+      return;
+    }
     addToCart(product, cantidad);
     setNotification(`${product.name} fue agregado al carrito`, 3000, "success");
-  }, [addToCart, cantidad, product, setNotification]);
+  }, [addToCart, cantidad, product, setNotification, stock]);
+
+  const handleIncrement: () => void = useCallback(() => {
+    setCantidad((prev) => {
+      if (prev >= stock) {
+        setNotification("Stock maximo alcanzado", 3000, "warning");
+        return prev;
+      }
+      return prev + 1;
+    });
+  }, [stock, setNotification]);
+
+  const handleDecrement: () => void = useCallback(() => {
+    setCantidad((prev) => Math.max(1, prev - 1));
+  }, []);
 
   const handleBack: () => void = useCallback(() => {
     navigate("/");
@@ -53,6 +72,14 @@ const ProductDetail: React.FC<ProductDetailProps> = (props) => {
             </span>
           </div>
 
+          <div className="mb-2">
+            {stock > 0 ? (
+              <span className="badge bg-success">{stock} en stock</span>
+            ) : (
+              <span className="badge bg-danger">Sin stock</span>
+            )}
+          </div>
+
           {tags && tags.length > 0 && (
             <div className="mb-2">
               {tags.map((t) => (
@@ -64,21 +91,24 @@ const ProductDetail: React.FC<ProductDetailProps> = (props) => {
           )}
 
           <div className="d-flex align-items-center gap-2 mt-3">
-            <label className="mb-0" htmlFor="cantidad-input">
-              Cantidad:
-            </label>
-            <input
-              className="form-control"
-              id="cantidad-input"
+            <span className="mb-0">Cantidad:</span>
+            <QuantityStepper 
+              max={stock}
               min={1}
-              onChange={(e) => setCantidad(Math.max(1, Number(e.target.value) || 1))}
-              style={{ width: 100 }}
-              type="number"
+              onDecrement={handleDecrement}
+              onIncrement={handleIncrement}
+              size="md"
               value={cantidad}
             />
-            <button className="btn btn-cta" onClick={handleAdd}>
-              Añadir al carrito
-            </button>
+            {stock <= 0 ? (
+              <button className="btn btn-secondary" disabled>
+                Sin stock
+              </button>
+            ) : (
+              <button className="btn btn-cta" onClick={handleAdd}>
+                Añadir al carrito
+              </button>
+            )}
           </div>
 
           <div className="mt-3">

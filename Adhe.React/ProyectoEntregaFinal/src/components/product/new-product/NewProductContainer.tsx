@@ -1,16 +1,20 @@
 import React from "react";
 
-import type { ProductFormPayload } from "./NewProductTypes";
+import type { FormMode, Fields, ProductFormPayload } from "./NewProductTypes";
 
 import ProductForm from "./product-form/ProductForm";
 
 interface Props {
+  existingImageUrl?: string;
+  initialData?: Partial<Fields>;
   loading?: boolean;
+  mode?: FormMode;
+  onCancel?: () => void;
   onCreated?: (p: ProductFormPayload) => void;
 }
 
 const NewProductContainer: React.FC<Props> = (props) => {
-  const { onCreated, loading = false } = props;
+  const { onCreated, loading = false, mode = "create", initialData, existingImageUrl, onCancel } = props;
 
   function handleFormSubmit(payload: ProductFormPayload): void {
     onCreated?.(payload);
@@ -18,8 +22,8 @@ const NewProductContainer: React.FC<Props> = (props) => {
 
   return (
     <div className="container py-4">
-      <h2>Nuevo producto</h2>
-      <ProductForm loading={loading} onSubmit={handleFormSubmit} />
+      <h2>{mode === "edit" ? "Editar producto" : "Nuevo producto"}</h2>
+      <ProductForm existingImageUrl={existingImageUrl} initialData={initialData} loading={loading} mode={mode} onCancel={onCancel} onSubmit={handleFormSubmit} />
     </div>
   );
 };

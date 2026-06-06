@@ -4,6 +4,7 @@ import styles from "./Product.module.css";
 
 interface Props {
   files: File[];
+  existingUrls?: string[];
   /**
    * When true, the internal upload label is hidden (so parent may render it).
    */
@@ -14,16 +15,19 @@ interface Props {
    */
   inputId?: string;
   onChange: (files: File[]) => void;
+  onExistingChange?: (urls: string[]) => void;
 }
 
 const AdditionalImagesInput: React.FC<Props> = (props) => {
-  const { files, onChange, inputId, hideUploadButton } = props;
+  const { files, existingUrls, onChange, onExistingChange, inputId, hideUploadButton } = props;
   const uid: string = React.useId();
   const id: string = inputId ?? uid;
   const previews: string[] = useMemo(() => files.map((f) => URL.createObjectURL(f)), [files]);
   const scrollRef: React.RefObject<HTMLDivElement | null> = useRef<HTMLDivElement | null>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
+
+  const hasItems: boolean = (existingUrls?.length ?? 0) > 0 || previews.length > 0;
 
   const updateScrollState: () => void = useCallback(() => {
     const el: HTMLDivElement | null = scrollRef.current;
@@ -55,7 +59,7 @@ const AdditionalImagesInput: React.FC<Props> = (props) => {
       el.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", updateScrollState);
     };
-  }, [previews, updateScrollState]);
+  }, [previews, existingUrls, updateScrollState]);
 
   function handleFiles(e: React.ChangeEvent<HTMLInputElement>): void {
     const list: FileList | null = e.target.files;
@@ -67,8 +71,13 @@ const AdditionalImagesInput: React.FC<Props> = (props) => {
     e.currentTarget.value = "";
   }
 
-  function removeAt(i: number): void {
+  function removeFileAt(i: number): void {
     onChange(files.filter((_, idx) => idx !== i));
+  }
+
+  function removeExistingAt(i: number): void {
+    if (!existingUrls || !onExistingChange) return;
+    onExistingChange(existingUrls.filter((_, idx) => idx !== i));
   }
 
   function scrollByOffset(offset: number): void {
@@ -94,10 +103,31 @@ const AdditionalImagesInput: React.FC<Props> = (props) => {
           </button>
         )}
         <div className={`${styles.additionalGrid} mt-2`} ref={scrollRef}>
+          {!hasItems && (
+            <div className="text-muted small py-3">No hay imágenes adicionales</div>
+          )}
+          {existingUrls?.map((url, idx) => (
+            <div className={styles.thumbWrap} key={`existing-${url}`}>
+              <img alt={`imagen existente ${idx + 1}`} className={styles.additionalThumb} src={url} />
+              <button
+                aria-label={`Eliminar imagen existente ${idx + 1}`}
+                className={styles.thumbRemove}
+                onClick={() => removeExistingAt(idx)}
+                type="button"
+              >
+                ×
+              </button>
+            </div>
+          ))}
           {previews.map((u, idx) => (
             <div className={styles.thumbWrap} key={u}>
               <img alt={`preview-${idx}`} className={styles.additionalThumb} src={u} />
-              <button aria-label={`Eliminar imagen adicional ${idx + 1}`} className={styles.thumbRemove} onClick={() => removeAt(idx)} type="button">
+              <button
+                aria-label={`Eliminar imagen adicional ${idx + 1}`}
+                className={styles.thumbRemove}
+                onClick={() => removeFileAt(idx)}
+                type="button"
+              >
                 ×
               </button>
             </div>

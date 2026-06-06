@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import { useNavigate, type NavigateFunction } from "react-router-dom";
 
-import type { Currency, ProductFormPayload } from "../NewProductTypes";
+import type { Currency, FormMode, ProductFormPayload, Fields } from "../NewProductTypes";
 
 import useCategories from "../../../../hooks/useCategories";
 import useNotification from "../../../../hooks/useNotification";
@@ -23,12 +23,16 @@ function parseCurrency(value: string): Currency {
 
 interface ProductFormProps {
   loading?: boolean;
+  mode?: FormMode;
+  initialData?: Partial<Fields>;
+  existingImageUrl?: string;
   onSubmit: (payload: ProductFormPayload) => void;
+  onCancel?: () => void;
 }
 
 const ProductForm: React.FC<ProductFormProps> = (props) => {
-  const { loading, onSubmit } = props;
-  const { fields, setField, setFile, reset, previewUrl, handleSubmit } = useProductForm();
+  const { loading, onSubmit, mode = "create", initialData, existingImageUrl, onCancel } = props;
+  const { fields, setField, setFile, reset, previewUrl, handleSubmit, errors } = useProductForm(initialData);
   const navigate: NavigateFunction = useNavigate();
   const { categories, createCategory } = useCategories();
   const { tags: allTags, createTag } = useTags();
@@ -36,6 +40,41 @@ const ProductForm: React.FC<ProductFormProps> = (props) => {
   const [showCategoryModal, setShowCategoryModal] = useState(false);
   const [isCreatingCategory, setIsCreatingCategory] = useState<boolean>(false);
   const addInputId: string = React.useId();
+
+  const displayUrl: string | undefined = previewUrl ?? existingImageUrl;
+
+  const isEdit: boolean = mode === "edit";
+
+  const handleCancel: () => void = useCallback(() => {
+    reset();
+    if (onCancel) {
+      onCancel();
+    } else {
+      navigate("/");
+    }
+  }, [reset, onCancel, navigate]);
+
+  const handleCategoryChange: (newId: string) => void = useCallback(
+    (newId: string) => {
+      if (newId !== fields.categoriaId) {
+        setField("tags", []);
+        setField("tagIds", []);
+      }
+      setField("categoriaId", newId);
+    },
+    [fields.categoriaId, setField],
+  );
+
+  const submitLabel: string = loading
+    ? (isEdit ? "Actualizando..." : "Subiendo...")
+    : (isEdit ? "Actualizar producto" : "Subir producto");
+
+  const handleExistingImagesChange: (urls: string[]) => void = useCallback(
+    (urls: string[]) => {
+      setField("existingImageUrls", urls);
+    },
+    [setField],
+  );
 
   const {
     tagQuery,
@@ -57,10 +96,20 @@ const ProductForm: React.FC<ProductFormProps> = (props) => {
   );
 
   return (
-    <form className={styles.formCard} onSubmit={(e) => handleSubmit(onSubmit)(e)}>
+    <form className={styles.formCard} onSubmit={(e) => handleSubmit(onSubmit)(e)} noValidate>
       <div className={styles.leftColumn}>
         <div className={styles.preview}>
-          <ProductImagePreview name={fields.file?.name} onClear={() => setFile(null)} onFileChange={setFile} url={previewUrl} />
+          {isEdit && existingImageUrl && !fields.file && (
+            <div className="mb-2">
+              <small className="text-muted">Imagen actual:</small>
+            </div>
+          )}
+          <ProductImagePreview name={fields.file?.name} onClear={() => setFile(null)} onFileChange={setFile} url={displayUrl} />
+          {isEdit && existingImageUrl && !fields.file && (
+            <div className="mt-1">
+              <small className="text-muted">Seleccioná un archivo para reemplazar la imagen actual</small>
+            </div>
+          )}
         </div>
         <div className={styles.additionalArea}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
@@ -69,20 +118,34 @@ const ProductForm: React.FC<ProductFormProps> = (props) => {
               Seleccionar imágenes
             </label>
           </div>
-          <AdditionalImagesInput files={fields.images} hideUploadButton inputId={addInputId} onChange={(files) => setField("images", files)} />
+          <AdditionalImagesInput
+            existingUrls={fields.existingImageUrls}
+            files={fields.images}
+            hideUploadButton
+            inputId={addInputId}
+            onChange={(files: File[]) => setField("images", files)}
+            onExistingChange={handleExistingImagesChange}
+          />
         </div>
       </div>
 
       <div className={styles.fields}>
         <div>
           <label className="form-label" htmlFor="nombre">Nombre</label>
-          <input className="form-control" id="nombre" onChange={(e) => setField("nombre", e.target.value)} required value={fields.nombre} />
+          <input
+            className={`form-control${errors.nombre ? " is-invalid" : ""}`}
+            id="nombre"
+            onChange={(e) => setField("nombre", e.target.value)}
+            required
+            value={fields.nombre}
+          />
+          {errors.nombre && <div className="invalid-feedback">{errors.nombre}</div>}
         </div>
 
         <div>
           <label className="form-label" htmlFor="categoria">Categoría</label>
           <div className="d-flex gap-2">
-            <select className="form-select" id="categoria" onChange={(e) => setField("categoriaId", e.target.value)} value={fields.categoriaId}>
+            <select className="form-select" id="categoria" onChange={(e) => handleCategoryChange(e.target.value)} value={fields.categoriaId}>
               <option value="">-- Sin categoría --</option>
               {categories.map((c) => (
                 <option key={c.id} value={c.id}>{c.name}</option>
@@ -95,7 +158,29 @@ const ProductForm: React.FC<ProductFormProps> = (props) => {
         <div className={styles.fieldRow}>
           <div className={styles.priceInput}>
             <label className="form-label" htmlFor="precio">Precio</label>
-            <input className="form-control" id="precio" onChange={(e) => setField("precio", e.target.value)} required step="0.01" type="number" value={fields.precio} />
+            <input
+              className={`form-control${errors.precio ? " is-invalid" : ""}`}
+              id="precio"
+              min="0.01"
+              onChange={(e) => setField("precio", e.target.value)}
+              required
+              step="0.01"
+              type="number"
+              value={fields.precio}
+            />
+            {errors.precio && <div className="invalid-feedback">{errors.precio}</div>}
+          </div>
+          <div style={{ minWidth: 100 }}>
+            <label className="form-label" htmlFor="stock">Stock</label>
+            <input
+              className="form-control"
+              id="stock"
+              min="0"
+              onChange={(e) => setField("stock", e.target.value)}
+              step="1"
+              type="number"
+              value={fields.stock}
+            />
           </div>
           <div style={{ minWidth: 120 }}>
             <label className="form-label" htmlFor="currency">Moneda</label>
@@ -114,6 +199,7 @@ const ProductForm: React.FC<ProductFormProps> = (props) => {
 
         <TagAutocomplete
           allTags={allTags}
+          categoriaId={fields.categoriaId}
           onAdd={onAddTagFromInput}
           onQueryChange={setTagQuery}
           onRemove={onRemoveTag}
@@ -127,12 +213,12 @@ const ProductForm: React.FC<ProductFormProps> = (props) => {
 
       <div className={styles.formActions}>
         <div className={styles.actions}>
-          <button className={`btn btn-ghost ${styles.cancelBtn}`} onClick={() => { reset(); navigate("/"); }} type="button">
-            Cancelar
+          <button className={`btn btn-ghost ${styles.cancelBtn}`} onClick={handleCancel} type="button">
+            {isEdit ? "Cancelar edición" : "Cancelar"}
           </button>
           <button className="btn btn-cta btn-icon" disabled={!!loading} type="submit">
             <CloudUpload style={{ width: 18, height: 18 }} />
-            {loading ? "Subiendo..." : "Subir producto"}
+            {submitLabel}
           </button>
         </div>
       </div>

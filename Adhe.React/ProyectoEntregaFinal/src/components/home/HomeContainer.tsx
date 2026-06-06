@@ -8,7 +8,7 @@ import useProducts from "../../hooks/useProducts";
 import Home from "./Home";
 
 const HomeContainer: React.FC = () => {
-  const { products, loading } = useProducts();
+  const { enabledProducts, loading } = useProducts();
   const { favorites } = useFavorites();
 
   const location: ReturnType<typeof useLocation> = useLocation();
@@ -17,7 +17,7 @@ const HomeContainer: React.FC = () => {
   const filter: string | null = params.get("filter");
 
   const filteredProducts: Product[] = useMemo(() => {
-    let list: Product[] = products ?? [];
+    let list: Product[] = enabledProducts ?? [];
     if (q) {
       list = list.filter((p) => {
         const name: string = p.name?.toLowerCase() ?? "";
@@ -29,7 +29,7 @@ const HomeContainer: React.FC = () => {
       list = list.filter((p) => Boolean(favorites?.[p.id]));
     }
     return list;
-  }, [products, q, filter, favorites]);
+  }, [enabledProducts, q, filter, favorites]);
 
   return <Home emptyMessage={filter === "favorites" ? "No tienes productos favoritos aún." : undefined} loading={loading} products={filteredProducts} />;
 };

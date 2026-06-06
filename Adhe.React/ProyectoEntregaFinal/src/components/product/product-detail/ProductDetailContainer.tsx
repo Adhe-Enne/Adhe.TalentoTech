@@ -6,14 +6,51 @@ import type { Tag } from "../../../models/Tag";
 
 import useCategories from "../../../hooks/useCategories";
 import { useProduct } from "../../../hooks/useProduct";
+import useProducts from "../../../hooks/useProducts";
 import useTags from "../../../hooks/useTags";
 import ProductDetail from "./ProductDetail";
 
 const ProductDetailContainer: React.FC = () => {
   const { id } = useParams();
   const product: Product | undefined = useProduct(id);
+  const { loading } = useProducts();
   const { findById: findCategory } = useCategories();
   const { findById: findTag } = useTags();
+
+  if (loading) {
+    return (
+      <div aria-busy="true" className="container py-4">
+        <div aria-hidden="true" className="card">
+          <div className="card-body p-4">
+            <div className="row gx-4 gy-3">
+              <div className="col-12 col-md-5">
+                <div className="placeholder-glow">
+                  <span className="placeholder col-12" style={{ height: 300, borderRadius: 8 }} />
+                </div>
+              </div>
+              <div className="col-12 col-md-5">
+                <div className="placeholder-glow mb-3">
+                  <span className="placeholder col-8" style={{ height: 28 }} />
+                </div>
+                <div className="placeholder-glow mb-2">
+                  <span className="placeholder col-4" style={{ height: 16 }} />
+                </div>
+                <div className="placeholder-glow mb-3">
+                  <span className="placeholder col-12" style={{ height: 48 }} />
+                </div>
+                <div className="placeholder-glow mb-3">
+                  <span className="placeholder col-3" style={{ height: 32, borderRadius: 999 }} />
+                </div>
+                <div className="placeholder-glow">
+                  <span className="placeholder col-5" style={{ height: 38 }} />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   if (!product) {
     return (

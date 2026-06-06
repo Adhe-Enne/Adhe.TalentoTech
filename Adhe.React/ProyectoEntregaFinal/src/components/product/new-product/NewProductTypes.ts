@@ -5,9 +5,11 @@ export type Currency = "USD" | "ARS" | "BTC";
 export type ProductFormPayload = {
   nombre: string;
   precio: number;
+  stock: number;
   descripcion?: string;
   file?: File | null; // main image
-  images?: File[]; // additional images
+  images?: File[]; // additional images (new files)
+  existingImageUrls?: string[]; // existing additional image URLs to keep
   categoriaId?: string;
   tags?: string[]; // tag names
   tagIds?: string[]; // persisted tag ids
@@ -23,14 +25,18 @@ export type StateRefType = {
 export type Fields = {
   nombre: string;
   precio: string;
+  stock: string;
   descripcion: string;
   file: File | null;
-  images: File[]; // additional images selected
+  images: File[]; // additional images selected (new files)
+  existingImageUrls: string[]; // existing additional image URLs to keep
   categoriaId: string;
   currency: Currency;
   tags: string[];
   tagIds: string[];
 };
+
+export type FormMode = 'create' | 'edit';
 
 export type UseProductFormReturn = {
   fields: Fields;
@@ -40,6 +46,9 @@ export type UseProductFormReturn = {
   previewUrl?: string;
   getPayload: () => ProductFormPayload;
   handleSubmit: (onSubmit: (p: ProductFormPayload) => void) => (e: SyntheticEvent) => void;
+  errors: Record<string, string>;
+  validate: () => boolean;
+  clearErrors: () => void;
 };
 
 export type UseCancelableReturn = {
