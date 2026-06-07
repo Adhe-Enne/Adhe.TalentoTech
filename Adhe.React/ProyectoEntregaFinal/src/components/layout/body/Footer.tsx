@@ -1,9 +1,11 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
+import useAuth from "../../../hooks/useAuth";
 import useNotification from "../../../hooks/useNotification";
 
 const Footer: React.FC = () => {
+  const { isAdmin } = useAuth();
   const { setNotification } = useNotification();
 
   const HandleAction: (message: string) => void = (message: string): void => {
@@ -61,9 +63,11 @@ const Footer: React.FC = () => {
                 <li>
                   <a href="mailto:ninadaniel_service@hotmail.com">ninadaniel_service@hotmail.com</a>
                 </li>
-                <li>
-                  <Link to="/new">Nuevo producto</Link>
-                </li>
+                {isAdmin && (
+                  <li>
+                    <Link to="/admin/productos/nuevo">Nuevo producto</Link>
+                  </li>
+                )}
               </ul>
             </div>
 

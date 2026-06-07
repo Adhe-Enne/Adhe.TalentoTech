@@ -4,3 +4,5 @@ export const PRODUCTS_COLLECTION: string = "products_inventory";
 export const CATEGORIES_COLLECTION: string = "products_categories";
 export const TAGS_COLLECTION: string = "products_tags";
 export const COUPONS_COLLECTION: string = "products_coupons";
+
+export const USERS_COLLECTION: string = "ecommerce_users";

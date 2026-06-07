@@ -1,6 +1,7 @@
 import React, { lazy, Suspense, type JSX } from "react";
-import { Routes, Route } from "react-router-dom";
+import { Navigate, Routes, Route } from "react-router-dom";
 
+import { AuthProvider } from "../contexts/Auth/AuthProvider";
 import CategoriesProvider from "../contexts/Categories/CategoriesProvider";
 import CouponsProvider from "../contexts/Coupons/CouponsProvider";
 import { FavoritesProvider } from "../contexts/Favorites/FavoritesProvider";
@@ -8,6 +9,8 @@ import { NotificationProvider } from "../contexts/Notification/NotificationProvi
 import { ProductsProvider } from "../contexts/Products/ProductsProvider";
 import TagsProvider from "../contexts/Tags/TagsProvider";
 import TeamProvider from "../contexts/Team/TeamProvider";
+import GuestRoute from "./auth/GuestRoute";
+import ProtectedRoute from "./auth/ProtectedRoute";
 import CartContainer from "./cart/CartContainer";
 import HomeContainer from "./home/HomeContainer";
 import NotificationStack from "./home/NotificationStack";
@@ -22,98 +25,128 @@ const ProductDetailContainer: React.LazyExoticComponent<React.ComponentType> = l
 const CouponManager: React.LazyExoticComponent<React.ComponentType> = lazy(() => import("./admin/coupons/CouponManager"));
 const AdminProductListContainer: React.LazyExoticComponent<React.ComponentType> = lazy(() => import("./admin/products/AdminProductListContainer"));
 const EditProductFlow: React.LazyExoticComponent<React.ComponentType> = lazy(() => import("./product/edit-product/EditProductFlow"));
+const LoginContainer: React.LazyExoticComponent<React.ComponentType> = lazy(() => import("./auth/LoginContainer"));
+const RegisterContainer: React.LazyExoticComponent<React.ComponentType> = lazy(() => import("./auth/RegisterContainer"));
+const ProfileContainer: React.LazyExoticComponent<React.ComponentType> = lazy(() => import("./auth/ProfileContainer"));
 
 const adminFallback: JSX.Element = <div className="text-center p-4">Cargando panel admin...</div>;
 const pageFallback: JSX.Element = <div className="text-center p-4">Cargando...</div>;
+const authFallback: JSX.Element = <div className="text-center p-4">Cargando...</div>;
 
 const AppRoutes: React.FC = (): JSX.Element => {
   return (
     <div>
-      <NotificationProvider>
-        <FavoritesProvider>
-          <CategoriesProvider>
-            <TagsProvider>
-              <ProductsProvider>
-                <TeamProvider>
-                  <CouponsProvider>
-                    <NotificationStack />
-                    <Routes>
-                      <Route element={<Layout />}>
-                        <Route element={<HomeContainer />} index />
-                        <Route element={<HomeContainer />} path="home" />
-                        <Route element={<HomeContainer />} path="/" />
-                        <Route element={<HomeContainer />} path="productos" />
+      <AuthProvider>
+        <NotificationProvider>
+          <FavoritesProvider>
+            <CategoriesProvider>
+              <TagsProvider>
+                <ProductsProvider>
+                  <TeamProvider>
+                    <CouponsProvider>
+                      <NotificationStack />
+                      <Routes>
                         <Route
                           element={
-                            <Suspense fallback={pageFallback}>
-                              <ContactPage />
-                            </Suspense>
+                            <GuestRoute>
+                              <Suspense fallback={authFallback}>
+                                <LoginContainer />
+                              </Suspense>
+                            </GuestRoute>
                           }
-                          path="contacto"
-                        />
-                        <Route element={<CartContainer />} path="carrito" />
-                        <Route
-                          element={
-                            <Suspense fallback={pageFallback}>
-                              <ProductDetailContainer />
-                            </Suspense>
-                          }
-                          path="producto/:id"
+                          path="login"
                         />
                         <Route
                           element={
-                            <Suspense fallback={pageFallback}>
-                              <CreateProductFlow />
-                            </Suspense>
+                            <GuestRoute>
+                              <Suspense fallback={authFallback}>
+                                <RegisterContainer />
+                              </Suspense>
+                            </GuestRoute>
                           }
-                          path="new"
+                          path="registro"
                         />
-                        <Route
-                          element={
-                            <Suspense fallback={pageFallback}>
-                              <TeamFullViewContainer />
-                            </Suspense>
-                          }
-                          path="equipo"
-                        />
-                      </Route>
 
-                      <Route
-                        element={
-                          <Suspense fallback={adminFallback}>
-                            <AdminLayout />
-                          </Suspense>
-                        }
-                        path="admin"
-                      >
-                        <Route element={<AdminDashboardContainer />} index />
-                        <Route element={<AdminProductListContainer />} path="productos" />
+                        <Route element={<ProtectedRoute><Layout /></ProtectedRoute>}>
+                          <Route element={<HomeContainer />} index />
+                          <Route element={<HomeContainer />} path="/" />
+                          <Route element={<HomeContainer />} path="productos" />
+                          <Route
+                            element={
+                              <Suspense fallback={pageFallback}>
+                                <ContactPage />
+                              </Suspense>
+                            }
+                            path="contacto"
+                          />
+                          <Route element={<CartContainer />} path="carrito" />
+                          <Route
+                            element={
+                              <Suspense fallback={pageFallback}>
+                                <ProductDetailContainer />
+                              </Suspense>
+                            }
+                            path="producto/:id"
+                          />
+                          <Route
+                            element={
+                              <Suspense fallback={pageFallback}>
+                                <TeamFullViewContainer />
+                              </Suspense>
+                            }
+                            path="equipo"
+                          />
+                          <Route
+                            element={
+                              <Suspense fallback={pageFallback}>
+                                <ProfileContainer />
+                              </Suspense>
+                            }
+                            path="perfil"
+                          />
+                        </Route>
+
                         <Route
                           element={
-                            <Suspense fallback={pageFallback}>
-                              <CreateProductFlow />
-                            </Suspense>
+                            <ProtectedRoute rolesPermitidos={["admin"]}>
+                              <Suspense fallback={adminFallback}>
+                                <AdminLayout />
+                              </Suspense>
+                            </ProtectedRoute>
                           }
-                          path="productos/nuevo"
-                        />
-                        <Route element={<CouponManager />} path="cupones" />
-                        <Route
-                          element={
-                            <Suspense fallback={pageFallback}>
-                              <EditProductFlow />
-                            </Suspense>
-                          }
-                          path="productos/:id/editar"
-                        />
-                      </Route>
-                    </Routes>
-                  </CouponsProvider>
-                </TeamProvider>
-              </ProductsProvider>
-            </TagsProvider>
-          </CategoriesProvider>
-        </FavoritesProvider>
-      </NotificationProvider>
+                          path="admin"
+                        >
+                          <Route element={<AdminDashboardContainer />} index />
+                          <Route element={<AdminProductListContainer />} path="productos" />
+                          <Route
+                            element={
+                              <Suspense fallback={pageFallback}>
+                                <CreateProductFlow />
+                              </Suspense>
+                            }
+                            path="productos/nuevo"
+                          />
+                          <Route element={<CouponManager />} path="cupones" />
+                          <Route
+                            element={
+                              <Suspense fallback={pageFallback}>
+                                <EditProductFlow />
+                              </Suspense>
+                            }
+                            path="productos/:id/editar"
+                          />
+                        </Route>
+
+                        <Route element={<Navigate replace to="/" />} path="*" />
+                      </Routes>
+                    </CouponsProvider>
+                  </TeamProvider>
+                </ProductsProvider>
+              </TagsProvider>
+            </CategoriesProvider>
+          </FavoritesProvider>
+        </NotificationProvider>
+      </AuthProvider>
     </div>
   );
 };
