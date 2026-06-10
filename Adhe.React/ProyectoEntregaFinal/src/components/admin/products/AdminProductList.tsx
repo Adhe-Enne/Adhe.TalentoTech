@@ -1,17 +1,20 @@
 import React, { useMemo, useState } from "react";
+import { Alert, Button, Spinner, Table } from "react-bootstrap";
+import { FaEdit, FaTrash } from "react-icons/fa";
+import { Link } from "react-router-dom";
 
 import type { Product } from "../../../models";
 
 import adminStyles from "./AdminProductList.module.css";
 
 interface AdminProductListProps {
-  products: Product[];
-  loading: boolean;
   error: string | null;
+  loading: boolean;
+  products: Product[];
   onDelete: (id: string, name: string) => void;
-  onToggleEnabled: (id: string, current: boolean) => void;
   onEdit: (id: string) => void;
   onRetry: () => void;
+  onToggleEnabled: (id: string, current: boolean) => void;
 }
 
 const AdminProductList: React.FC<AdminProductListProps> = (props) => {
@@ -26,7 +29,7 @@ const AdminProductList: React.FC<AdminProductListProps> = (props) => {
   if (loading) {
     return (
       <div aria-busy="true" className="d-flex justify-content-center py-5">
-        <div aria-hidden="true" className="spinner-border" />
+        <Spinner animation="border" aria-hidden="true" />
         <output aria-live="polite" className="visually-hidden">Cargando productos...</output>
       </div>
     );
@@ -34,10 +37,10 @@ const AdminProductList: React.FC<AdminProductListProps> = (props) => {
 
   if (error) {
     return (
-      <div className="alert alert-danger d-flex align-items-center gap-2">
+      <Alert variant="danger" className="d-flex align-items-center gap-2">
         <span>{error}</span>
-        <button className="btn btn-sm btn-outline-danger ms-auto" onClick={onRetry}>Reintentar</button>
-      </div>
+        <Button size="sm" variant="outline-danger" className="ms-auto" onClick={onRetry}>Reintentar</Button>
+      </Alert>
     );
   }
 
@@ -45,22 +48,27 @@ const AdminProductList: React.FC<AdminProductListProps> = (props) => {
     <div>
       <div className="d-flex justify-content-between align-items-center mb-3">
         <h3 className="mb-0">Productos</h3>
-        <input
+        <div className="d-flex gap-2 align-items-center">
+          <Link className="btn btn-success btn-sm" to="/admin/productos/nuevo">
+            + Nuevo producto
+          </Link>
+          <input
           className="form-control form-control-sm"
+          onChange={(e) => setSearch(e.target.value)}
           placeholder="Buscar por nombre..."
           style={{ maxWidth: 260, borderRadius: 999 }}
           value={search}
-          onChange={(e) => setSearch(e.target.value)}
         />
+        </div>
       </div>
 
       {filtered.length === 0 ? (
-        <div className="alert alert-info text-center py-4">
+        <Alert variant="info" className="text-center py-4">
           {search ? "No se encontraron productos con ese nombre." : "No hay productos disponibles."}
-        </div>
+        </Alert>
       ) : (
         <div className="table-responsive">
-          <table className="table table-hover align-middle">
+          <Table hover className="align-middle">
             <thead>
               <tr>
                 <th style={{ width: 56 }}></th>
@@ -74,7 +82,7 @@ const AdminProductList: React.FC<AdminProductListProps> = (props) => {
             </thead>
             <tbody>
               {filtered.map((p) => (
-                <tr key={p.id} className={adminStyles.productRow}>
+                <tr className={adminStyles.productRow} key={p.id}>
                   <td>
                     <img
                       alt={p.name}
@@ -98,26 +106,20 @@ const AdminProductList: React.FC<AdminProductListProps> = (props) => {
                   </td>
                   <td>
                     <div className="d-flex gap-1">
-                      <button
-                        aria-label={`Editar ${p.name}`}
-                        className="btn btn-sm btn-outline-primary"
-                        onClick={() => onEdit(p.id)}
-                      >
+                      <Button size="sm" variant="outline-primary" aria-label={`Editar ${p.name}`} onClick={() => onEdit(p.id)}>
+                        <FaEdit className="me-1" />
                         Editar
-                      </button>
-                      <button
-                        aria-label={`Eliminar ${p.name}`}
-                        className="btn btn-sm btn-outline-danger"
-                        onClick={() => onDelete(p.id, p.name)}
-                      >
+                      </Button>
+                      <Button size="sm" variant="outline-danger" aria-label={`Eliminar ${p.name}`} onClick={() => onDelete(p.id, p.name)}>
+                        <FaTrash className="me-1" />
                         Eliminar
-                      </button>
+                      </Button>
                     </div>
                   </td>
                 </tr>
               ))}
             </tbody>
-          </table>
+          </Table>
         </div>
       )}
     </div>

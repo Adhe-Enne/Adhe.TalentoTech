@@ -1,10 +1,11 @@
 import React, { useRef, useEffect, useCallback } from "react";
+import { Container } from "react-bootstrap";
 import { NavLink, Outlet, useLocation } from "react-router-dom";
 
 import "./Layout.css";
-import Footer from "./body/Footer";
-import NavLinks from "./body/NavLinks";
-import SearchForm from "./body/SearchForm";
+import Footer from "./Footer";
+import SearchForm from "./SearchForm";
+import UserToolbar from "./UserToolbar";
 
 interface LayoutProps {
   children?: React.ReactNode;
@@ -32,7 +33,7 @@ const Layout: React.FC<LayoutProps> = (props) => {
     <div className="layout">
       <header className="header site-header" ref={headerRef}>
         <nav className="navbar navbar-expand-lg navbar-dark bg-primary">
-          <div className="container">
+          <Container>
             <NavLink className={(navData) => (navData.isActive ? "navbar-brand active" : "navbar-brand")} end to="/">
               Adhe.E-commerce
             </NavLink>
@@ -67,13 +68,13 @@ const Layout: React.FC<LayoutProps> = (props) => {
               </ul>
 
               <SearchForm baseSearch={location.search} initialQ={urlQuery} />
-              <NavLinks />
+              <UserToolbar />
             </div>
-          </div>
+          </Container>
         </nav>
       </header>
       <main className="main-content">
-        <div className="container container-tight main-wrapper">{children ?? <Outlet />}</div>
+        <Container className="container-tight main-wrapper">{children ?? <Outlet />}</Container>
       </main>
       <Footer />
     </div>

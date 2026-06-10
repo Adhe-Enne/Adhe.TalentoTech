@@ -1,12 +1,12 @@
 import React, { useCallback, useState } from "react";
 import { useNavigate, type NavigateFunction } from "react-router-dom";
 
-import type { Currency, FormMode, ProductFormPayload, Fields } from "../NewProductTypes";
+import type { Currency, FormMode, ProductFormPayload, Fields } from "./ProductFormTypes";
 
-import useCategories from "../../../../hooks/useCategories";
-import useNotification from "../../../../hooks/useNotification";
-import useTags from "../../../../hooks/useTags";
-import CloudUpload from "../../../icons/CloudUpload";
+import useCategories from "../../../hooks/useCategories";
+import useNotification from "../../../hooks/useNotification";
+import useTags from "../../../hooks/useTags";
+import CloudUpload from "../../icons/CloudUpload";
 import AdditionalImagesInput from "./AdditionalImagesInput";
 import CategoryCreateModal from "./CategoryCreateModal";
 import { useProductForm } from "./hooks/useProductForm";
@@ -22,12 +22,12 @@ function parseCurrency(value: string): Currency {
 }
 
 interface ProductFormProps {
+  existingImageUrl?: string;
+  initialData?: Partial<Fields>;
   loading?: boolean;
   mode?: FormMode;
-  initialData?: Partial<Fields>;
-  existingImageUrl?: string;
-  onSubmit: (payload: ProductFormPayload) => void;
   onCancel?: () => void;
+  onSubmit: (payload: ProductFormPayload) => void;
 }
 
 const ProductForm: React.FC<ProductFormProps> = (props) => {
@@ -35,12 +35,11 @@ const ProductForm: React.FC<ProductFormProps> = (props) => {
   const { fields, setField, setFile, reset, previewUrl, handleSubmit, errors } = useProductForm(initialData);
   const navigate: NavigateFunction = useNavigate();
   const { categories, createCategory } = useCategories();
-  const { tags: allTags, createTag } = useTags();
+  const { tags, createTag } = useTags();
   const { setNotification } = useNotification();
   const [showCategoryModal, setShowCategoryModal] = useState(false);
   const [isCreatingCategory, setIsCreatingCategory] = useState<boolean>(false);
   const addInputId: string = React.useId();
-
   const displayUrl: string | undefined = previewUrl ?? existingImageUrl;
 
   const isEdit: boolean = mode === "edit";
@@ -65,9 +64,7 @@ const ProductForm: React.FC<ProductFormProps> = (props) => {
     [fields.categoriaId, setField],
   );
 
-  const submitLabel: string = loading
-    ? (isEdit ? "Actualizando..." : "Subiendo...")
-    : (isEdit ? "Actualizar producto" : "Subir producto");
+  const submitLabel: string = loading ? (isEdit ? "Actualizando..." : "Subiendo...") : isEdit ? "Actualizar producto" : "Subir producto";
 
   const handleExistingImagesChange: (urls: string[]) => void = useCallback(
     (urls: string[]) => {
@@ -76,17 +73,9 @@ const ProductForm: React.FC<ProductFormProps> = (props) => {
     [setField],
   );
 
-  const {
-    tagQuery,
-    showSuggestions,
-    suggestionsRef,
-    setTagQuery,
-    setShowSuggestions,
-    onAddTagFromInput,
-    onRemoveTag,
-  } = useTagManager(
+  const { tagQuery, showSuggestions, suggestionsRef, setTagQuery, setShowSuggestions, onAddTagFromInput, onRemoveTag } = useTagManager(
     {
-      allTags,
+      allTags: tags,
       categoriaId: fields.categoriaId,
       tagIds: fields.tagIds,
       tags: fields.tags,
@@ -96,7 +85,7 @@ const ProductForm: React.FC<ProductFormProps> = (props) => {
   );
 
   return (
-    <form className={styles.formCard} onSubmit={(e) => handleSubmit(onSubmit)(e)} noValidate>
+    <form className={styles.formCard} noValidate onSubmit={(e) => handleSubmit(onSubmit)(e)}>
       <div className={styles.leftColumn}>
         <div className={styles.preview}>
           {isEdit && existingImageUrl && !fields.file && (
@@ -131,33 +120,37 @@ const ProductForm: React.FC<ProductFormProps> = (props) => {
 
       <div className={styles.fields}>
         <div>
-          <label className="form-label" htmlFor="nombre">Nombre</label>
-          <input
-            className={`form-control${errors.nombre ? " is-invalid" : ""}`}
-            id="nombre"
-            onChange={(e) => setField("nombre", e.target.value)}
-            required
-            value={fields.nombre}
-          />
+          <label className="form-label" htmlFor="nombre">
+            Nombre
+          </label>
+          <input className={`form-control${errors.nombre ? " is-invalid" : ""}`} id="nombre" onChange={(e) => setField("nombre", e.target.value)} required value={fields.nombre} />
           {errors.nombre && <div className="invalid-feedback">{errors.nombre}</div>}
         </div>
 
         <div>
-          <label className="form-label" htmlFor="categoria">Categoría</label>
+          <label className="form-label" htmlFor="categoria">
+            Categoría
+          </label>
           <div className="d-flex gap-2">
             <select className="form-select" id="categoria" onChange={(e) => handleCategoryChange(e.target.value)} value={fields.categoriaId}>
               <option value="">-- Sin categoría --</option>
               {categories.map((c) => (
-                <option key={c.id} value={c.id}>{c.name}</option>
+                <option key={c.id} value={c.id}>
+                  {c.name}
+                </option>
               ))}
             </select>
-            <button className="btn btn-outline-secondary" onClick={() => setShowCategoryModal(true)} type="button">Nueva</button>
+            <button className="btn btn-outline-secondary" onClick={() => setShowCategoryModal(true)} type="button">
+              Nueva
+            </button>
           </div>
         </div>
 
         <div className={styles.fieldRow}>
           <div className={styles.priceInput}>
-            <label className="form-label" htmlFor="precio">Precio</label>
+            <label className="form-label" htmlFor="precio">
+              Precio
+            </label>
             <input
               className={`form-control${errors.precio ? " is-invalid" : ""}`}
               id="precio"
@@ -171,19 +164,15 @@ const ProductForm: React.FC<ProductFormProps> = (props) => {
             {errors.precio && <div className="invalid-feedback">{errors.precio}</div>}
           </div>
           <div style={{ minWidth: 100 }}>
-            <label className="form-label" htmlFor="stock">Stock</label>
-            <input
-              className="form-control"
-              id="stock"
-              min="0"
-              onChange={(e) => setField("stock", e.target.value)}
-              step="1"
-              type="number"
-              value={fields.stock}
-            />
+            <label className="form-label" htmlFor="stock">
+              Stock
+            </label>
+            <input className="form-control" id="stock" min="0" onChange={(e) => setField("stock", e.target.value)} step="1" type="number" value={fields.stock} />
           </div>
           <div style={{ minWidth: 120 }}>
-            <label className="form-label" htmlFor="currency">Moneda</label>
+            <label className="form-label" htmlFor="currency">
+              Moneda
+            </label>
             <select className="form-select" id="currency" onChange={(e) => setField("currency", parseCurrency(e.target.value))} value={fields.currency}>
               <option value="USD">USD</option>
               <option value="ARS">ARS</option>
@@ -193,18 +182,20 @@ const ProductForm: React.FC<ProductFormProps> = (props) => {
         </div>
 
         <div>
-          <label className="form-label" htmlFor="descripcion">Descripción</label>
+          <label className="form-label" htmlFor="descripcion">
+            Descripción
+          </label>
           <textarea className="form-control" id="descripcion" onChange={(e) => setField("descripcion", e.target.value)} value={fields.descripcion} />
         </div>
 
         <TagAutocomplete
-          allTags={allTags}
+          allTags={tags}
           categoriaId={fields.categoriaId}
           onAdd={onAddTagFromInput}
           onQueryChange={setTagQuery}
           onRemove={onRemoveTag}
           onShowSuggestions={setShowSuggestions}
-          selectedTags={fields.tags}
+          selectedTags={fields.tagIds}
           showSuggestions={showSuggestions}
           suggestionsRef={suggestionsRef}
           tagQuery={tagQuery}
@@ -237,8 +228,7 @@ const ProductForm: React.FC<ProductFormProps> = (props) => {
             } else {
               setNotification("No se pudo crear la categoría", 3000, "danger");
             }
-          } catch (err) {
-            console.error(err);
+          } catch {
             setNotification("Error al crear la categoría", 3000, "danger");
           } finally {
             setIsCreatingCategory(false);

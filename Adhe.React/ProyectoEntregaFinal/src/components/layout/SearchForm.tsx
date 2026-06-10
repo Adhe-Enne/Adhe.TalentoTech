@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, type NavigateFunction } from "react-router-dom";
 
-import { buildProductsUrl } from "../hooks/buildProductsUrl";
+import { buildProductsUrl } from "./hooks/buildProductsUrl";
 
 interface SearchFormProps {
   baseSearch: string;

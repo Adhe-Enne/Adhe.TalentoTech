@@ -1,4 +1,4 @@
-import { collection, getDocs, query, orderBy, addDoc, doc, updateDoc, deleteDoc, type DocumentData, Query, QuerySnapshot, DocumentReference } from "firebase/firestore";
+import { collection, getDocs, query, orderBy, limit, startAfter, addDoc, doc, updateDoc, deleteDoc, type DocumentData, Query, QuerySnapshot, DocumentReference, type QueryDocumentSnapshot } from "firebase/firestore";
 
 import type { Product } from "../models";
 import type { Category } from "../models/Category"; // Necesario para el mapeo de fetch
@@ -18,6 +18,7 @@ interface ProductUpdatePayload extends Omit<Partial<Product>, "id" | "createdAt"
 
 export const productService: {
   fetchProducts: () => Promise<Product[]>;
+  fetchProductsPage: (pageSize: number, lastDoc?: QueryDocumentSnapshot) => Promise<{ products: Product[]; lastDoc: QueryDocumentSnapshot | null }>;
   createProduct: (productData: ProductCreatePayload) => Promise<Product>;
   deleteProduct: (id: string) => Promise<void>;
   updateProduct: (id: string, productData: ProductUpdatePayload) => Promise<void>;
@@ -49,6 +50,33 @@ export const productService: {
         updatedAt: tsToIso(data.updatedAt) ?? undefined,
       };
     });
+  },
+
+  fetchProductsPage: async (pageSize: number, lastDoc?: QueryDocumentSnapshot): Promise<{ products: Product[]; lastDoc: QueryDocumentSnapshot | null }> => {
+    const constraints: readonly [ReturnType<typeof orderBy>, ReturnType<typeof limit>] = [orderBy("createdAt", "desc"), limit(pageSize)];
+    const q: Query<DocumentData> = lastDoc ? query(collection(db, PRODUCTS_COLLECTION), ...constraints, startAfter(lastDoc)) : query(collection(db, PRODUCTS_COLLECTION), ...constraints);
+    const snap: QuerySnapshot<DocumentData> = await getDocs(q);
+    const products: Product[] = snap.docs.map((d) => {
+      const data: DocumentData = d.data();
+      return {
+        id: d.id,
+        name: data.name ?? "Sin nombre",
+        description: data.description,
+        price: Number(data.price ?? 0),
+        stock: data.stock ?? data.quantity ?? 0,
+        image: data.image ?? (Array.isArray(data.images) ? data.images[0] : undefined) ?? "/images/avatar1.svg",
+        images: Array.isArray(data.images) ? data.images : undefined,
+        currency: data.currency,
+        categoryId: data.categoryId ?? data.category?.id,
+        category: data.category as Category,
+        tagIds: Array.isArray(data.tagIds) ? data.tagIds : undefined,
+        isEnabled: data.isEnabled ?? true,
+        createdAt: tsToIso(data.createdAt) ?? "",
+        updatedAt: tsToIso(data.updatedAt) ?? undefined,
+      };
+    });
+    const lastDocSnapshot: QueryDocumentSnapshot | null = snap.docs[snap.docs.length - 1] ?? null;
+    return { products, lastDoc: lastDocSnapshot };
   },
 
   /**
@@ -105,6 +133,7 @@ export const productService: {
     const payload: ProductUpdatePayload = {
       name: productData.name,
       description: productData.description,
+      stock: productData.stock,
       price: productData.price !== undefined ? Number(productData.price) : undefined,
       image: productData.image,
       images: productData.images,

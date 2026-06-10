@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, type Dispatch, type RefObject, type SetStateAction } from "react";
 
-import type { Tag } from "../../../../../models/Tag";
+import type { Tag } from "../../../../models/Tag";
 
 interface TagManagerDeps {
   allTags: Tag[];

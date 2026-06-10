@@ -1,26 +1,30 @@
 import React, { type ChangeEvent } from "react";
+import { Badge, Button, Container, ListGroup } from "react-bootstrap";
+import { FaTrash } from "react-icons/fa";
 import { Link } from "react-router-dom";
 
-import { type CartItem } from "../../models";
 import type { AppliedCoupon } from "../../contexts/Cart/CartType";
+
+import { type CartItem } from "../../models";
 import CreditCard from "../icons/CreditCard";
+import HelmetMeta from "../ui/HelmetMeta";
 
 interface CartProps {
+  appliedCoupon: AppliedCoupon | null;
+  couponCode: string;
+  couponError: string | null;
+  discountedTotal: number;
+  isApplyingCoupon: boolean;
+
   items: CartItem[];
+  rawTotal: number;
+  onApplyCoupon: () => void;
   onBack?: () => void;
   onChangeQty: (productId: string, cantidad: number) => void;
+  onCouponCodeChange: (code: string) => void;
   onPurchase: () => void;
   onRemove: (productId: string) => void;
-
-  couponCode: string;
-  onCouponCodeChange: (code: string) => void;
-  onApplyCoupon: () => void;
   onRemoveCoupon: () => void;
-  appliedCoupon: AppliedCoupon | null;
-  discountedTotal: number;
-  rawTotal: number;
-  isApplyingCoupon: boolean;
-  couponError: string | null;
 }
 
 const Cart: React.FC<CartProps> = (props) => {
@@ -42,7 +46,8 @@ const Cart: React.FC<CartProps> = (props) => {
   } = props;
 
   return (
-    <div className="container py-4">
+    <Container className="py-4">
+      <HelmetMeta description="Revisa tu carrito de compras en Talento Tech." title="Talento Tech | Carrito" />
       <h2>Carrito</h2>
       {items.length === 0 ? (
         <div className="text-center py-5">
@@ -54,31 +59,32 @@ const Cart: React.FC<CartProps> = (props) => {
         </div>
       ) : (
         <div className="cart-list">
-          <div className="list-group">
+          <ListGroup>
             {items.map((it) => (
-              <div className="list-group-item d-flex align-items-center gap-3" key={it.product.id}>
+              <ListGroup.Item className="d-flex align-items-center gap-3" key={it.product.id}>
                 <img alt={it.product.name} className="rounded" src={it.product.image} style={{ width: 96, height: 96, objectFit: "cover" }} />
                 <div className="flex-grow-1">
                   <strong>{it.product.name}</strong>
                   <div className="text-muted">${it.product.price.toFixed(2)}</div>
                 </div>
                 <div className="d-flex align-items-center gap-2">
-                  <button className="btn btn-outline-secondary btn-sm" onClick={() => onChangeQty(it.product.id, Math.max(1, it.quantity - 1))}>
+                  <Button size="sm" variant="outline-secondary" onClick={() => onChangeQty(it.product.id, Math.max(1, it.quantity - 1))}>
                     -
-                  </button>
+                  </Button>
                   <span>{it.quantity}</span>
-                  <button className="btn btn-outline-secondary btn-sm" onClick={() => onChangeQty(it.product.id, it.quantity + 1)}>
+                  <Button size="sm" variant="outline-secondary" onClick={() => onChangeQty(it.product.id, it.quantity + 1)}>
                     +
-                  </button>
+                  </Button>
                 </div>
                 <div style={{ width: 140, textAlign: "right" }}>${(it.product.price * it.quantity).toFixed(2)}</div>
                 <div>
-                  <button className="btn btn-danger btn-sm" onClick={() => onRemove(it.product.id)}>
-                    Eliminar
-                  </button>
+                  <Button size="sm" variant="danger" onClick={() => onRemove(it.product.id)}>
+                    <FaTrash />
+                  </Button>
                 </div>
-              </div>
+              </ListGroup.Item>
             ))}
+          </ListGroup>
 
             <div className="d-flex justify-content-between align-items-center mt-3">
               <div>
@@ -88,7 +94,6 @@ const Cart: React.FC<CartProps> = (props) => {
                 <strong className="d-block">${rawTotal.toFixed(2)}</strong>
               </div>
             </div>
-          </div>
         </div>
       )}
 
@@ -98,11 +103,11 @@ const Cart: React.FC<CartProps> = (props) => {
             <h5 className="card-title">Cupon de descuento</h5>
             {appliedCoupon ? (
               <div className="d-flex align-items-center gap-2">
-                <span className="badge bg-success fs-6">{appliedCoupon.code}</span>
+                <Badge bg="success" className="fs-6">{appliedCoupon.code}</Badge>
                 <span className="text-success">{appliedCoupon.discountValue}% de descuento</span>
-                <button className="btn btn-outline-danger btn-sm ms-auto" onClick={onRemoveCoupon}>
+                <Button size="sm" variant="outline-danger" className="ms-auto" onClick={onRemoveCoupon}>
                   Quitar
-                </button>
+                </Button>
               </div>
             ) : (
               <div className="d-flex gap-2">
@@ -115,9 +120,9 @@ const Cart: React.FC<CartProps> = (props) => {
                   type="text"
                   value={couponCode}
                 />
-                <button className="btn btn-primary" disabled={isApplyingCoupon || !couponCode.trim()} onClick={onApplyCoupon}>
+                <Button variant="primary" disabled={isApplyingCoupon || !couponCode.trim()} onClick={onApplyCoupon}>
                   {isApplyingCoupon ? "Aplicando..." : "Aplicar"}
-                </button>
+                </Button>
               </div>
             )}
             {couponError && <div className="text-danger small mt-1">{couponError}</div>}
@@ -128,9 +133,7 @@ const Cart: React.FC<CartProps> = (props) => {
       <div className="d-flex justify-content-between align-items-center mt-3 p-3 bg-light rounded">
         <strong>Total final:</strong>
         <div className="text-end">
-          {appliedCoupon && (
-            <small className="text-muted text-decoration-line-through d-block">${rawTotal.toFixed(2)}</small>
-          )}
+          {appliedCoupon && <small className="text-muted text-decoration-line-through d-block">${rawTotal.toFixed(2)}</small>}
           <strong className="fs-4">${discountedTotal.toFixed(2)}</strong>
         </div>
       </div>
@@ -146,12 +149,12 @@ const Cart: React.FC<CartProps> = (props) => {
 
       <div className="mt-3">
         {onBack && (
-          <button className="btn btn-secondary" onClick={onBack}>
+          <Button variant="secondary" onClick={onBack}>
             Volver
-          </button>
+          </Button>
         )}
       </div>
-    </div>
+    </Container>
   );
 };
 

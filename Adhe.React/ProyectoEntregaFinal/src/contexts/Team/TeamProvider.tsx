@@ -1,5 +1,6 @@
-import React, { useMemo } from "react";
+import React, { useCallback, useMemo } from "react";
 
+import type { Person } from "../../models/Person";
 import type { ProviderProps } from "../../models/ProviderProps";
 import type { TeamContextType } from "./TeamTypes";
 
@@ -9,7 +10,8 @@ import TeamContext from "./TeamContext";
 
 const TeamProvider: React.FC<ProviderProps> = (props) => {
   const { children } = props;
-  const { data: team, error, loading, reload } = useAsyncCollection(() => teamService.fetchTeam());
+  const fetchAllTeam: () => Promise<Person[]> = useCallback(() => teamService.fetchTeam(), []);
+  const { data: team, error, loading, reload } = useAsyncCollection(fetchAllTeam);
 
   const value: TeamContextType = useMemo(() => ({ team, loading, error, reload }), [team, loading, error, reload]);
 

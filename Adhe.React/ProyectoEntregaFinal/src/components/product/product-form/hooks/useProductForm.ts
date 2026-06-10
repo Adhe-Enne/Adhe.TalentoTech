@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 
-import type { ProductFormPayload, Fields, UseProductFormReturn } from "../../NewProductTypes";
+import type { ProductFormPayload, Fields, UseProductFormReturn } from "../ProductFormTypes";
 
 export const useProductForm: (initial?: Partial<Fields>) => UseProductFormReturn = (initial?: Partial<Fields>): UseProductFormReturn => {
   const [fields, setFields] = useState<Fields>({
@@ -23,7 +23,7 @@ export const useProductForm: (initial?: Partial<Fields>) => UseProductFormReturn
     setFields((s: Fields) => ({ ...s, [k]: v }));
     setErrors((prev) => {
       if (prev[k]) {
-        const next = { ...prev };
+        const next: Record<string, string> = { ...prev };
         delete next[k];
         return next;
       }
@@ -59,7 +59,7 @@ export const useProductForm: (initial?: Partial<Fields>) => UseProductFormReturn
     }
 
     const price: number = Number.parseFloat(fields.precio);
-    if (isNaN(price) || price <= 0) {
+    if (Number.isNaN(price) || price <= 0) {
       newErrors.precio = "El precio debe ser un número mayor a 0";
     }
 

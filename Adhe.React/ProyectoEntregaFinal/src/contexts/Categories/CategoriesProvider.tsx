@@ -10,7 +10,8 @@ import CategoriesContext from "./CategoriesContext";
 
 export const CategoriesProvider: React.FC<ProviderProps> = (props) => {
   const { children } = props;
-  const { data: categories, loading, setData, reload } = useAsyncCollection(() => categoryService.fetchCategories());
+  const fetchAllCategories: () => Promise<Category[]> = useCallback(() => categoryService.fetchCategories(), []);
+  const { data: categories, loading, setData, reload } = useAsyncCollection(fetchAllCategories);
 
   const createCategory: (name: string, slug?: string) => Promise<Category | undefined> = useCallback(async (name: string, slug?: string): Promise<Category | undefined> => {
     try {

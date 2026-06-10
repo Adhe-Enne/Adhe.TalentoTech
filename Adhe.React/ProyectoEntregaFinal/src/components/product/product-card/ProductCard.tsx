@@ -29,7 +29,7 @@ const ProductCard: React.FC<ProductCardProps> = (props) => {
     <div className={`card h-100 ${styles.tarjetaProducto} ${outOfStock ? styles.outOfStockCard : ""}`}>
       <div style={{ position: "relative", width: "100%", height: "100%" }}>
         <button aria-label={`Ver detalles de ${product.name}`} className={styles.imageWrapper} onClick={() => onClick?.(product)} type="button">
-          <img alt={product.name} className={styles.imagen} src={product.image} />
+          <img alt={product.name} className={styles.imagen} loading="lazy" src={product.image} />
           <span className={"badge-price " + styles.priceBadge}>${product.price.toFixed(2)}</span>
           {outOfStock && (
             <span className={styles.outOfStockOverlay}>Sin stock</span>

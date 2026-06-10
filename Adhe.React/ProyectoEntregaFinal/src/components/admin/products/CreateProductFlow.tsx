@@ -3,14 +3,15 @@ import { useNavigate, type NavigateFunction } from "react-router-dom";
 
 import type { Product } from "../../../models";
 import type { Tag } from "../../../models/Tag";
-import type { ProductFormPayload } from "./NewProductTypes";
+import type { ProductFormPayload } from "../../product/product-form/ProductFormTypes";
 
 import useNotification from "../../../hooks/useNotification";
 import useProducts from "../../../hooks/useProducts";
 import useTags from "../../../hooks/useTags";
 import { imageService } from "../../../services/imageService";
-import NewProductContainer from "./NewProductContainer";
-import { useCancelable } from "./product-form/hooks/useCancelable";
+import { useCancelable } from "../../product/product-form/hooks/useCancelable";
+import ProductFormWrapper from "../../product/product-form/ProductFormWrapper";
+import HelmetMeta from "../../ui/HelmetMeta";
 
 const CreateProductFlow: React.FC = () => {
   const [loading, setLoading] = useState(false);
@@ -108,7 +109,12 @@ const CreateProductFlow: React.FC = () => {
     [createProduct, resolveTagIds, fileToDataUrl, navigate, setNotification, simulateDelay],
   );
 
-  return <NewProductContainer loading={loading} onCreated={onCreated} />;
+  return (
+    <>
+      <HelmetMeta description="Crea un nuevo producto en Talento Tech." title="Admin | Nuevo Producto" />
+      <ProductFormWrapper loading={loading} onCreated={onCreated} />
+    </>
+  );
 };
 
 export default CreateProductFlow;

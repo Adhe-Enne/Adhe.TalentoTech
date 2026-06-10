@@ -1,17 +1,19 @@
 import React from "react";
+import { Badge, Button } from "react-bootstrap";
 
 import type { UserInfo } from "../../services/authService";
 
 import ConfirmDialog from "../ui/ConfirmDialog";
+import HelmetMeta from "../ui/HelmetMeta";
 
 interface ProfileProps {
+  loggingOut: boolean;
+  showConfirm: boolean;
   user: UserInfo | null;
+  onConfirmClose: () => void;
+  onConfirmOpen: () => void;
   onLogout: () => Promise<void>;
   onNavigateHome: () => void;
-  showConfirm: boolean;
-  onConfirmOpen: () => void;
-  onConfirmClose: () => void;
-  loggingOut: boolean;
 }
 
 const Profile: React.FC<ProfileProps> = (props) => {
@@ -21,33 +23,24 @@ const Profile: React.FC<ProfileProps> = (props) => {
 
   return (
     <div className="d-flex justify-content-center align-items-center" style={{ minHeight: "60vh" }}>
+      <HelmetMeta description="Revisa tu perfil en Talento Tech." title="Talento Tech | Perfil" />
       <div className="card shadow-sm" style={{ width: "100%", maxWidth: 460 }}>
         <div className="card-body p-4 text-center">
-          <div
-            className="rounded-circle bg-primary d-flex align-items-center justify-content-center mx-auto mb-3"
-            style={{ width: 80, height: 80 }}
-          >
+          <div className="rounded-circle bg-primary d-flex align-items-center justify-content-center mx-auto mb-3" style={{ width: 80, height: 80 }}>
             <span className="text-white fs-2 fw-bold">{user?.email?.charAt(0).toUpperCase() ?? "?"}</span>
           </div>
           <h4 className="mb-1">{user?.email ?? "Sin sesión"}</h4>
-          <span className={`badge ${user?.rol === "admin" ? "bg-warning text-dark" : "bg-secondary"} mb-3`}>
-            {roleLabel}
-          </span>
+          <Badge bg={user?.rol === "admin" ? "warning" : "secondary"} className={user?.rol === "admin" ? "text-dark mb-3" : "mb-3"}>{roleLabel}</Badge>
 
           <hr />
 
           <div className="d-flex flex-column gap-2">
-            <button
-              className="btn btn-outline-danger"
-              disabled={loggingOut}
-              onClick={onConfirmOpen}
-              type="button"
-            >
+            <Button variant="outline-danger" disabled={loggingOut} onClick={onConfirmOpen}>
               {loggingOut ? "Cerrando sesión..." : "Cerrar sesión"}
-            </button>
-            <button className="btn btn-outline-secondary" onClick={onNavigateHome} type="button">
+            </Button>
+            <Button variant="outline-secondary" onClick={onNavigateHome}>
               Volver al inicio
-            </button>
+            </Button>
           </div>
         </div>
       </div>

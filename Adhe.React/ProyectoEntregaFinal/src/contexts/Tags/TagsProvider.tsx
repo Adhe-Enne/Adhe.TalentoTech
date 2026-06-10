@@ -10,7 +10,8 @@ import TagsContext from "./TagsContext";
 
 export const TagsProvider: React.FC<ProviderProps> = (props) => {
   const { children } = props;
-  const { data: tags, loading, setData, reload } = useAsyncCollection(() => tagService.fetchTags());
+  const fetchAllTags: () => Promise<Tag[]> = useCallback(() => tagService.fetchTags(), []);
+  const { data: tags, loading, setData, reload } = useAsyncCollection(fetchAllTags);
 
   const createTag: (name: string, categoryId: string) => Promise<Tag | undefined> = useCallback(async (name: string, categoryId: string): Promise<Tag | undefined> => {
     try {

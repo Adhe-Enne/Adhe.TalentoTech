@@ -1,10 +1,9 @@
 import React, { type JSX } from "react";
 import { Link } from "react-router-dom";
 
-import useAuth from "../../../hooks/useAuth";
-import useCart from "../../../hooks/useCart";
-import useFavorites from "../../../hooks/useFavorites";
-import PlusCircle from "../../icons/PlusCircle";
+import useAuth from "../../hooks/useAuth";
+import useCart from "../../hooks/useCart";
+import useFavorites from "../../hooks/useFavorites";
 
 const NavLinks: React.FC = () => {
   const { user, isAdmin } = useAuth();
@@ -21,14 +20,6 @@ const NavLinks: React.FC = () => {
 
   return (
     <ul className="navbar-nav ms-auto align-items-center nav-tools">
-      {isAdmin && (
-        <li className="nav-item d-none d-lg-block">
-          <Link aria-label="Nuevo producto" className="btn btn-sm btn-success ms-2 btn-new-product btn-icon" to="/admin/productos/nuevo">
-            <PlusCircle className="nav-icon" />
-            Nuevo producto
-          </Link>
-        </li>
-      )}
       <li className="nav-item">
         <Link aria-label="Favoritos" className="btn btn-ghost btn-sm position-relative me-2" to="/productos?filter=favorites">
           <svg aria-hidden className="nav-icon nav-fav-icon" fill="currentColor" height="22" viewBox="0 0 24 24" width="22">

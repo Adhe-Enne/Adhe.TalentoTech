@@ -1,6 +1,6 @@
 import { useCallback, type RefObject } from "react";
 
-import type { StateRefType } from "../../NewProductTypes";
+import type { StateRefType } from "../ProductFormTypes";
 
 export const useAbortableFileReader: (stateRef: RefObject<StateRefType>) => (file: File) => Promise<string> = (stateRef: RefObject<StateRefType>) => {
   return useCallback(

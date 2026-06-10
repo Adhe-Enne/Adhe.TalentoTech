@@ -1,4 +1,5 @@
 import React from "react";
+import { Col, Container, Row } from "react-bootstrap";
 
 import type { Product } from "../../models";
 
@@ -11,15 +12,15 @@ interface ProductGridProps {
 const ProductGrid: React.FC<ProductGridProps> = (props) => {
   const { products } = props;
   return (
-    <div className="container">
-      <div className="row g-3 product-grid-row">
+    <Container>
+      <Row className="g-3 product-grid-row">
         {products.map((p) => (
-          <div className="col-12 col-sm-6 col-md-4 col-lg-3" key={p.id}>
+          <Col key={p.id} xs={12} sm={6} md={4} lg={3}>
             <ProductCardContainer product={p} />
-          </div>
+          </Col>
         ))}
-      </div>
-    </div>
+      </Row>
+    </Container>
   );
 };
 

@@ -1,16 +1,16 @@
 import React, { useMemo } from "react";
 
-import type { Tag } from "../../../../models/Tag";
+import type { Tag } from "../../../models/Tag";
 
 import styles from "./Product.module.css";
 
 interface TagAutocompleteProps {
   allTags: Tag[];
-  categoriaId?: string;
   selectedTags: string[];
   showSuggestions: boolean;
   suggestionsRef: React.RefObject<HTMLUListElement | null>;
   tagQuery: string;
+  categoriaId?: string;
   onAdd: (name: string) => void;
   onQueryChange: (query: string) => void;
   onRemove: (name: string) => void;
@@ -18,6 +18,7 @@ interface TagAutocompleteProps {
 }
 
 const TagAutocomplete: React.FC<TagAutocompleteProps> = (props) => {
+  
   const { allTags, categoriaId, selectedTags, tagQuery, onAdd, onQueryChange, onRemove, showSuggestions, onShowSuggestions, suggestionsRef } = props;
 
   const queryLower: string = tagQuery.trim().toLowerCase();

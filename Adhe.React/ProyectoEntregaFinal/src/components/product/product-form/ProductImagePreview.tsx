@@ -1,6 +1,6 @@
 import React from "react";
 
-import type { ImagePreviewProps } from "../NewProductTypes";
+import type { ImagePreviewProps } from "./ProductFormTypes";
 
 import styles from "./Product.module.css";
 

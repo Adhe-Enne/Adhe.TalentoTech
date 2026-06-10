@@ -19,7 +19,7 @@ const ProductImageCarousel: React.FC<Props> = (props) => {
 
   return (
     <div className={styles.carousel}>
-      <img alt={alt} className={styles.mainImage} src={imgs[index]} />
+      <img alt={alt} className={styles.mainImage} loading="lazy" src={imgs[index]} />
       {imgs.length > 1 && (
         <div className={styles.controls}>
           <button aria-label="Anterior" className={styles.btn} onClick={prev}>
@@ -35,7 +35,7 @@ const ProductImageCarousel: React.FC<Props> = (props) => {
         <div className={styles.thumbnails}>
           {imgs.map((s, i) => (
             <button aria-label={`${alt} ${i + 1}`} className={styles.thumbBtn} key={s} onClick={() => setIndex(i)} type="button">
-              <img alt={`${alt} ${i + 1}`} className={`${styles.thumb} ${i === index ? styles.thumbActive : ""}`} src={s} />
+              <img alt={`${alt} ${i + 1}`} className={`${styles.thumb} ${i === index ? styles.thumbActive : ""}`} loading="lazy" src={s} />
             </button>
           ))}
         </div>

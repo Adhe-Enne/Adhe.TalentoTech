@@ -13,18 +13,19 @@ import GuestRoute from "./auth/GuestRoute";
 import ProtectedRoute from "./auth/ProtectedRoute";
 import CartContainer from "./cart/CartContainer";
 import HomeContainer from "./home/HomeContainer";
-import NotificationStack from "./home/NotificationStack";
 import Layout from "./layout/Layout";
+import NotificationStack from "./ui/NotificationStack";
+import HelmetMeta from "./ui/HelmetMeta";
 
 const AdminLayout: React.LazyExoticComponent<React.ComponentType> = lazy(() => import("./admin/AdminLayout"));
 const AdminDashboardContainer: React.LazyExoticComponent<React.ComponentType> = lazy(() => import("./admin/AdminDashboardContainer"));
-const ContactPage: React.LazyExoticComponent<React.ComponentType> = lazy(() => import("./contact/Contact"));
-const TeamFullViewContainer: React.LazyExoticComponent<React.ComponentType> = lazy(() => import("./contact/full-view/TeamFullViewContainer"));
-const CreateProductFlow: React.LazyExoticComponent<React.ComponentType> = lazy(() => import("./product/new-product/CreateProductFlow"));
+const ContactContainer: React.LazyExoticComponent<React.ComponentType> = lazy(() => import("./contact/ContactContainer"));
+const TeamFullViewContainer: React.LazyExoticComponent<React.ComponentType> = lazy(() => import("./team/full-view/TeamFullViewContainer"));
+const CreateProductFlow: React.LazyExoticComponent<React.ComponentType> = lazy(() => import("./admin/products/CreateProductFlow"));
 const ProductDetailContainer: React.LazyExoticComponent<React.ComponentType> = lazy(() => import("./product/product-detail/ProductDetailContainer"));
-const CouponManager: React.LazyExoticComponent<React.ComponentType> = lazy(() => import("./admin/coupons/CouponManager"));
+const CouponManager: React.LazyExoticComponent<React.ComponentType> = lazy(() => import("./admin/coupons/CouponManagerContainer"));
 const AdminProductListContainer: React.LazyExoticComponent<React.ComponentType> = lazy(() => import("./admin/products/AdminProductListContainer"));
-const EditProductFlow: React.LazyExoticComponent<React.ComponentType> = lazy(() => import("./product/edit-product/EditProductFlow"));
+const EditProductFlow: React.LazyExoticComponent<React.ComponentType> = lazy(() => import("./admin/products/EditProductFlow"));
 const LoginContainer: React.LazyExoticComponent<React.ComponentType> = lazy(() => import("./auth/LoginContainer"));
 const RegisterContainer: React.LazyExoticComponent<React.ComponentType> = lazy(() => import("./auth/RegisterContainer"));
 const ProfileContainer: React.LazyExoticComponent<React.ComponentType> = lazy(() => import("./auth/ProfileContainer"));
@@ -44,6 +45,7 @@ const AppRoutes: React.FC = (): JSX.Element => {
                 <ProductsProvider>
                   <TeamProvider>
                     <CouponsProvider>
+                      <HelmetMeta description="Tienda de productos tecnológicos." title="Talento Tech" />
                       <NotificationStack />
                       <Routes>
                         <Route
@@ -67,14 +69,20 @@ const AppRoutes: React.FC = (): JSX.Element => {
                           path="registro"
                         />
 
-                        <Route element={<ProtectedRoute><Layout /></ProtectedRoute>}>
+                        <Route
+                          element={
+                            <ProtectedRoute>
+                              <Layout />
+                            </ProtectedRoute>
+                          }
+                        >
                           <Route element={<HomeContainer />} index />
                           <Route element={<HomeContainer />} path="/" />
                           <Route element={<HomeContainer />} path="productos" />
                           <Route
                             element={
                               <Suspense fallback={pageFallback}>
-                                <ContactPage />
+                                <ContactContainer />
                               </Suspense>
                             }
                             path="contacto"

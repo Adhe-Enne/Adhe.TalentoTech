@@ -1,6 +1,8 @@
 import React, { useCallback, useState } from "react";
 import { useNavigate, type NavigateFunction } from "react-router-dom";
 
+import type { UserInfo } from "../../services/authService";
+
 import useAuth from "../../hooks/useAuth";
 import useNotification from "../../hooks/useNotification";
 import Register from "./Register";
@@ -16,8 +18,8 @@ const RegisterContainer: React.FC = () => {
   const { setNotification } = useNotification();
   const navigate: NavigateFunction = useNavigate();
 
-  const handleSubmit: (e: React.FormEvent) => void = useCallback(
-    async (e: React.FormEvent) => {
+  const handleSubmit: (e: React.SubmitEvent) => Promise<void> = useCallback(
+    async (e: React.SubmitEvent) => {
       e.preventDefault();
       setError(null);
 
@@ -39,7 +41,7 @@ const RegisterContainer: React.FC = () => {
       setLoading(true);
 
       try {
-        const user = await signup(email, password);
+        const user: UserInfo = await signup(email, password);
         setNotification(`Cuenta creada! Bienvenido, ${user.email}`, 4000, "success");
         navigate("/");
       } catch (err: unknown) {
@@ -59,11 +61,11 @@ const RegisterContainer: React.FC = () => {
       email={email}
       error={error}
       loading={loading}
-      password={password}
       onConfirmPasswordChange={setConfirmPassword}
       onEmailChange={setEmail}
       onPasswordChange={setPassword}
       onSubmit={handleSubmit}
+      password={password}
     />
   );
 };

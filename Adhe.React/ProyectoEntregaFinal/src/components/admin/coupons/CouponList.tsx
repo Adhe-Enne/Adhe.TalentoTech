@@ -1,4 +1,5 @@
 import React from "react";
+import { Alert, Button, Spinner, Table } from "react-bootstrap";
 
 import type { Coupon } from "../../../models";
 
@@ -19,7 +20,7 @@ const CouponList: React.FC<CouponListProps> = (props) => {
   if (loading) {
     return (
       <div aria-busy="true" className="d-flex justify-content-center py-5">
-        <div aria-hidden="true" className="spinner-border" />
+        <Spinner animation="border" aria-hidden="true" />
         <output aria-live="polite" className="visually-hidden">
           Cargando cupones...
         </output>
@@ -29,22 +30,22 @@ const CouponList: React.FC<CouponListProps> = (props) => {
 
   if (error) {
     return (
-      <div className="alert alert-danger d-flex align-items-center gap-2">
+      <Alert variant="danger" className="d-flex align-items-center gap-2">
         <span>{error}</span>
-        <button className="btn btn-sm btn-outline-danger ms-auto" onClick={onRetry}>
+        <Button size="sm" variant="outline-danger" className="ms-auto" onClick={onRetry}>
           Reintentar
-        </button>
-      </div>
+        </Button>
+      </Alert>
     );
   }
 
   if (coupons.length === 0) {
-    return <div className="alert alert-info text-center py-4">No hay cupones aun. Crea el primero usando el formulario de arriba.</div>;
+    return <Alert variant="info" className="text-center py-4">No hay cupones aun. Crea el primero usando el formulario de arriba.</Alert>;
   }
 
   return (
     <div className="table-responsive">
-      <table className="table table-hover align-middle">
+      <Table hover className="align-middle">
         <thead>
           <tr>
             <th>Codigo</th>
@@ -61,7 +62,7 @@ const CouponList: React.FC<CouponListProps> = (props) => {
             <CouponItem coupon={c} key={c.id} onDelete={onDelete} onToggle={onToggle} />
           ))}
         </tbody>
-      </table>
+      </Table>
     </div>
   );
 };

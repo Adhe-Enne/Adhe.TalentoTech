@@ -1,5 +1,8 @@
 import React, { useCallback, useState } from "react";
+import { Alert, Button, Spinner } from "react-bootstrap";
 import { Link } from "react-router-dom";
+
+import HelmetMeta from "../ui/HelmetMeta";
 
 interface LoginProps {
   email: string;
@@ -19,14 +22,16 @@ const Login: React.FC<LoginProps> = (props) => {
   const handleDismiss: () => void = useCallback(() => setDismissed(true), []);
 
   return (
+    <>
+      <HelmetMeta description="Inicia sesión en Talento Tech." title="Talento Tech | Iniciar Sesión" />
     <div className="d-flex justify-content-center align-items-center" style={{ minHeight: "80vh" }}>
       <div className="card shadow-sm" style={{ width: "100%", maxWidth: 420 }}>
         <div className="card-body p-4">
           {redirectMessage && !dismissed && (
-            <div className="alert alert-info d-flex align-items-center justify-content-between py-2 small" role="alert">
+            <Alert variant="info" className="d-flex align-items-center justify-content-between py-2 small">
               <span>{redirectMessage}</span>
               <button aria-label="Cerrar" className="btn-close ms-2" onClick={handleDismiss} style={{ fontSize: "0.75rem" }} type="button" />
-            </div>
+            </Alert>
           )}
 
           <h2 className="card-title text-center mb-4">Iniciar Sesión</h2>
@@ -66,11 +71,11 @@ const Login: React.FC<LoginProps> = (props) => {
                 value={password}
               />
             </div>
-            {error && <div className="alert alert-danger py-2 small">{error}</div>}
-            <button className="btn btn-primary w-100" disabled={loading} type="submit">
-              {loading && <span className="spinner-border spinner-border-sm me-2" />}
+            {error && <Alert variant="danger" className="py-2 small">{error}</Alert>}
+            <Button variant="primary" className="w-100" disabled={loading} type="submit">
+              {loading && <Spinner animation="border" size="sm" className="me-2" />}
               {loading ? "Ingresando..." : "Ingresar"}
-            </button>
+            </Button>
           </form>
           <p className="text-center mt-3 mb-0 small">
             ¿No tenés una cuenta? <Link to="/registro">Registrate aquí</Link>
@@ -78,6 +83,7 @@ const Login: React.FC<LoginProps> = (props) => {
         </div>
       </div>
     </div>
+    </>
   );
 };
 

@@ -1,4 +1,5 @@
 import React, { useCallback, useState } from "react";
+import { Badge, Button, Col, Container, Row } from "react-bootstrap";
 import { useNavigate, type NavigateFunction } from "react-router-dom";
 
 import type { Tag } from "../../../models/Tag";
@@ -6,6 +7,7 @@ import type { Tag } from "../../../models/Tag";
 import useCart from "../../../hooks/useCart";
 import useNotification from "../../../hooks/useNotification";
 import { type Product } from "../../../models";
+import HelmetMeta from "../../ui/HelmetMeta";
 import QuantityStepper from "../../ui/QuantityStepper";
 import ProductImageCarousel from "./ProductImageCarousel";
 
@@ -52,14 +54,16 @@ const ProductDetail: React.FC<ProductDetailProps> = (props) => {
   }, [navigate]);
 
   return (
-    <div className="container">
-      <div className="row gx-4 gy-3 justify-content-center product-detail">
-        <div className="col-12 col-md-5">
+    <>
+      <HelmetMeta description={`${product.name} — ${(product.description ?? "Producto disponible en Talento Tech").slice(0, 160)}`} title={`${product.name} | Talento Tech`} />
+    <Container>
+      <Row className="gx-4 gy-3 justify-content-center product-detail">
+        <Col xs={12} md={5}>
           <div className="card">
-            <ProductImageCarousel alt={product.name} images={images ?? [product.image]} />
+            <ProductImageCarousel alt={product.name} images={[product.image, ...(images ?? [])]} />
           </div>
-        </div>
-        <div className="col-12 col-md-5">
+        </Col>
+        <Col xs={12} md={5}>
           <h2>{product.name}</h2>
           {categoryName && <div className="mb-1 text-muted">Categoría: {categoryName}</div>}
 
@@ -74,18 +78,18 @@ const ProductDetail: React.FC<ProductDetailProps> = (props) => {
 
           <div className="mb-2">
             {stock > 0 ? (
-              <span className="badge bg-success">{stock} en stock</span>
+              <Badge bg="success">{stock} en stock</Badge>
             ) : (
-              <span className="badge bg-danger">Sin stock</span>
+              <Badge bg="danger">Sin stock</Badge>
             )}
           </div>
 
           {tags && tags.length > 0 && (
             <div className="mb-2">
               {tags.map((t) => (
-                <span className="badge bg-secondary me-1" key={t.id}>
+                <Badge bg="secondary" className="me-1" key={t.id}>
                   {t.name}
-                </span>
+                </Badge>
               ))}
             </div>
           )}
@@ -101,9 +105,9 @@ const ProductDetail: React.FC<ProductDetailProps> = (props) => {
               value={cantidad}
             />
             {stock <= 0 ? (
-              <button className="btn btn-secondary" disabled>
+              <Button variant="secondary" disabled>
                 Sin stock
-              </button>
+              </Button>
             ) : (
               <button className="btn btn-cta" onClick={handleAdd}>
                 Añadir al carrito
@@ -116,9 +120,10 @@ const ProductDetail: React.FC<ProductDetailProps> = (props) => {
               Volver
             </button>
           </div>
-        </div>
-      </div>
-    </div>
+        </Col>
+      </Row>
+    </Container>
+    </>
   );
 };
 

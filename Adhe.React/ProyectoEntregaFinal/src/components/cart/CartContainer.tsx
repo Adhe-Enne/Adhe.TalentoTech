@@ -39,7 +39,7 @@ const CartContainer: React.FC = () => {
   const handleChangeQty: (id: string, qty: number) => void = useCallback(
     (id: string, qty: number) => {
       const item = cart.find((it) => it.product.id === id);
-      if (!item) return;
+      if (!item) {return;}
 
       if (qty > item.quantity && qty > item.product.stock) {
         setNotification(`Stock maximo alcanzado para ${item.product.name}`, 3000, "warning");
@@ -105,8 +105,8 @@ const CartContainer: React.FC = () => {
       items={cart}
       onApplyCoupon={handleApplyCoupon}
       onBack={handleBack}
-      onCouponCodeChange={setCouponCode}
       onChangeQty={handleChangeQty}
+      onCouponCodeChange={setCouponCode}
       onPurchase={handlePurchase}
       onRemove={handleRemove}
       onRemoveCoupon={handleRemoveCoupon}

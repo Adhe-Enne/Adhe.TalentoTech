@@ -1,4 +1,5 @@
 import React from "react";
+import { Badge, Button } from "react-bootstrap";
 
 import type { Coupon } from "../../../models";
 
@@ -32,9 +33,9 @@ const CouponItem: React.FC<CouponItemProps> = (props) => {
       </td>
       <td>{coupon.discountValue}%</td>
       <td>
-        <span className={`badge bg-${badge.variant}${badge.variant === "warning" ? " text-dark" : ""}`} style={{ borderRadius: 999 }}>
+        <Badge bg={badge.variant} className={badge.variant === "warning" ? "text-dark" : ""} style={{ borderRadius: 999 }}>
           {badge.label}
-        </span>
+        </Badge>
       </td>
       <td>
         {coupon.usedCount}
@@ -76,9 +77,9 @@ const CouponItem: React.FC<CouponItemProps> = (props) => {
         </button>
       </td>
       <td>
-        <button aria-label={`Eliminar cupon ${coupon.code}`} className="btn btn-sm btn-outline-danger" onClick={() => onDelete(coupon.id)}>
+        <Button size="sm" variant="outline-danger" aria-label={`Eliminar cupon ${coupon.code}`} onClick={() => onDelete(coupon.id)}>
           Eliminar
-        </button>
+        </Button>
       </td>
     </tr>
   );

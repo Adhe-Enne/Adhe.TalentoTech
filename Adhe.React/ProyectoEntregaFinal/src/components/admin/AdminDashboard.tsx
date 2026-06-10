@@ -1,5 +1,8 @@
 import React from "react";
+import { Col, Row, Spinner } from "react-bootstrap";
 import { Link } from "react-router-dom";
+
+import HelmetMeta from "../ui/HelmetMeta";
 
 interface AdminDashboardProps {
   activeCoupons: number;
@@ -15,7 +18,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = (props) => {
   if (loading) {
     return (
       <div aria-busy="true" className="d-flex justify-content-center py-5">
-        <div aria-hidden="true" className="spinner-border" />
+        <Spinner animation="border" aria-hidden="true" />
         <output aria-live="polite" className="visually-hidden">
           Cargando...
         </output>
@@ -32,10 +35,11 @@ const AdminDashboard: React.FC<AdminDashboardProps> = (props) => {
 
   return (
     <div>
+      <HelmetMeta description="Panel de administración de Talento Tech." title="Admin | Talento Tech" />
       <h3 className="mb-4">Dashboard</h3>
-      <div className="row g-3">
+      <Row className="g-3">
         {metrics.map((m) => (
-          <div className="col-12 col-sm-6 col-lg-3" key={m.label}>
+          <Col xs={12} sm={6} lg={3} key={m.label}>
             <div className="card h-100 shadow-sm" style={{ borderRadius: 12 }}>
               <div className="card-body d-flex align-items-center gap-3 p-3">
                 <div
@@ -51,9 +55,9 @@ const AdminDashboard: React.FC<AdminDashboardProps> = (props) => {
               </div>
               {m.link && <Link className="stretched-link" to={m.link} />}
             </div>
-          </div>
+          </Col>
         ))}
-      </div>
+      </Row>
     </div>
   );
 };

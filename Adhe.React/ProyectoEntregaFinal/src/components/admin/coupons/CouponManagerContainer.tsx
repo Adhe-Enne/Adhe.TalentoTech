@@ -5,11 +5,9 @@ import type { Coupon } from "../../../models";
 import useAsyncCollection from "../../../hooks/useAsyncCollection";
 import useNotification from "../../../hooks/useNotification";
 import { couponService } from "../../../services/couponService";
-import ConfirmDialog from "../../ui/ConfirmDialog";
-import CouponForm from "./CouponForm";
-import CouponList from "./CouponList";
+import CouponManagerPage from "./CouponManagerPage";
 
-const CouponManager: React.FC = () => {
+const CouponManagerContainer: React.FC = () => {
   const { data: coupons, loading, error, reload: fetchCoupons, setData: setCoupons } = useAsyncCollection<Coupon>(() => couponService.fetchCoupons());
   const { setNotification } = useNotification();
   const [code, setCode] = useState("");
@@ -96,30 +94,26 @@ const CouponManager: React.FC = () => {
   );
 
   return (
-    <div>
-      <h3 className="mb-4">Gestion de Cupones</h3>
-      <CouponForm
-        code={code}
-        discountValue={discountValue}
-        errors={errors}
-        onCodeChange={setCode}
-        onDiscountChange={setDiscountValue}
-        onSubmit={handleCreate}
-        submitting={submitting}
-      />
-      <CouponList coupons={coupons} error={error} loading={loading} onDelete={handleDeleteRequest} onRetry={fetchCoupons} onToggle={handleToggle} />
-      <ConfirmDialog
-        confirmLabel="Eliminar"
-        confirmVariant="danger"
-        loading={deleting}
-        message={`¿Eliminar el cupón ${deleteTarget?.code}? No se podrá deshacer.`}
-        onCancel={() => setDeleteTarget(null)}
-        onConfirm={handleDeleteConfirm}
-        open={deleteTarget !== null}
-        title="Eliminar cupón"
-      />
-    </div>
+    <CouponManagerPage
+      code={code}
+      coupons={coupons}
+      deleteTarget={deleteTarget}
+      deleting={deleting}
+      discountValue={discountValue}
+      error={error}
+      errors={errors}
+      loading={loading}
+      onCodeChange={setCode}
+      onCreate={handleCreate}
+      onDeleteCancel={() => setDeleteTarget(null)}
+      onDeleteConfirm={handleDeleteConfirm}
+      onDeleteRequest={handleDeleteRequest}
+      onDiscountChange={setDiscountValue}
+      onRetry={fetchCoupons}
+      onToggle={handleToggle}
+      submitting={submitting}
+    />
   );
 };
 
-export default CouponManager;
+export default CouponManagerContainer;

@@ -2,14 +2,15 @@ import React, { useCallback, useMemo, useState } from "react";
 import { useNavigate, useParams, type NavigateFunction } from "react-router-dom";
 
 import type { Product, Tag } from "../../../models";
-import type { Currency, Fields, ProductFormPayload } from "../new-product/NewProductTypes";
+import type { Currency, Fields, ProductFormPayload } from "../../product/product-form/ProductFormTypes";
 
 import useNotification from "../../../hooks/useNotification";
 import useProducts from "../../../hooks/useProducts";
 import useTags from "../../../hooks/useTags";
 import { imageService } from "../../../services/imageService";
-import NewProductContainer from "../new-product/NewProductContainer";
-import { useCancelable } from "../new-product/product-form/hooks/useCancelable";
+import { useCancelable } from "../../product/product-form/hooks/useCancelable";
+import ProductFormWrapper from "../../product/product-form/ProductFormWrapper";
+import HelmetMeta from "../../ui/HelmetMeta";
 
 const VALID_CURRENCIES: Set<Currency> = new Set(["USD", "ARS", "BTC"]);
 
@@ -142,15 +143,19 @@ const EditProductFlow: React.FC = () => {
 
   if (!product) {
     return (
-        <div className="d-flex justify-content-center py-5">
+      <div className="d-flex justify-content-center py-5">
         <output className="spinner-border">
           <span className="visually-hidden">Cargando producto...</span>
         </output>
       </div>
     );
   }
-
-  return <NewProductContainer existingImageUrl={product.image} initialData={initialData} loading={loading} mode="edit" onCancel={handleCancel} onCreated={onCreated} />;
+  return (
+    <>
+      <HelmetMeta description={`Edita los detalles de ${product.name}`} title={`Editar ${product.name}`} />
+      <ProductFormWrapper existingImageUrl={product.image} initialData={initialData} loading={loading} mode="edit" onCancel={handleCancel} onCreated={onCreated} />
+    </>
+  );
 };
 
 export default EditProductFlow;

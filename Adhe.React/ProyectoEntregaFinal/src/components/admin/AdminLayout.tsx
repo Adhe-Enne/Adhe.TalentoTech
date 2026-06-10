@@ -20,6 +20,9 @@ const AdminLayout: React.FC = () => {
           <NavLink className={(props) => `${styles.sidebarLink}${props.isActive ? " " + styles.active : ""}`} to="/admin/productos">
             Productos
           </NavLink>
+          <NavLink className={(props) => `${styles.sidebarLink}${props.isActive ? " " + styles.active : ""}`} to="/admin/productos/nuevo">
+            + Nuevo Producto
+          </NavLink>
           <NavLink className={(props) => `${styles.sidebarLink}${props.isActive ? " " + styles.active : ""}`} to="/admin/cupones">
             Cupones
           </NavLink>

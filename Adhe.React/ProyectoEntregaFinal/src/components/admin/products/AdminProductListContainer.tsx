@@ -1,10 +1,11 @@
 import React, { useCallback, useState } from "react";
 import { useNavigate, type NavigateFunction } from "react-router-dom";
 
-import { productService } from "../../../services/productService";
 import useNotification from "../../../hooks/useNotification";
 import useProducts from "../../../hooks/useProducts";
+import { productService } from "../../../services/productService";
 import ConfirmDialog from "../../ui/ConfirmDialog";
+import HelmetMeta from "../../ui/HelmetMeta";
 import AdminProductList from "./AdminProductList";
 
 interface DeleteTarget {
@@ -31,15 +32,14 @@ const AdminProductListContainer: React.FC = () => {
     [updateProduct, setNotification],
   );
 
-  const handleDeleteRequest: (id: string, name: string) => void = useCallback(
-    (id: string, name: string) => {
-      setDeleteTarget({ id, name });
-    },
-    [],
-  );
+  const handleDeleteRequest: (id: string, name: string) => void = useCallback((id: string, name: string) => {
+    setDeleteTarget({ id, name });
+  }, []);
 
   const handleDeleteConfirm: () => void = useCallback(async () => {
-    if (!deleteTarget) return;
+    if (!deleteTarget) {
+      return;
+    }
     setDeleting(true);
     try {
       await productService.deleteProduct(deleteTarget.id);
@@ -53,20 +53,24 @@ const AdminProductListContainer: React.FC = () => {
     }
   }, [deleteTarget, reload, setNotification]);
 
-  const handleEdit: (id: string) => void = useCallback((id: string) => {
-    navigate(`/admin/productos/${id}/editar`);
-  }, [navigate]);
+  const handleEdit: (id: string) => void = useCallback(
+    (id: string) => {
+      navigate(`/admin/productos/${id}/editar`);
+    },
+    [navigate],
+  );
 
   return (
     <>
+      <HelmetMeta description="Gestiona tus productos en Talento Tech." title="Admin | Productos" />
       <AdminProductList
         error={null}
         loading={loading}
-        products={products ?? []}
         onDelete={handleDeleteRequest}
         onEdit={handleEdit}
         onRetry={reload}
         onToggleEnabled={handleToggleEnabled}
+        products={products ?? []}
       />
       <ConfirmDialog
         confirmLabel="Eliminar"

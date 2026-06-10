@@ -1,8 +1,8 @@
 import React from "react";
 
-import type { FormMode, Fields, ProductFormPayload } from "./NewProductTypes";
+import type { FormMode, Fields, ProductFormPayload } from "./ProductFormTypes";
 
-import ProductForm from "./product-form/ProductForm";
+import ProductForm from "./ProductForm";
 
 interface Props {
   existingImageUrl?: string;

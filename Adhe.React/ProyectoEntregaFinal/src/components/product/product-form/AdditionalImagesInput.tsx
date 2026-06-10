@@ -76,7 +76,9 @@ const AdditionalImagesInput: React.FC<Props> = (props) => {
   }
 
   function removeExistingAt(i: number): void {
-    if (!existingUrls || !onExistingChange) return;
+    if (!existingUrls || !onExistingChange) {
+      return;
+    }
     onExistingChange(existingUrls.filter((_, idx) => idx !== i));
   }
 
@@ -103,18 +105,11 @@ const AdditionalImagesInput: React.FC<Props> = (props) => {
           </button>
         )}
         <div className={`${styles.additionalGrid} mt-2`} ref={scrollRef}>
-          {!hasItems && (
-            <div className="text-muted small py-3">No hay imágenes adicionales</div>
-          )}
+          {!hasItems && <div className="text-muted small py-3">No hay imágenes adicionales</div>}
           {existingUrls?.map((url, idx) => (
             <div className={styles.thumbWrap} key={`existing-${url}`}>
               <img alt={`imagen existente ${idx + 1}`} className={styles.additionalThumb} src={url} />
-              <button
-                aria-label={`Eliminar imagen existente ${idx + 1}`}
-                className={styles.thumbRemove}
-                onClick={() => removeExistingAt(idx)}
-                type="button"
-              >
+              <button aria-label={`Eliminar imagen existente ${idx + 1}`} className={styles.thumbRemove} onClick={() => removeExistingAt(idx)} type="button">
                 ×
               </button>
             </div>
@@ -122,12 +117,7 @@ const AdditionalImagesInput: React.FC<Props> = (props) => {
           {previews.map((u, idx) => (
             <div className={styles.thumbWrap} key={u}>
               <img alt={`preview-${idx}`} className={styles.additionalThumb} src={u} />
-              <button
-                aria-label={`Eliminar imagen adicional ${idx + 1}`}
-                className={styles.thumbRemove}
-                onClick={() => removeFileAt(idx)}
-                type="button"
-              >
+              <button aria-label={`Eliminar imagen adicional ${idx + 1}`} className={styles.thumbRemove} onClick={() => removeFileAt(idx)} type="button">
                 ×
               </button>
             </div>

@@ -12,7 +12,8 @@ import ProductsContext from "./ProductsContext";
 export const ProductsProvider: React.FC<ProviderProps> = (props) => {
   const { children } = props;
   const { setNotification } = useNotification();
-  const { data: products, loading, setData, reload } = useAsyncCollection(() => productService.fetchProducts());
+  const fetchAllProducts: () => Promise<Product[]> = useCallback(() => productService.fetchProducts(), []);
+  const { data: products, loading, setData, reload } = useAsyncCollection(fetchAllProducts);
 
   const enabledProducts: Product[] = useMemo(() => products.filter((p) => p.isEnabled !== false), [products]);
 
