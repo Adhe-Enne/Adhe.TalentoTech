@@ -1,71 +1,45 @@
-import React, { useState, useRef, useEffect, useCallback, useMemo } from "react";
+import React, { useCallback, useMemo, useState } from "react";
+import { toast } from "react-toastify";
 
 import type { ProviderProps } from "../../models/ProviderProps";
 import type { NotificationContextType, NotificationItem, NotificationVariant, SetNotificationFn } from "./NotificationTypes";
 
 import NotificationContext from "./NotificationContext";
 
+const variantMap: Record<NotificationVariant, "success" | "info" | "warning" | "error" | "default"> = {
+  danger: "error",
+  info: "info",
+  primary: "default",
+  secondary: "default",
+  success: "success",
+  warning: "warning",
+};
+
+let toastIdCounter = 1;
+
 export const NotificationProvider: React.FC<ProviderProps> = (props) => {
   const { children } = props;
-  const [notifs, setNotifs] = useState<NotificationItem[]>([]);
-  const idRef: React.RefObject<number> = useRef<number>(1);
-  const timersRef: React.RefObject<Map<number, number>> = useRef<Map<number, number>>(new Map());
+  const [notifs] = useState<NotificationItem[]>([]);
 
-  const clearTimer: (id: number) => void = useCallback((id: number) => {
-    const t: number | undefined = timersRef.current.get(id);
-    if (t !== undefined) {
-      globalThis.clearTimeout(t);
-      timersRef.current.delete(id);
+  const dismiss: (id?: number) => void = useCallback((id?: number) => {
+    if (id === undefined) {
+      toast.dismiss();
+    } else {
+      toast.dismiss(id);
     }
   }, []);
-
-  const dismiss: (id?: number) => void = useCallback(
-    (id?: number): void => {
-      if (id === undefined) {
-        // dismiss all
-        timersRef.current.forEach((t) => globalThis.clearTimeout(t));
-        timersRef.current.clear();
-        setNotifs([]);
-      } else {
-        clearTimer(id);
-        setNotifs((prev) => prev.filter((n) => n.id !== id));
-      }
-    },
-    [clearTimer],
-  );
-
-  const removeNotification: (id: number) => void = (id: number): void => {
-    setNotifs((prev) => prev.filter((n) => n.id !== id));
-    timersRef.current.delete(id);
-  };
 
   const setNotification: SetNotificationFn = useCallback((message: string | null, duration = 3000, variant?: NotificationVariant): void => {
     if (message === null) {
       return;
     }
-
-    const id: number = idRef.current++;
-    const item: NotificationItem = { id, message, variant };
-
-    setNotifs((prev) => [item, ...prev]);
-
-    const timer: number = globalThis.setTimeout((): void => {
-      removeNotification(id);
-    }, duration) as unknown as number;
-
-    timersRef.current.set(id, timer);
-  }, []);
-
-  function clearTimers(): void {
-    const timers: Map<number, number> = timersRef.current;
-    timers.forEach((t) => globalThis.clearTimeout(t));
-    timers.clear();
-  }
-
-  useEffect(() => {
-    return (): void => {
-      clearTimers();
-    };
+    const toastId: number = toastIdCounter++;
+    const mappedType = variant ? variantMap[variant] ?? "default" : "default";
+    toast(message, {
+      autoClose: duration,
+      toastId,
+      type: mappedType,
+    });
   }, []);
 
   const value: NotificationContextType = useMemo(() => ({ notifications: notifs, setNotification, dismiss }), [notifs, setNotification, dismiss]);

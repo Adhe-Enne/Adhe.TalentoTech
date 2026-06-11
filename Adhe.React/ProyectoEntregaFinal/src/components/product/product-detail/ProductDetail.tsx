@@ -1,5 +1,6 @@
 import React, { useCallback, useState } from "react";
 import { Badge, Button, Col, Container, Row } from "react-bootstrap";
+import { FaArrowLeft, FaShoppingCart } from "react-icons/fa";
 import { useNavigate, type NavigateFunction } from "react-router-dom";
 
 import type { Tag } from "../../../models/Tag";
@@ -109,14 +110,16 @@ const ProductDetail: React.FC<ProductDetailProps> = (props) => {
                 Sin stock
               </Button>
             ) : (
-              <button className="btn btn-cta" onClick={handleAdd}>
+              <button className="btn btn-cta btn-icon" aria-label={`Agregar ${product.name} al carrito`} onClick={handleAdd}>
+                <FaShoppingCart />
                 Añadir al carrito
               </button>
             )}
           </div>
 
           <div className="mt-3">
-            <button className="btn btn-cta" onClick={handleBack}>
+            <button className="btn btn-cta" aria-label="Volver a productos" onClick={handleBack}>
+              <FaArrowLeft className="me-1" />
               Volver
             </button>
           </div>

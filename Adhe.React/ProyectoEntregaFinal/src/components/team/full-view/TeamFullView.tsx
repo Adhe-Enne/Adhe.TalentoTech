@@ -28,10 +28,10 @@ const TeamFullView: React.FC<Props> = (props) => {
   }
 
   if (loading) {
-    return <div className={styles.loading}>Cargando equipo...</div>;
+    return <div aria-live="polite" className={styles.loading} role="status">Cargando equipo...</div>;
   }
   if (error) {
-    return <div className={styles.error}>Error: {error}</div>;
+    return <div aria-live="assertive" className={styles.error} role="alert">Error: {error}</div>;
   }
 
   return (

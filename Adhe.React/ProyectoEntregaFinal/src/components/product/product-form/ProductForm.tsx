@@ -1,4 +1,5 @@
 import React, { useCallback, useState } from "react";
+import { FaCloudUploadAlt, FaPlus } from "react-icons/fa";
 import { useNavigate, type NavigateFunction } from "react-router-dom";
 
 import type { Currency, FormMode, ProductFormPayload, Fields } from "./ProductFormTypes";
@@ -6,7 +7,6 @@ import type { Currency, FormMode, ProductFormPayload, Fields } from "./ProductFo
 import useCategories from "../../../hooks/useCategories";
 import useNotification from "../../../hooks/useNotification";
 import useTags from "../../../hooks/useTags";
-import CloudUpload from "../../icons/CloudUpload";
 import AdditionalImagesInput from "./AdditionalImagesInput";
 import CategoryCreateModal from "./CategoryCreateModal";
 import { useProductForm } from "./hooks/useProductForm";
@@ -141,6 +141,7 @@ const ProductForm: React.FC<ProductFormProps> = (props) => {
               ))}
             </select>
             <button className="btn btn-outline-secondary" onClick={() => setShowCategoryModal(true)} type="button">
+              <FaPlus className="me-1" />
               Nueva
             </button>
           </div>
@@ -208,7 +209,7 @@ const ProductForm: React.FC<ProductFormProps> = (props) => {
             {isEdit ? "Cancelar edición" : "Cancelar"}
           </button>
           <button className="btn btn-cta btn-icon" disabled={!!loading} type="submit">
-            <CloudUpload style={{ width: 18, height: 18 }} />
+            <FaCloudUploadAlt />
             {submitLabel}
           </button>
         </div>

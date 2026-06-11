@@ -1,12 +1,11 @@
 import React, { type ChangeEvent } from "react";
 import { Badge, Button, Container, ListGroup } from "react-bootstrap";
-import { FaTrash } from "react-icons/fa";
+import { FaCreditCard, FaMinus, FaPlus, FaTrash } from "react-icons/fa";
 import { Link } from "react-router-dom";
 
 import type { AppliedCoupon } from "../../contexts/Cart/CartType";
 
 import { type CartItem } from "../../models";
-import CreditCard from "../icons/CreditCard";
 import HelmetMeta from "../ui/HelmetMeta";
 
 interface CartProps {
@@ -68,17 +67,17 @@ const Cart: React.FC<CartProps> = (props) => {
                   <div className="text-muted">${it.product.price.toFixed(2)}</div>
                 </div>
                 <div className="d-flex align-items-center gap-2">
-                  <Button size="sm" variant="outline-secondary" onClick={() => onChangeQty(it.product.id, Math.max(1, it.quantity - 1))}>
-                    -
+                  <Button aria-label="Reducir cantidad" onClick={() => onChangeQty(it.product.id, Math.max(1, it.quantity - 1))} size="sm" variant="outline-secondary">
+                    <FaMinus />
                   </Button>
                   <span>{it.quantity}</span>
-                  <Button size="sm" variant="outline-secondary" onClick={() => onChangeQty(it.product.id, it.quantity + 1)}>
-                    +
+                  <Button aria-label="Aumentar cantidad" onClick={() => onChangeQty(it.product.id, it.quantity + 1)} size="sm" variant="outline-secondary">
+                    <FaPlus />
                   </Button>
                 </div>
                 <div style={{ width: 140, textAlign: "right" }}>${(it.product.price * it.quantity).toFixed(2)}</div>
                 <div>
-                  <Button size="sm" variant="danger" onClick={() => onRemove(it.product.id)}>
+                  <Button aria-label={`Eliminar ${it.product.name}`} onClick={() => onRemove(it.product.id)} size="sm" variant="danger">
                     <FaTrash />
                   </Button>
                 </div>
@@ -86,14 +85,14 @@ const Cart: React.FC<CartProps> = (props) => {
             ))}
           </ListGroup>
 
-            <div className="d-flex justify-content-between align-items-center mt-3">
-              <div>
-                <strong>Total:</strong>
-              </div>
-              <div className="text-end">
-                <strong className="d-block">${rawTotal.toFixed(2)}</strong>
-              </div>
+          <div className="d-flex justify-content-between align-items-center mt-3">
+            <div>
+              <strong>Total:</strong>
             </div>
+            <div className="text-end">
+              <strong className="d-block">${rawTotal.toFixed(2)}</strong>
+            </div>
+          </div>
         </div>
       )}
 
@@ -103,9 +102,12 @@ const Cart: React.FC<CartProps> = (props) => {
             <h5 className="card-title">Cupon de descuento</h5>
             {appliedCoupon ? (
               <div className="d-flex align-items-center gap-2">
-                <Badge bg="success" className="fs-6">{appliedCoupon.code}</Badge>
+                <Badge bg="success" className="fs-6">
+                  {appliedCoupon.code}
+                </Badge>
                 <span className="text-success">{appliedCoupon.discountValue}% de descuento</span>
-                <Button size="sm" variant="outline-danger" className="ms-auto" onClick={onRemoveCoupon}>
+                <Button aria-label="Quitar cupón" className="ms-auto" onClick={onRemoveCoupon} size="sm" variant="outline-danger">
+                  <FaTrash className="me-1" />
                   Quitar
                 </Button>
               </div>
@@ -120,7 +122,7 @@ const Cart: React.FC<CartProps> = (props) => {
                   type="text"
                   value={couponCode}
                 />
-                <Button variant="primary" disabled={isApplyingCoupon || !couponCode.trim()} onClick={onApplyCoupon}>
+                <Button aria-label="Aplicar cupón" disabled={isApplyingCoupon || !couponCode.trim()} onClick={onApplyCoupon} variant="primary">
                   {isApplyingCoupon ? "Aplicando..." : "Aplicar"}
                 </Button>
               </div>
@@ -141,7 +143,7 @@ const Cart: React.FC<CartProps> = (props) => {
       {items.length > 0 && (
         <div className="mt-2">
           <button className="btn btn-cta btn-icon w-100" onClick={onPurchase}>
-            <CreditCard style={{ width: 18, height: 18 }} />
+            <FaCreditCard />
             Proceder al pago
           </button>
         </div>
@@ -149,7 +151,7 @@ const Cart: React.FC<CartProps> = (props) => {
 
       <div className="mt-3">
         {onBack && (
-          <Button variant="secondary" onClick={onBack}>
+          <Button onClick={onBack} variant="secondary">
             Volver
           </Button>
         )}

@@ -39,7 +39,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = (props) => {
       <h3 className="mb-4">Dashboard</h3>
       <Row className="g-3">
         {metrics.map((m) => (
-          <Col xs={12} sm={6} lg={3} key={m.label}>
+          <Col key={m.label} lg={3} sm={6} xs={12}>
             <div className="card h-100 shadow-sm" style={{ borderRadius: 12 }}>
               <div className="card-body d-flex align-items-center gap-3 p-3">
                 <div

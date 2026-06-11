@@ -75,7 +75,7 @@ const Register: React.FC<RegisterProps> = (props) => {
                 />
               </div>
               {error && <Alert variant="danger" className="py-2 small">{error}</Alert>}
-<Button variant="primary" className="w-100" disabled={loading} type="submit">
+<Button aria-label="Crear cuenta" variant="primary" className="w-100" disabled={loading} type="submit">
               {loading ? "Creando cuenta..." : "Crear cuenta"}
             </Button>
             </form>

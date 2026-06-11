@@ -32,7 +32,7 @@ const CouponList: React.FC<CouponListProps> = (props) => {
     return (
       <Alert variant="danger" className="d-flex align-items-center gap-2">
         <span>{error}</span>
-        <Button size="sm" variant="outline-danger" className="ms-auto" onClick={onRetry}>
+        <Button aria-label="Reintentar carga de cupones" size="sm" variant="outline-danger" className="ms-auto" onClick={onRetry}>
           Reintentar
         </Button>
       </Alert>

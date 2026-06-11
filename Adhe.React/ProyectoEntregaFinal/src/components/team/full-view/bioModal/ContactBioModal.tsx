@@ -47,12 +47,12 @@ const ContactBioModal: React.FC<Props> = (props) => {
           {person.bio ? <p>{person.bio}</p> : <p className={modalStyles.smallMeta}>Sin biografía disponible.</p>}
           <div className={modalStyles.modalLinks}>
             {person.email && (
-              <a className="btn btn-ghost btn-sm" href={`mailto:${person.email}`}>
+              <a aria-label={`Email de ${person.name}`} className="btn btn-ghost btn-sm" href={`mailto:${person.email}`}>
                 Email
               </a>
             )}
             {person.linkedin && (
-              <a className="btn btn-outline-primary btn-sm" href={person.linkedin} rel="noopener noreferrer" target="_blank">
+              <a aria-label={`LinkedIn de ${person.name}`} className="btn btn-outline-primary btn-sm" href={person.linkedin} rel="noopener noreferrer" target="_blank">
                 LinkedIn
               </a>
             )}

@@ -13,20 +13,20 @@ const AdminLayout: React.FC = () => {
         </NavLink>
       </header>
       <div className={styles.adminBody}>
-        <nav aria-label="Panel de administración" className={styles.sidebar}>
-          <NavLink className={(props) => `${styles.sidebarLink}${props.isActive ? " " + styles.active : ""}`} end to="/admin">
-            Dashboard
-          </NavLink>
-          <NavLink className={(props) => `${styles.sidebarLink}${props.isActive ? " " + styles.active : ""}`} to="/admin/productos">
-            Productos
-          </NavLink>
-          <NavLink className={(props) => `${styles.sidebarLink}${props.isActive ? " " + styles.active : ""}`} to="/admin/productos/nuevo">
-            + Nuevo Producto
-          </NavLink>
-          <NavLink className={(props) => `${styles.sidebarLink}${props.isActive ? " " + styles.active : ""}`} to="/admin/cupones">
-            Cupones
-          </NavLink>
-        </nav>
+          <nav aria-label="Panel de administración" className={styles.sidebar}>
+            <NavLink aria-label="Dashboard" className={(props) => `${styles.sidebarLink}${props.isActive ? " " + styles.active : ""}`} end to="/admin">
+              Dashboard
+            </NavLink>
+            <NavLink aria-label="Productos" className={(props) => `${styles.sidebarLink}${props.isActive ? " " + styles.active : ""}`} to="/admin/productos">
+              Productos
+            </NavLink>
+            <NavLink aria-label="Nuevo Producto" className={(props) => `${styles.sidebarLink}${props.isActive ? " " + styles.active : ""}`} to="/admin/productos/nuevo">
+              + Nuevo Producto
+            </NavLink>
+            <NavLink aria-label="Cupones" className={(props) => `${styles.sidebarLink}${props.isActive ? " " + styles.active : ""}`} to="/admin/cupones">
+              Cupones
+            </NavLink>
+          </nav>
         <main className={styles.content}>
           <Outlet />
         </main>

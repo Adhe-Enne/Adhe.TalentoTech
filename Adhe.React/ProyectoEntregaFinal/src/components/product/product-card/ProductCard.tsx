@@ -1,10 +1,10 @@
 import React from "react";
+import { FaCartPlus } from "react-icons/fa";
 
 import type { Product } from "../../../models";
 
 import useFavorites from "../../../hooks/useFavorites";
 import useIsFavorite from "../../../hooks/useIsFavorite";
-import Plus from "../../icons/Plus";
 import QuantityStepper from "../../ui/QuantityStepper";
 import styles from "./ProductCard.module.css";
 
@@ -70,7 +70,7 @@ const ProductCard: React.FC<ProductCardProps> = (props) => {
 
           {!outOfStock && !inCart && onAddToCart && (
             <button className={`btn btn-primary btn-sm ${styles.btnPrimary} btn-icon`} onClick={() => onAddToCart(product)}>
-              <Plus style={{ width: 16, height: 16 }} />
+              <FaCartPlus />
               Añadir
             </button>
           )}

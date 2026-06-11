@@ -76,10 +76,11 @@ const CategoryCreateModal: React.FC<CategoryCreateModalProps> = (props) => {
             <input className="form-control" disabled={isCreating} id="new-category-slug" onChange={(e) => setSlug(e.target.value)} value={slug} />
           </div>
           <div className="d-flex justify-content-end gap-2">
-            <button className="btn btn-secondary" disabled={isCreating} onClick={onClose} type="button">
+            <button aria-label="Cancelar creación de categoría" className="btn btn-secondary" disabled={isCreating} onClick={onClose} type="button">
               Cancelar
             </button>
             <button
+              aria-label="Crear categoría"
               className="btn btn-primary"
               disabled={isCreating}
               onClick={async () => {

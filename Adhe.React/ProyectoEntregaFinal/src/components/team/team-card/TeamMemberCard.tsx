@@ -25,7 +25,7 @@ const TeamMemberCard: React.FC<TeamMemberCardProps> = (props) => {
           )}
           {linkedin && (
             <div>
-              <a className={styles.email} href={linkedin} rel="noopener noreferrer" target="_blank">
+              <a aria-label={`LinkedIn de ${nombre}`} className={styles.email} href={linkedin} rel="noopener noreferrer" target="_blank">
                 Perfil LinkedIn
               </a>
             </div>

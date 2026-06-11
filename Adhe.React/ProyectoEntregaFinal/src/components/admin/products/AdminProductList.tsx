@@ -21,25 +21,26 @@ const AdminProductList: React.FC<AdminProductListProps> = (props) => {
   const { products, loading, error, onDelete, onToggleEnabled, onEdit, onRetry } = props;
   const [search, setSearch] = useState("");
 
-  const filtered: Product[] = useMemo(
-    () => products.filter((p) => p.name?.toLowerCase().includes(search.toLowerCase())),
-    [products, search],
-  );
+  const filtered: Product[] = useMemo(() => products.filter((p) => p.name?.toLowerCase().includes(search.toLowerCase())), [products, search]);
 
   if (loading) {
     return (
       <div aria-busy="true" className="d-flex justify-content-center py-5">
         <Spinner animation="border" aria-hidden="true" />
-        <output aria-live="polite" className="visually-hidden">Cargando productos...</output>
+        <output aria-live="polite" className="visually-hidden">
+          Cargando productos...
+        </output>
       </div>
     );
   }
 
   if (error) {
     return (
-      <Alert variant="danger" className="d-flex align-items-center gap-2">
+      <Alert className="d-flex align-items-center gap-2" variant="danger">
         <span>{error}</span>
-        <Button size="sm" variant="outline-danger" className="ms-auto" onClick={onRetry}>Reintentar</Button>
+        <Button className="ms-auto" onClick={onRetry} size="sm" variant="outline-danger">
+          Reintentar
+        </Button>
       </Alert>
     );
   }
@@ -53,6 +54,7 @@ const AdminProductList: React.FC<AdminProductListProps> = (props) => {
             + Nuevo producto
           </Link>
           <input
+          aria-label="Buscar productos por nombre"
           className="form-control form-control-sm"
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Buscar por nombre..."
@@ -63,12 +65,12 @@ const AdminProductList: React.FC<AdminProductListProps> = (props) => {
       </div>
 
       {filtered.length === 0 ? (
-        <Alert variant="info" className="text-center py-4">
+        <Alert className="text-center py-4" variant="info">
           {search ? "No se encontraron productos con ese nombre." : "No hay productos disponibles."}
         </Alert>
       ) : (
         <div className="table-responsive">
-          <Table hover className="align-middle">
+          <Table className="align-middle" hover>
             <thead>
               <tr>
                 <th style={{ width: 56 }}></th>
@@ -84,12 +86,7 @@ const AdminProductList: React.FC<AdminProductListProps> = (props) => {
               {filtered.map((p) => (
                 <tr className={adminStyles.productRow} key={p.id}>
                   <td>
-                    <img
-                      alt={p.name}
-                      className="rounded"
-                      src={p.image}
-                      style={{ width: 48, height: 48, objectFit: "cover", borderRadius: 8 }}
-                    />
+                    <img alt={p.name} className="rounded" src={p.image} style={{ width: 48, height: 48, objectFit: "cover", borderRadius: 8 }} />
                   </td>
                   <td className="fw-semibold">{p.name}</td>
                   <td className="text-primary fw-bold">${p.price.toFixed(2)}</td>
@@ -106,11 +103,11 @@ const AdminProductList: React.FC<AdminProductListProps> = (props) => {
                   </td>
                   <td>
                     <div className="d-flex gap-1">
-                      <Button size="sm" variant="outline-primary" aria-label={`Editar ${p.name}`} onClick={() => onEdit(p.id)}>
+                      <Button aria-label={`Editar ${p.name}`} onClick={() => onEdit(p.id)} size="sm" variant="outline-primary">
                         <FaEdit className="me-1" />
                         Editar
                       </Button>
-                      <Button size="sm" variant="outline-danger" aria-label={`Eliminar ${p.name}`} onClick={() => onDelete(p.id, p.name)}>
+                      <Button aria-label={`Eliminar ${p.name}`} onClick={() => onDelete(p.id, p.name)} size="sm" variant="outline-danger">
                         <FaTrash className="me-1" />
                         Eliminar
                       </Button>

@@ -1,5 +1,6 @@
 import React from "react";
 import { Badge, Button } from "react-bootstrap";
+import { FaTrash } from "react-icons/fa";
 
 import type { Coupon } from "../../../models";
 
@@ -78,6 +79,7 @@ const CouponItem: React.FC<CouponItemProps> = (props) => {
       </td>
       <td>
         <Button size="sm" variant="outline-danger" aria-label={`Eliminar cupon ${coupon.code}`} onClick={() => onDelete(coupon.id)}>
+          <FaTrash className="me-1" />
           Eliminar
         </Button>
       </td>

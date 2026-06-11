@@ -40,10 +40,10 @@ const ContactPage: React.FC<ContactPageProps> = (props) => {
                 <textarea className="form-control" id="message" onChange={(e) => onMessageChange(e.target.value)} rows={4} value={message} />
               </div>
               <div className="d-flex gap-2">
-                <button className="btn btn-cta" type="submit">
+                <button aria-label="Enviar mensaje" className="btn btn-cta" type="submit">
                   Enviar
                 </button>
-                <a className="btn btn-ghost" href="mailto:soporte@example.com">
+                <a aria-label="Enviar email a soporte" className="btn btn-ghost" href="mailto:soporte@example.com">
                   Contacto por email
                 </a>
               </div>

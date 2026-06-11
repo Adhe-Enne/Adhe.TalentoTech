@@ -35,10 +35,10 @@ const Profile: React.FC<ProfileProps> = (props) => {
           <hr />
 
           <div className="d-flex flex-column gap-2">
-            <Button variant="outline-danger" disabled={loggingOut} onClick={onConfirmOpen}>
+            <Button aria-label="Cerrar sesión" variant="outline-danger" disabled={loggingOut} onClick={onConfirmOpen}>
               {loggingOut ? "Cerrando sesión..." : "Cerrar sesión"}
             </Button>
-            <Button variant="outline-secondary" onClick={onNavigateHome}>
+            <Button aria-label="Volver al inicio" variant="outline-secondary" onClick={onNavigateHome}>
               Volver al inicio
             </Button>
           </div>

@@ -14,8 +14,8 @@ import ProtectedRoute from "./auth/ProtectedRoute";
 import CartContainer from "./cart/CartContainer";
 import HomeContainer from "./home/HomeContainer";
 import Layout from "./layout/Layout";
-import NotificationStack from "./ui/NotificationStack";
 import HelmetMeta from "./ui/HelmetMeta";
+import NotificationStack from "./ui/NotificationStack";
 
 const AdminLayout: React.LazyExoticComponent<React.ComponentType> = lazy(() => import("./admin/AdminLayout"));
 const AdminDashboardContainer: React.LazyExoticComponent<React.ComponentType> = lazy(() => import("./admin/AdminDashboardContainer"));

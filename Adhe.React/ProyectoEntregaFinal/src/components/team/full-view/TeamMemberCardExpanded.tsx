@@ -27,12 +27,12 @@ const TeamMemberCardExpanded: React.FC<TeamMemberCardExpandedProps> = (props) =>
 
           <div className={styles.links}>
             {email && (
-              <a className="btn btn-ghost btn-sm" href={`mailto:${email}`}>
+              <a aria-label={`Email de ${name}`} className="btn btn-ghost btn-sm" href={`mailto:${email}`}>
                 Email
               </a>
             )}
             {linkedin && (
-              <a className="btn btn-outline-primary btn-sm" href={linkedin} rel="noopener noreferrer" target="_blank">
+              <a aria-label={`LinkedIn de ${name}`} className="btn btn-outline-primary btn-sm" href={linkedin} rel="noopener noreferrer" target="_blank">
                 LinkedIn
               </a>
             )}

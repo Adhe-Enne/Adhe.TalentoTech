@@ -72,7 +72,7 @@ const Login: React.FC<LoginProps> = (props) => {
               />
             </div>
             {error && <Alert variant="danger" className="py-2 small">{error}</Alert>}
-            <Button variant="primary" className="w-100" disabled={loading} type="submit">
+            <Button aria-label="Iniciar sesión" variant="primary" className="w-100" disabled={loading} type="submit">
               {loading && <Spinner animation="border" size="sm" className="me-2" />}
               {loading ? "Ingresando..." : "Ingresar"}
             </Button>

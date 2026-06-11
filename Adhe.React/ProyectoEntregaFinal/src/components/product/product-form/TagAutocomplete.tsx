@@ -93,7 +93,7 @@ const TagAutocomplete: React.FC<TagAutocompleteProps> = (props) => {
         {selectedTags.map((t: string) => (
           <span className="badge bg-secondary me-1" key={t}>
             {t}{" "}
-            <button className="btn btn-sm btn-link text-white ms-1" onClick={() => onRemove(t)} type="button">
+            <button aria-label={`Eliminar tag ${t}`} className="btn btn-sm btn-link text-white ms-1" onClick={() => onRemove(t)} type="button">
               ×
             </button>
           </span>

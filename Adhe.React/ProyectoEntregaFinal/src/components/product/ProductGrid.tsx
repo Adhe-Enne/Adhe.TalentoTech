@@ -15,7 +15,7 @@ const ProductGrid: React.FC<ProductGridProps> = (props) => {
     <Container>
       <Row className="g-3 product-grid-row">
         {products.map((p) => (
-          <Col key={p.id} xs={12} sm={6} md={4} lg={3}>
+          <Col key={p.id} lg={3} md={4} sm={6} xs={12}>
             <ProductCardContainer product={p} />
           </Col>
         ))}

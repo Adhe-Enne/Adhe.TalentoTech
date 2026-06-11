@@ -33,21 +33,23 @@ const Home: React.FC<HomeProps> = (props) => {
 
   const renderProductList: () => JSX.Element = () => {
     if (products.length === 0) {
-      const message: string = hasLocalFilter
-        ? `No se encontraron productos para "${localQ}".`
-        : (emptyMessage ?? "No hay productos disponibles.");
+      const message: string = hasLocalFilter ? `No se encontraron productos para "${localQ}".` : (emptyMessage ?? "No hay productos disponibles.");
       return (
-        <Alert variant="info" className="d-flex align-items-center gap-2">
+        <Alert className="d-flex align-items-center gap-2" variant="info">
           <span>{message}</span>
           {hasLocalFilter && (
-            <Button size="sm" variant="outline-secondary" className="ms-auto" onClick={() => onLocalQChange?.("")}>
+            <Button className="ms-auto" onClick={() => onLocalQChange?.("")} size="sm" variant="outline-secondary">
               Limpiar filtro
             </Button>
           )}
         </Alert>
       );
     }
-    return <div className={styles.fadeIn}><ProductGrid products={products} /></div>;
+    return (
+      <div className={styles.fadeIn}>
+        <ProductGrid products={products} />
+      </div>
+    );
   };
 
   return (
@@ -77,7 +79,7 @@ const Home: React.FC<HomeProps> = (props) => {
                   value={localQ}
                 />
                 {hasLocalFilter && (
-                  <Button variant="outline-secondary" onClick={() => onLocalQChange?.("")}>
+                  <Button onClick={() => onLocalQChange?.("")} variant="outline-secondary">
                     Limpiar
                   </Button>
                 )}
@@ -94,14 +96,14 @@ const Home: React.FC<HomeProps> = (props) => {
           {showLoadMore && (
             <div className="d-flex justify-content-center gap-2 mt-4">
               {showReset && (
-                <Button variant="outline-secondary" onClick={() => onReload?.()}>
+                <Button onClick={() => onReload?.()} variant="outline-secondary">
                   Ver menos
                 </Button>
               )}
-              <Button variant="primary" disabled={loadingMore} onClick={() => onLoadMore?.()}>
+              <Button disabled={loadingMore} onClick={() => onLoadMore?.()} variant="primary">
                 {loadingMore ? (
                   <>
-                    <Spinner animation="border" size="sm" aria-hidden="true" className="me-2" />
+                    <Spinner animation="border" aria-hidden="true" className="me-2" size="sm" />
                     Cargando...
                   </>
                 ) : (

@@ -55,7 +55,7 @@ const CouponForm: React.FC<CouponFormProps> = (props) => {
             {errors.discount && <div className="invalid-feedback">{errors.discount}</div>}
           </div>
           <div className="col-12 col-sm-3 d-flex align-items-end">
-            <Button variant="primary" className="w-100" disabled={submitting} type="submit">
+            <Button aria-label="Crear cupón" variant="primary" className="w-100" disabled={submitting} type="submit">
               {submitting ? <Spinner animation="border" size="sm" /> : "Crear cupon"}
             </Button>
           </div>
