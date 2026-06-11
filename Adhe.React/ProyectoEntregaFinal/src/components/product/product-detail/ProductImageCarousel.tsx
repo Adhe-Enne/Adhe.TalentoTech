@@ -1,4 +1,5 @@
 import React, { useState, useCallback } from "react";
+import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 
 import styles from "./ProductImageCarousel.module.css";
 
@@ -23,10 +24,10 @@ const ProductImageCarousel: React.FC<Props> = (props) => {
       {imgs.length > 1 && (
         <div className={styles.controls}>
           <button aria-label="Anterior" className={styles.btn} onClick={prev}>
-            ‹
+            <FaChevronLeft aria-hidden="true" />
           </button>
           <button aria-label="Siguiente" className={styles.btn} onClick={next}>
-            ›
+            <FaChevronRight aria-hidden="true" />
           </button>
         </div>
       )}

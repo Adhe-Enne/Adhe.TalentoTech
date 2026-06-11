@@ -1,4 +1,5 @@
 import React from "react";
+import { FaCloudUploadAlt, FaTimes } from "react-icons/fa";
 
 import type { ImagePreviewProps } from "./ProductFormTypes";
 
@@ -12,15 +13,16 @@ const ProductImagePreview: React.FC<ImagePreviewProps> = (props) => {
         <>
           <img alt="preview" className={styles.mainImage} src={url} />
           <button aria-label="Eliminar imagen principal" className={styles.imageRemove} onClick={onClear} type="button">
-            ×
+            <FaTimes aria-hidden="true" />
           </button>
         </>
       ) : (
         <div className={styles.placeholder}>Previsualización de imagen</div>
       )}
       <div className={styles.uploadGroup}>
-        <label className={`btn btn-sm btn-outline-primary ${styles.uploadLabel}`}>
-          <span>Seleccionar</span>
+        <label aria-label="Seleccionar imagen del producto" className={`btn btn-sm btn-outline-primary ${styles.uploadLabel}`}>
+          <FaCloudUploadAlt aria-hidden="true" className="me-1" />
+          Seleccionar
           <input accept="image/*" className={styles.hiddenInput} onChange={(e) => onFileChange(e.target.files?.[0] ?? null)} type="file" />
         </label>
       </div>

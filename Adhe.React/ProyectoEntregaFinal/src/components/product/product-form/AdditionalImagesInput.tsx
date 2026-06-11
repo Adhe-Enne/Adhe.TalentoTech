@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState, useCallback } from "react";
+import { FaChevronLeft, FaChevronRight, FaTimes } from "react-icons/fa";
 
 import styles from "./Product.module.css";
 
@@ -101,7 +102,7 @@ const AdditionalImagesInput: React.FC<Props> = (props) => {
       <div className={styles.thumbScrollWrap}>
         {canScrollLeft && (
           <button aria-label="Desplazar izquierda" className={`${styles.scrollBtn} ${styles.left}`} onClick={() => scrollByOffset(-240)} type="button">
-            ‹
+            <FaChevronLeft aria-hidden="true" />
           </button>
         )}
         <div className={`${styles.additionalGrid} mt-2`} ref={scrollRef}>
@@ -110,7 +111,7 @@ const AdditionalImagesInput: React.FC<Props> = (props) => {
             <div className={styles.thumbWrap} key={`existing-${url}`}>
               <img alt={`imagen existente ${idx + 1}`} className={styles.additionalThumb} src={url} />
               <button aria-label={`Eliminar imagen existente ${idx + 1}`} className={styles.thumbRemove} onClick={() => removeExistingAt(idx)} type="button">
-                ×
+                <FaTimes aria-hidden="true" />
               </button>
             </div>
           ))}
@@ -118,14 +119,14 @@ const AdditionalImagesInput: React.FC<Props> = (props) => {
             <div className={styles.thumbWrap} key={u}>
               <img alt={`preview-${idx}`} className={styles.additionalThumb} src={u} />
               <button aria-label={`Eliminar imagen adicional ${idx + 1}`} className={styles.thumbRemove} onClick={() => removeFileAt(idx)} type="button">
-                ×
+                <FaTimes aria-hidden="true" />
               </button>
             </div>
           ))}
         </div>
         {canScrollRight && (
           <button aria-label="Desplazar derecha" className={`${styles.scrollBtn} ${styles.right}`} onClick={() => scrollByOffset(240)} type="button">
-            ›
+            <FaChevronRight aria-hidden="true" />
           </button>
         )}
       </div>

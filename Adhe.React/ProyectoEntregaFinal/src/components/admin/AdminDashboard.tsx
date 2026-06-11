@@ -1,5 +1,6 @@
 import React from "react";
 import { Col, Row, Spinner } from "react-bootstrap";
+import { FaBox, FaCheckCircle, FaTag } from "react-icons/fa";
 import { Link } from "react-router-dom";
 
 import HelmetMeta from "../ui/HelmetMeta";
@@ -26,11 +27,11 @@ const AdminDashboard: React.FC<AdminDashboardProps> = (props) => {
     );
   }
 
-  const metrics: { label: string; value: number; icon: string; link?: string }[] = [
-    { label: "Total Productos", value: totalProducts, icon: "\u{1F4E6}", link: "/admin/productos" },
-    { label: "Productos Activos", value: activeProducts, icon: "\u2705" },
-    { label: "Total Cupones", value: totalCoupons, icon: "\u{1F3F7}\uFE0F", link: "/admin/cupones" },
-    { label: "Cupones Activos", value: activeCoupons, icon: "\u2705" },
+  const metrics: { label: string; value: number; icon: React.ReactNode; link?: string }[] = [
+    { label: "Total Productos", value: totalProducts, icon: <FaBox />, link: "/admin/productos" },
+    { label: "Productos Activos", value: activeProducts, icon: <FaCheckCircle /> },
+    { label: "Total Cupones", value: totalCoupons, icon: <FaTag />, link: "/admin/cupones" },
+    { label: "Cupones Activos", value: activeCoupons, icon: <FaCheckCircle /> },
   ];
 
   return (
@@ -53,7 +54,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = (props) => {
                   <div style={{ fontSize: "0.85rem", color: "#6c757d", marginTop: 2 }}>{m.label}</div>
                 </div>
               </div>
-              {m.link && <Link className="stretched-link" to={m.link} />}
+              {m.link && <Link aria-label={`Ir a ${m.label}`} className="stretched-link" to={m.link} />}
             </div>
           </Col>
         ))}

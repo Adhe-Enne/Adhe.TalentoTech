@@ -1,5 +1,6 @@
 import React from "react";
 import { Button, Spinner } from "react-bootstrap";
+import { FaPlus } from "react-icons/fa";
 
 interface CouponFormProps {
   code: string;
@@ -55,8 +56,15 @@ const CouponForm: React.FC<CouponFormProps> = (props) => {
             {errors.discount && <div className="invalid-feedback">{errors.discount}</div>}
           </div>
           <div className="col-12 col-sm-3 d-flex align-items-end">
-            <Button aria-label="Crear cupón" variant="primary" className="w-100" disabled={submitting} type="submit">
-              {submitting ? <Spinner animation="border" size="sm" /> : "Crear cupon"}
+            <Button aria-label="Crear cupón" className="w-100" disabled={submitting} type="submit" variant="primary">
+              {submitting ? (
+                <Spinner animation="border" size="sm" />
+              ) : (
+                <>
+                  <FaPlus aria-hidden="true" className="me-1" />
+                  Crear cupon
+                </>
+              )}
             </Button>
           </div>
         </div>

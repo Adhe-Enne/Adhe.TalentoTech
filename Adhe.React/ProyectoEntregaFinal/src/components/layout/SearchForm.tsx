@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { FaSearch } from "react-icons/fa";
 import { useNavigate, type NavigateFunction } from "react-router-dom";
 
 import { buildProductsUrl } from "./hooks/buildProductsUrl";
@@ -74,9 +75,7 @@ const SearchForm: React.FC<SearchFormProps> = (props) => {
         }}
         type="submit"
       >
-        <svg aria-hidden className="nav-icon" fill="currentColor" height="20" viewBox="0 0 24 24" width="20">
-          <path d="M10 2a8 8 0 1 0 4.9 14.32l4.38 4.38 1.41-1.41-4.38-4.38A8 8 0 0 0 10 2zm0 2a6 6 0 1 1 0 12 6 6 0 0 1 0-12z" />
-        </svg>
+        <FaSearch aria-hidden="true" className="nav-icon" />
       </button>
     </form>
   );

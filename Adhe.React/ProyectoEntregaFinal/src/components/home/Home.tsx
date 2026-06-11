@@ -1,6 +1,6 @@
 import React, { type JSX } from "react";
 import { Alert, Button, Container, InputGroup, Spinner } from "react-bootstrap";
-import { FaSearch } from "react-icons/fa";
+import { FaChevronUp, FaSearch, FaTimes } from "react-icons/fa";
 
 import type { Product } from "../../models";
 
@@ -38,7 +38,8 @@ const Home: React.FC<HomeProps> = (props) => {
         <Alert className="d-flex align-items-center gap-2" variant="info">
           <span>{message}</span>
           {hasLocalFilter && (
-            <Button className="ms-auto" onClick={() => onLocalQChange?.("")} size="sm" variant="outline-secondary">
+            <Button aria-label="Limpiar filtro de búsqueda" className="ms-auto" onClick={() => onLocalQChange?.("")} size="sm" variant="outline-secondary">
+              <FaTimes aria-hidden="true" className="me-1" />
               Limpiar filtro
             </Button>
           )}
@@ -79,7 +80,8 @@ const Home: React.FC<HomeProps> = (props) => {
                   value={localQ}
                 />
                 {hasLocalFilter && (
-                  <Button onClick={() => onLocalQChange?.("")} variant="outline-secondary">
+                  <Button aria-label="Limpiar filtro local" onClick={() => onLocalQChange?.("")} variant="outline-secondary">
+                    <FaTimes aria-hidden="true" className="me-1" />
                     Limpiar
                   </Button>
                 )}
@@ -96,11 +98,12 @@ const Home: React.FC<HomeProps> = (props) => {
           {showLoadMore && (
             <div className="d-flex justify-content-center gap-2 mt-4">
               {showReset && (
-                <Button onClick={() => onReload?.()} variant="outline-secondary">
+                <Button aria-label="Ver menos productos" onClick={() => onReload?.()} variant="outline-secondary">
+                  <FaChevronUp aria-hidden="true" className="me-1" />
                   Ver menos
                 </Button>
               )}
-              <Button disabled={loadingMore} onClick={() => onLoadMore?.()} variant="primary">
+              <Button aria-label="Cargar más productos" disabled={loadingMore} onClick={() => onLoadMore?.()} variant="primary">
                 {loadingMore ? (
                   <>
                     <Spinner animation="border" aria-hidden="true" className="me-2" size="sm" />

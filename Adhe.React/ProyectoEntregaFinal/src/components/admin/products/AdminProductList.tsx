@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from "react";
 import { Alert, Button, Spinner, Table } from "react-bootstrap";
-import { FaEdit, FaTrash } from "react-icons/fa";
+import { FaEdit, FaPlus, FaTrash } from "react-icons/fa";
 import { Link } from "react-router-dom";
 
 import type { Product } from "../../../models";
@@ -50,8 +50,9 @@ const AdminProductList: React.FC<AdminProductListProps> = (props) => {
       <div className="d-flex justify-content-between align-items-center mb-3">
         <h3 className="mb-0">Productos</h3>
         <div className="d-flex gap-2 align-items-center">
-          <Link className="btn btn-success btn-sm" to="/admin/productos/nuevo">
-            + Nuevo producto
+          <Link aria-label="Crear nuevo producto" className="btn btn-success btn-sm" to="/admin/productos/nuevo">
+            <FaPlus aria-hidden="true" className="me-1" />
+            Nuevo producto
           </Link>
           <input
           aria-label="Buscar productos por nombre"

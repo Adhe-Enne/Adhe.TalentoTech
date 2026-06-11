@@ -1,4 +1,5 @@
 import React from "react";
+import { FaMinus, FaPlus } from "react-icons/fa";
 
 interface QuantityStepperProps {
   max: number;
@@ -28,7 +29,7 @@ const QuantityStepper: React.FC<QuantityStepperProps> = (props) => {
         style={{ minWidth: 44, minHeight: 44, borderTopRightRadius: 0, borderBottomRightRadius: 0 }}
         type="button"
       >
-        −
+        <FaMinus aria-hidden="true" />
       </button>
       <span
         aria-live="polite"
@@ -54,7 +55,7 @@ const QuantityStepper: React.FC<QuantityStepperProps> = (props) => {
         style={{ minWidth: 44, minHeight: 44, borderTopLeftRadius: 0, borderBottomLeftRadius: 0 }}
         type="button"
       >
-        +
+        <FaPlus aria-hidden="true" />
       </button>
     </fieldset>
   );

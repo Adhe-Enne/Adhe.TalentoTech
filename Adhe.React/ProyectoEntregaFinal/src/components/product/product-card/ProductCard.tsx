@@ -1,5 +1,5 @@
 import React from "react";
-import { FaCartPlus } from "react-icons/fa";
+import { FaCartPlus, FaEye, FaHeart, FaRegHeart } from "react-icons/fa";
 
 import type { Product } from "../../../models";
 
@@ -47,7 +47,7 @@ const ProductCard: React.FC<ProductCardProps> = (props) => {
           title={fav ? "Eliminar favorito" : "Marcar favorito"}
           type="button"
         >
-          <span aria-hidden="true">{fav ? "♥" : "♡"}</span>
+          {fav ? <FaHeart aria-hidden="true" /> : <FaRegHeart aria-hidden="true" />}
         </button>
       </div>
 
@@ -63,13 +63,14 @@ const ProductCard: React.FC<ProductCardProps> = (props) => {
 
         <div className={`d-flex gap-2 ${styles.actions}`}>
           {onClick && (
-            <button className={`btn btn-outline-primary btn-sm ${styles.btnOutline}`} onClick={() => onClick(product)}>
+            <button aria-label={`Ver detalle de ${product.name}`} className={`btn btn-outline-primary btn-sm ${styles.btnOutline}`} onClick={() => onClick(product)}>
+              <FaEye aria-hidden="true" className="me-1" />
               Ver detalle
             </button>
           )}
 
           {!outOfStock && !inCart && onAddToCart && (
-            <button className={`btn btn-primary btn-sm ${styles.btnPrimary} btn-icon`} onClick={() => onAddToCart(product)}>
+            <button aria-label={`Agregar ${product.name} al carrito`} className={`btn btn-primary btn-sm ${styles.btnPrimary} btn-icon`} onClick={() => onAddToCart(product)}>
               <FaCartPlus />
               Añadir
             </button>

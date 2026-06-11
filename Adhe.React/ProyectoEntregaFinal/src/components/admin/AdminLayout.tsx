@@ -1,4 +1,5 @@
 import React from "react";
+import { FaArrowLeft, FaBox, FaPlus, FaTachometerAlt, FaTicketAlt } from "react-icons/fa";
 import { NavLink, Outlet } from "react-router-dom";
 
 import styles from "./AdminLayout.module.css";
@@ -8,22 +9,27 @@ const AdminLayout: React.FC = () => {
     <div className={styles.adminLayout}>
       <header className={styles.adminHeader}>
         <h2 className={styles.adminTitle}>Panel de Administración</h2>
-        <NavLink className="btn btn-sm btn-outline-light" end to="/">
+        <NavLink aria-label="Volver a la tienda" className="btn btn-sm btn-outline-light" end to="/">
+          <FaArrowLeft aria-hidden="true" className="me-1" />
           Volver a tienda
         </NavLink>
       </header>
       <div className={styles.adminBody}>
           <nav aria-label="Panel de administración" className={styles.sidebar}>
             <NavLink aria-label="Dashboard" className={(props) => `${styles.sidebarLink}${props.isActive ? " " + styles.active : ""}`} end to="/admin">
+              <FaTachometerAlt aria-hidden="true" className="me-1" />
               Dashboard
             </NavLink>
             <NavLink aria-label="Productos" className={(props) => `${styles.sidebarLink}${props.isActive ? " " + styles.active : ""}`} to="/admin/productos">
+              <FaBox aria-hidden="true" className="me-1" />
               Productos
             </NavLink>
             <NavLink aria-label="Nuevo Producto" className={(props) => `${styles.sidebarLink}${props.isActive ? " " + styles.active : ""}`} to="/admin/productos/nuevo">
-              + Nuevo Producto
+              <FaPlus aria-hidden="true" className="me-1" />
+              Nuevo Producto
             </NavLink>
             <NavLink aria-label="Cupones" className={(props) => `${styles.sidebarLink}${props.isActive ? " " + styles.active : ""}`} to="/admin/cupones">
+              <FaTicketAlt aria-hidden="true" className="me-1" />
               Cupones
             </NavLink>
           </nav>
