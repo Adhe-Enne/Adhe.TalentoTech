@@ -30,15 +30,17 @@ const Profile: React.FC<ProfileProps> = (props) => {
             <span className="text-white fs-2 fw-bold">{user?.email?.charAt(0).toUpperCase() ?? "?"}</span>
           </div>
           <h4 className="mb-1">{user?.email ?? "Sin sesión"}</h4>
-          <Badge bg={user?.rol === "admin" ? "warning" : "secondary"} className={user?.rol === "admin" ? "text-dark mb-3" : "mb-3"}>{roleLabel}</Badge>
+          <Badge bg={user?.rol === "admin" ? "warning" : "secondary"} className={user?.rol === "admin" ? "text-dark mb-3" : "mb-3"}>
+            {roleLabel}
+          </Badge>
 
           <hr />
 
           <div className="d-flex flex-column gap-2">
-            <Button aria-label="Cerrar sesión" variant="outline-danger" disabled={loggingOut} onClick={onConfirmOpen}>
+            <Button aria-label="Cerrar sesión" disabled={loggingOut} onClick={onConfirmOpen} variant="outline-danger">
               {loggingOut ? "Cerrando sesión..." : "Cerrar sesión"}
             </Button>
-            <Button aria-label="Volver al inicio" variant="outline-secondary" onClick={onNavigateHome}>
+            <Button aria-label="Volver al inicio" onClick={onNavigateHome} variant="outline-secondary">
               Volver al inicio
             </Button>
           </div>

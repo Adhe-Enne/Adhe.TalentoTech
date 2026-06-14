@@ -1,11 +1,28 @@
-import { collection, getDocs, query, orderBy, limit, startAfter, addDoc, doc, updateDoc, deleteDoc, type DocumentData, Query, QuerySnapshot, DocumentReference, type QueryDocumentSnapshot } from "firebase/firestore";
+import {
+  collection,
+  getDocs,
+  query,
+  orderBy,
+  limit,
+  startAfter,
+  addDoc,
+  doc,
+  updateDoc,
+  deleteDoc,
+  type DocumentData,
+  type DocumentReference,
+  type Query,
+  type QueryDocumentSnapshot,
+  type QuerySnapshot,
+} from "firebase/firestore";
 
 import type { Product } from "../models";
-import type { Category } from "../models/Category"; // Necesario para el mapeo de fetch
+import type { Category } from "../models/Category";
+import type { PaginatedResult } from "../types";
 
 import { PRODUCTS_COLLECTION } from "../App.Constants";
 import { db } from "../firebase";
-import { tsToIso } from "../utils/parseDataUtils"; // Necesario para el mapeo de fetch
+import { tsToIso } from "../utils/parseDataUtils";
 
 interface ProductCreatePayload extends Omit<Partial<Product>, "id" | "createdAt" | "updatedAt"> {
   createdAt?: string;
@@ -16,67 +33,52 @@ interface ProductUpdatePayload extends Omit<Partial<Product>, "id" | "createdAt"
   updatedAt?: string;
 }
 
+function mapDocToProduct(d: QueryDocumentSnapshot<DocumentData>): Product {
+  const data: DocumentData = d.data();
+  return {
+    id: d.id,
+    name: data.name ?? "Sin nombre",
+    description: data.description,
+    price: Number(data.price ?? 0),
+    stock: data.stock ?? data.quantity ?? 0,
+    image: data.image ?? (Array.isArray(data.images) ? data.images[0] : undefined) ?? "/images/avatar1.svg",
+    images: Array.isArray(data.images) ? data.images : undefined,
+    currency: data.currency,
+    categoryId: data.categoryId ?? data.category?.id,
+    category: data.category as Category,
+    tagIds: Array.isArray(data.tagIds) ? data.tagIds : undefined,
+    isEnabled: data.isEnabled ?? true,
+    createdAt: tsToIso(data.createdAt) ?? "",
+    updatedAt: tsToIso(data.updatedAt) ?? undefined,
+  };
+}
+
 export const productService: {
   fetchProducts: () => Promise<Product[]>;
-  fetchProductsPage: (pageSize: number, lastDoc?: QueryDocumentSnapshot) => Promise<{ products: Product[]; lastDoc: QueryDocumentSnapshot | null }>;
+  fetchProductsPage: (pageSize: number, lastKey?: string) => Promise<PaginatedResult<Product>>;
   createProduct: (productData: ProductCreatePayload) => Promise<Product>;
   deleteProduct: (id: string) => Promise<void>;
   updateProduct: (id: string, productData: ProductUpdatePayload) => Promise<void>;
 } = {
-  /**
-   * Obtiene todos los productos de Firestore.
-   * @returns {Promise<Product[]>} Una promesa que resuelve con un array de productos.
-   */
   fetchProducts: async (): Promise<Product[]> => {
     const q: Query<DocumentData> = query(collection(db, PRODUCTS_COLLECTION), orderBy("createdAt", "desc"));
     const snap: QuerySnapshot<DocumentData> = await getDocs(q);
-
-    return snap.docs.map((d) => {
-      const data: DocumentData = d.data();
-      return {
-        id: d.id,
-        name: data.name ?? "Sin nombre",
-        description: data.description,
-        price: Number(data.price ?? 0),
-        stock: data.stock ?? data.quantity ?? 0,
-        image: data.image ?? (Array.isArray(data.images) ? data.images[0] : undefined) ?? "/images/avatar1.svg",
-        images: Array.isArray(data.images) ? data.images : undefined,
-        currency: data.currency,
-        categoryId: data.categoryId ?? data.category?.id,
-        category: data.category as Category,
-        tagIds: Array.isArray(data.tagIds) ? data.tagIds : undefined,
-        isEnabled: data.isEnabled ?? true,
-        createdAt: tsToIso(data.createdAt) ?? "", // tsToIso está en utils/parseDataUtils
-        updatedAt: tsToIso(data.updatedAt) ?? undefined,
-      };
-    });
+    return snap.docs.map(mapDocToProduct);
   },
 
-  fetchProductsPage: async (pageSize: number, lastDoc?: QueryDocumentSnapshot): Promise<{ products: Product[]; lastDoc: QueryDocumentSnapshot | null }> => {
+  fetchProductsPage: async (pageSize: number, lastKey?: string): Promise<PaginatedResult<Product>> => {
     const constraints: readonly [ReturnType<typeof orderBy>, ReturnType<typeof limit>] = [orderBy("createdAt", "desc"), limit(pageSize)];
-    const q: Query<DocumentData> = lastDoc ? query(collection(db, PRODUCTS_COLLECTION), ...constraints, startAfter(lastDoc)) : query(collection(db, PRODUCTS_COLLECTION), ...constraints);
+    const q: Query<DocumentData> = lastKey
+      ? query(collection(db, PRODUCTS_COLLECTION), ...constraints, startAfter(lastKey))
+      : query(collection(db, PRODUCTS_COLLECTION), ...constraints);
     const snap: QuerySnapshot<DocumentData> = await getDocs(q);
-    const products: Product[] = snap.docs.map((d) => {
-      const data: DocumentData = d.data();
-      return {
-        id: d.id,
-        name: data.name ?? "Sin nombre",
-        description: data.description,
-        price: Number(data.price ?? 0),
-        stock: data.stock ?? data.quantity ?? 0,
-        image: data.image ?? (Array.isArray(data.images) ? data.images[0] : undefined) ?? "/images/avatar1.svg",
-        images: Array.isArray(data.images) ? data.images : undefined,
-        currency: data.currency,
-        categoryId: data.categoryId ?? data.category?.id,
-        category: data.category as Category,
-        tagIds: Array.isArray(data.tagIds) ? data.tagIds : undefined,
-        isEnabled: data.isEnabled ?? true,
-        createdAt: tsToIso(data.createdAt) ?? "",
-        updatedAt: tsToIso(data.updatedAt) ?? undefined,
-      };
-    });
-    const lastDocSnapshot: QueryDocumentSnapshot | null = snap.docs[snap.docs.length - 1] ?? null;
-    return { products, lastDoc: lastDocSnapshot };
+    const items: Product[] = snap.docs.map(mapDocToProduct);
+    const lastDoc: QueryDocumentSnapshot<DocumentData> | undefined = snap.docs[snap.docs.length - 1];
+    return {
+      items,
+      lastKey: lastDoc ? (tsToIso(lastDoc.data().createdAt) ?? lastDoc.id) : null,
+      hasMore: items.length === pageSize,
+    };
   },
 
   /**
@@ -134,7 +136,7 @@ export const productService: {
       name: productData.name,
       description: productData.description,
       stock: productData.stock,
-      price: productData.price !== undefined ? Number(productData.price) : undefined,
+      price: productData.price ?? Number(productData.price),
       image: productData.image,
       images: productData.images,
       categoryId: productData.categoryId,

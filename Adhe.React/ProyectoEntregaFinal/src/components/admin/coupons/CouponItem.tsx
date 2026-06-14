@@ -78,7 +78,7 @@ const CouponItem: React.FC<CouponItemProps> = (props) => {
         </button>
       </td>
       <td>
-        <Button size="sm" variant="outline-danger" aria-label={`Eliminar cupon ${coupon.code}`} onClick={() => onDelete(coupon.id)}>
+        <Button aria-label={`Eliminar cupon ${coupon.code}`} onClick={() => onDelete(coupon.id)} size="sm" variant="outline-danger">
           <FaTrash className="me-1" />
           Eliminar
         </Button>

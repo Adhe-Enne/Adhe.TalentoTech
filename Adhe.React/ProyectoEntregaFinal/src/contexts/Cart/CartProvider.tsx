@@ -1,10 +1,10 @@
 import React, { useState, useCallback, useMemo } from "react";
 
-import type { CartItem, Product } from "../../models";
-import type { ProviderProps } from "../../models/ProviderProps";
+import type { CartItem, CouponValidationResult, Product } from "../../models";
+import type { ProviderProps } from "../../types/ProviderProps";
 import type { AppliedCoupon, CartContextType } from "./CartType";
 
-import { couponService, type CouponValidationResult } from "../../services/couponService";
+import { couponService } from "../../services/couponService";
 import CartContext from "./CartContext";
 
 const CART_KEY: string = "tt_cart";

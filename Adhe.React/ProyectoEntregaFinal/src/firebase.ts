@@ -22,7 +22,3 @@ const firebaseConfig: FirebaseConfig = {
 const app: FirebaseApp = initializeApp(firebaseConfig);
 export const db: Firestore = getFirestore(app);
 export default app;
-
-// Usage example:
-// import { collection, addDoc } from 'firebase/firestore';
-// await addDoc(collection(db, 'products'), { name: 'producto', price: 100 });

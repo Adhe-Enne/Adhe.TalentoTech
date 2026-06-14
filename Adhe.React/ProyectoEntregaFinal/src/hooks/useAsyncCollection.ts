@@ -6,6 +6,7 @@ function useAsyncCollection<T>(fetcher: () => Promise<T[]>): {
   loading: boolean;
   reload: () => Promise<void>;
   setData: Dispatch<SetStateAction<T[]>>;
+  setError: Dispatch<SetStateAction<string | null>>;
 } {
   const [data, setData] = useState<T[]>([]);
   const [error, setError] = useState<string | null>(null);
@@ -50,7 +51,7 @@ function useAsyncCollection<T>(fetcher: () => Promise<T[]>): {
     }
   }, [fetcher]);
 
-  return { data, error, loading, reload, setData };
+  return { data, error, loading, reload, setData, setError };
 }
 
 export default useAsyncCollection;

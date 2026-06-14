@@ -59,12 +59,12 @@ const ProductDetail: React.FC<ProductDetailProps> = (props) => {
       <HelmetMeta description={`${product.name} — ${(product.description ?? "Producto disponible en Talento Tech").slice(0, 160)}`} title={`${product.name} | Talento Tech`} />
     <Container>
       <Row className="gx-4 gy-3 justify-content-center product-detail">
-        <Col xs={12} md={5}>
+        <Col md={5} xs={12}>
           <div className="card">
             <ProductImageCarousel alt={product.name} images={[product.image, ...(images ?? [])]} />
           </div>
         </Col>
-        <Col xs={12} md={5}>
+        <Col md={5} xs={12}>
           <h2>{product.name}</h2>
           {categoryName && <div className="mb-1 text-muted">Categoría: {categoryName}</div>}
 
@@ -106,11 +106,11 @@ const ProductDetail: React.FC<ProductDetailProps> = (props) => {
               value={cantidad}
             />
             {stock <= 0 ? (
-              <Button variant="secondary" disabled>
+              <Button disabled variant="secondary">
                 Sin stock
               </Button>
             ) : (
-              <button className="btn btn-cta btn-icon" aria-label={`Agregar ${product.name} al carrito`} onClick={handleAdd}>
+              <button aria-label={`Agregar ${product.name} al carrito`} className="btn btn-cta btn-icon" onClick={handleAdd}>
                 <FaShoppingCart />
                 Añadir al carrito
               </button>
@@ -118,7 +118,7 @@ const ProductDetail: React.FC<ProductDetailProps> = (props) => {
           </div>
 
           <div className="mt-3">
-            <button className="btn btn-cta" aria-label="Volver a productos" onClick={handleBack}>
+            <button aria-label="Volver a productos" className="btn btn-cta" onClick={handleBack}>
               <FaArrowLeft className="me-1" />
               Volver
             </button>

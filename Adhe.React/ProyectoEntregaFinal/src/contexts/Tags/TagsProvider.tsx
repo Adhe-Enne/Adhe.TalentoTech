@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo } from "react";
 
-import type { ProviderProps } from "../../models/ProviderProps";
 import type { Tag } from "../../models/Tag";
+import type { ProviderProps } from "../../types/ProviderProps";
 import type { TagsContextType } from "./TagsTypes";
 
 import useAsyncCollection from "../../hooks/useAsyncCollection";

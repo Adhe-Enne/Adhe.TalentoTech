@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo } from "react";
 
 import type { Category } from "../../models/Category";
-import type { ProviderProps } from "../../models/ProviderProps";
+import type { ProviderProps } from "../../types/ProviderProps";
 import type { CategoriesContextType } from "./CategoriesTypes";
 
 import useAsyncCollection from "../../hooks/useAsyncCollection";
@@ -13,16 +13,19 @@ export const CategoriesProvider: React.FC<ProviderProps> = (props) => {
   const fetchAllCategories: () => Promise<Category[]> = useCallback(() => categoryService.fetchCategories(), []);
   const { data: categories, loading, setData, reload } = useAsyncCollection(fetchAllCategories);
 
-  const createCategory: (name: string, slug?: string) => Promise<Category | undefined> = useCallback(async (name: string, slug?: string): Promise<Category | undefined> => {
-    try {
-      const created: Category = await categoryService.createCategory(name, slug);
-      setData((prev) => [created, ...prev]);
-      return created;
-    } catch (err) {
-      console.error(err);
-      return undefined;
-    }
-  }, [setData]);
+  const createCategory: (name: string, slug?: string) => Promise<Category | undefined> = useCallback(
+    async (name: string, slug?: string): Promise<Category | undefined> => {
+      try {
+        const created: Category = await categoryService.createCategory(name, slug);
+        setData((prev) => [created, ...prev]);
+        return created;
+      } catch (err) {
+        console.error(err);
+        return undefined;
+      }
+    },
+    [setData],
+  );
 
   const findById: (id: string) => Category | undefined = useCallback((id: string): Category | undefined => categories.find((c) => c.id === id), [categories]);
 

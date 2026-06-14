@@ -74,10 +74,14 @@ const Register: React.FC<RegisterProps> = (props) => {
                   value={confirmPassword}
                 />
               </div>
-              {error && <Alert variant="danger" className="py-2 small">{error}</Alert>}
-<Button aria-label="Crear cuenta" variant="primary" className="w-100" disabled={loading} type="submit">
-              {loading ? "Creando cuenta..." : "Crear cuenta"}
-            </Button>
+              {error && (
+                <Alert className="py-2 small" variant="danger">
+                  {error}
+                </Alert>
+              )}
+              <Button aria-label="Crear cuenta" className="w-100" disabled={loading} type="submit" variant="primary">
+                {loading ? "Creando cuenta..." : "Crear cuenta"}
+              </Button>
             </form>
             <p className="text-center mt-3 mb-0 small">
               ¿Ya tenés una cuenta? <Link to="/login">Iniciá sesión</Link>

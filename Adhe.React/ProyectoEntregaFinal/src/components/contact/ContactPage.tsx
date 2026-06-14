@@ -19,7 +19,7 @@ const ContactPage: React.FC<ContactPageProps> = (props) => {
     <Container className="py-4">
       <HelmetMeta description="Comunícate con nuestro equipo de Talento Tech." title="Talento Tech | Contacto" />
       <Row className="gx-4 gy-4 justify-content-center align-items-start">
-        <Col xs={12} md={6}>
+        <Col md={6} xs={12}>
           <div className="card p-3">
             <h2 className="mb-2">Contacto</h2>
             <p>
@@ -51,7 +51,7 @@ const ContactPage: React.FC<ContactPageProps> = (props) => {
           </div>
         </Col>
 
-        <Col xs={12} md={6}>
+        <Col md={6} xs={12}>
           <TeamListContainer />
         </Col>
       </Row>

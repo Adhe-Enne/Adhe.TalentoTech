@@ -1,5 +1,4 @@
-import type { Coupon } from "../../models";
-import type { CouponCreatePayload, CouponUpdatePayload } from "../../services/couponService";
+import type { Coupon, CouponCreatePayload, CouponUpdatePayload } from "../../models";
 
 export interface CouponsContextType {
   coupons: Coupon[];

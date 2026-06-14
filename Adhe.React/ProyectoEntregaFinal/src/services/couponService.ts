@@ -14,26 +14,11 @@ import {
   Query,
 } from "firebase/firestore";
 
-import type { Coupon } from "../models";
+import type { Coupon, CouponCreatePayload, CouponUpdatePayload, CouponValidationResult } from "../models";
 
 import { COUPONS_COLLECTION } from "../App.Constants";
 import { db } from "../firebase";
 import { tsToIso } from "../utils/parseDataUtils";
-
-export interface CouponCreatePayload extends Omit<Partial<Coupon>, "id" | "createdAt" | "updatedAt"> {
-  code: string;
-  discountValue: number;
-}
-
-export interface CouponUpdatePayload extends Omit<Partial<Coupon>, "id" | "createdAt"> {
-  updatedAt?: string;
-}
-
-export interface CouponValidationResult {
-  valid: boolean;
-  discountValue?: number;
-  error?: string;
-}
 
 export const couponService: {
   fetchCoupons: () => Promise<Coupon[]>;
@@ -85,10 +70,7 @@ export const couponService: {
   },
 
   updateCoupon: async (id: string, payload: CouponUpdatePayload): Promise<void> => {
-    const updateData: Record<string, unknown> = {
-      ...payload,
-      updatedAt: new Date().toISOString(),
-    };
+    const updateData: Record<string, unknown> = { ...payload, updatedAt: new Date().toISOString() };
     const filtered: Record<string, unknown> = Object.fromEntries(Object.entries(updateData).filter(([_, v]) => v !== undefined));
     await updateDoc(doc(db, COUPONS_COLLECTION, id), filtered);
   },
@@ -121,10 +103,7 @@ export const couponService: {
       return { valid: false, error: "Este cupón ha alcanzado su límite de usos" };
     }
 
-    return {
-      valid: true,
-      discountValue: coupon.discountValue,
-    };
+    return { valid: true, discountValue: coupon.discountValue };
   },
 
   incrementUsedCount: async (id: string): Promise<void> => {

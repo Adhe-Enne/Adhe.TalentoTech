@@ -10,3 +10,18 @@ export interface Coupon extends BaseEntity {
   minPurchaseAmount?: number | null;
   usageLimit?: number | null;
 }
+
+export interface CouponCreatePayload extends Omit<Partial<Coupon>, "id" | "createdAt" | "updatedAt"> {
+  code: string;
+  discountValue: number;
+}
+
+export interface CouponUpdatePayload extends Omit<Partial<Coupon>, "id" | "createdAt"> {
+  updatedAt?: string;
+}
+
+export interface CouponValidationResult {
+  valid: boolean;
+  discountValue?: number;
+  error?: string;
+}

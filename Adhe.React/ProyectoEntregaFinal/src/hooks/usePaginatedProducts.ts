@@ -1,10 +1,10 @@
-import type { QueryDocumentSnapshot } from "firebase/firestore";
-
-import { useCallback, useEffect, useRef, useState, type MutableRefObject } from "react";
+import { useCallback, useRef, useState, type RefObject } from "react";
 
 import type { Product } from "../models";
+import type { PaginatedResult } from "../types";
 
 import { productService } from "../services/productService";
+import useAsyncCollection from "./useAsyncCollection";
 
 const ITEMS_PER_PAGE: number = 8;
 
@@ -19,37 +19,19 @@ interface UsePaginatedProductsReturn {
 }
 
 const usePaginatedProducts: () => UsePaginatedProductsReturn = (): UsePaginatedProductsReturn => {
-  const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
   const [loadingMore, setLoadingMore] = useState<boolean>(false);
   const [hasMore, setHasMore] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
-  const lastDocRef: MutableRefObject<QueryDocumentSnapshot | null> = useRef<QueryDocumentSnapshot | null>(null);
-  const mountedRef: MutableRefObject<boolean> = useRef<boolean>(true);
+  const lastKeyRef: RefObject<string | null> = useRef<string | null>(null);
 
-  const loadFirstPage: () => Promise<void> = useCallback(async (): Promise<void> => {
-    setLoading(true);
-    setError(null);
-    try {
-      const result: { lastDoc: QueryDocumentSnapshot | null; products: Product[] } = await productService.fetchProductsPage(ITEMS_PER_PAGE);
-      if (!mountedRef.current) {
-        return;
-      }
-      const enabled: Product[] = result.products.filter((p: Product) => p.isEnabled !== false);
-      setProducts(enabled);
-      lastDocRef.current = result.lastDoc;
-      setHasMore(result.products.length === ITEMS_PER_PAGE);
-    } catch (err: unknown) {
-      if (!mountedRef.current) {
-        return;
-      }
-      setError((err as Error)?.message ?? "Error loading products");
-    } finally {
-      if (mountedRef.current) {
-        setLoading(false);
-      }
-    }
+  const fetcher: () => Promise<Product[]> = useCallback(async (): Promise<Product[]> => {
+    const result: PaginatedResult<Product> = await productService.fetchProductsPage(ITEMS_PER_PAGE);
+    const enabled: Product[] = result.items.filter((p: Product) => p.isEnabled !== false);
+    lastKeyRef.current = result.lastKey;
+    setHasMore(result.hasMore);
+    return enabled;
   }, []);
+
+  const { data: products, error, loading, reload, setData, setError } = useAsyncCollection<Product>(fetcher);
 
   const loadNextPage: () => Promise<void> = useCallback(async (): Promise<void> => {
     if (!hasMore || loadingMore) {
@@ -57,35 +39,19 @@ const usePaginatedProducts: () => UsePaginatedProductsReturn = (): UsePaginatedP
     }
     setLoadingMore(true);
     try {
-      const result: { lastDoc: QueryDocumentSnapshot | null; products: Product[] } = await productService.fetchProductsPage(ITEMS_PER_PAGE, lastDocRef.current ?? undefined);
-      if (!mountedRef.current) {
-        return;
-      }
-      const enabled: Product[] = result.products.filter((p: Product) => p.isEnabled !== false);
-      setProducts((prev: Product[]) => [...prev, ...enabled]);
-      lastDocRef.current = result.lastDoc;
-      setHasMore(result.products.length === ITEMS_PER_PAGE);
+      const result: PaginatedResult<Product> = await productService.fetchProductsPage(ITEMS_PER_PAGE, lastKeyRef.current ?? undefined);
+      const enabled: Product[] = result.items.filter((p: Product) => p.isEnabled !== false);
+      setData((prev: Product[]) => [...prev, ...enabled]);
+      lastKeyRef.current = result.lastKey;
+      setHasMore(result.hasMore);
     } catch (err: unknown) {
-      if (!mountedRef.current) {
-        return;
-      }
       setError((err as Error)?.message ?? "Error loading more products");
     } finally {
-      if (mountedRef.current) {
-        setLoadingMore(false);
-      }
+      setLoadingMore(false);
     }
-  }, [hasMore, loadingMore]);
+  }, [hasMore, loadingMore, setData, setError]);
 
-  useEffect((): (() => void) => {
-    mountedRef.current = true;
-    void loadFirstPage();
-    return (): void => {
-      mountedRef.current = false;
-    };
-  }, [loadFirstPage]);
-
-  return { error, hasMore, loading, loadingMore, products, loadNextPage, reload: loadFirstPage };
+  return { error, hasMore, loading, loadingMore, products, loadNextPage, reload };
 };
 
 export default usePaginatedProducts;

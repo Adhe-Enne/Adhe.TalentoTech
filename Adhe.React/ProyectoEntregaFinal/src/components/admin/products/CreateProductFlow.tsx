@@ -1,15 +1,13 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate, type NavigateFunction } from "react-router-dom";
 
 import type { Product } from "../../../models";
-import type { Tag } from "../../../models/Tag";
 import type { ProductFormPayload } from "../../product/product-form/ProductFormTypes";
 
 import useNotification from "../../../hooks/useNotification";
 import useProducts from "../../../hooks/useProducts";
+import useProductUpload from "../../../hooks/useProductUpload";
 import useTags from "../../../hooks/useTags";
-import { imageService } from "../../../services/imageService";
-import { useCancelable } from "../../product/product-form/hooks/useCancelable";
 import ProductFormWrapper from "../../product/product-form/ProductFormWrapper";
 import HelmetMeta from "../../ui/HelmetMeta";
 
@@ -19,29 +17,10 @@ const CreateProductFlow: React.FC = () => {
   const { createTag } = useTags();
   const { setNotification } = useNotification();
   const navigate: NavigateFunction = useNavigate();
+  const { uploadMainImage, uploadAdditionalImages, resolveTagIds } = useProductUpload(createTag);
+  const mountedRef: { current: boolean } = useRef(true) as { current: boolean };
 
-  const resolveTagIds: (tags?: string[] | undefined, categoryId?: string | undefined) => Promise<string[]> = useCallback(
-    async (tags?: string[] | undefined, categoryId?: string | undefined): Promise<string[]> => {
-      const ids: string[] = [];
-      if (!tags?.length) {
-        return ids;
-      }
-      for (const name of tags) {
-        const createdTag: Tag | undefined = await createTag(name, categoryId ?? "");
-        if (createdTag) {
-          ids.push(createdTag.id);
-        }
-      }
-      return ids;
-    },
-    [createTag],
-  );
-
-  const { fileToDataUrl, simulateDelay } = useCancelable();
-
-  const mountedRef: { current: boolean } = React.useRef<boolean>(true) as { current: boolean };
-
-  React.useEffect((): (() => void) => {
+  useEffect((): (() => void) => {
     return (): void => {
       mountedRef.current = false;
     };
@@ -51,31 +30,8 @@ const CreateProductFlow: React.FC = () => {
     async (p: ProductFormPayload): Promise<void> => {
       setLoading(true);
       try {
-        let imageUrl: string = "/images/avatar1.svg";
-        if (p.file) {
-          const imgbbKey: string | undefined = import.meta.env.VITE_IMGBB_API_KEY;
-          if (imgbbKey) {
-            imageUrl = await imageService.uploadImageToImgbb(p.file);
-          } else {
-            await simulateDelay(1500);
-            imageUrl = await fileToDataUrl(p.file);
-          }
-        }
-        const additionalImages: string[] = [];
-        if (p.images && p.images.length > 0) {
-          const imgbbKey: string | undefined = import.meta.env.VITE_IMGBB_API_KEY;
-          const uploads: Promise<string>[] = p.images.map(async (f) => {
-            if (imgbbKey) {
-              return await imageService.uploadImageToImgbb(f);
-            }
-            await simulateDelay(800);
-            return await fileToDataUrl(f);
-          });
-          const urls: string[] = await Promise.all(uploads);
-          additionalImages.push(...urls);
-        }
-
-        const images: string[] = additionalImages;
+        const imageUrl: string = p.file ? await uploadMainImage(p.file) : "/images/avatar1.svg";
+        const newImages: string[] = await uploadAdditionalImages(p.images ?? []);
         const tagIds: string[] = p.tagIds?.length === (p.tags?.length ?? 0) ? p.tagIds : await resolveTagIds(p.tags, p.categoriaId);
 
         const created: Partial<Product> = {
@@ -84,7 +40,7 @@ const CreateProductFlow: React.FC = () => {
           stock: p.stock,
           description: p.descripcion,
           image: imageUrl,
-          images,
+          images: newImages,
           currency: p.currency,
           categoryId: p.categoriaId,
           tagIds,
@@ -106,7 +62,7 @@ const CreateProductFlow: React.FC = () => {
         }
       }
     },
-    [createProduct, resolveTagIds, fileToDataUrl, navigate, setNotification, simulateDelay],
+    [createProduct, resolveTagIds, uploadMainImage, uploadAdditionalImages, navigate, setNotification],
   );
 
   return (

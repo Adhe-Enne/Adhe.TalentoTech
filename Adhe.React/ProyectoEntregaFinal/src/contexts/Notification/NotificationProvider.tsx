@@ -1,12 +1,14 @@
 import React, { useCallback, useMemo, useState } from "react";
 import { toast } from "react-toastify";
 
-import type { ProviderProps } from "../../models/ProviderProps";
+import type { ProviderProps } from "../../types/ProviderProps";
 import type { NotificationContextType, NotificationItem, NotificationVariant, SetNotificationFn } from "./NotificationTypes";
 
 import NotificationContext from "./NotificationContext";
 
-const variantMap: Record<NotificationVariant, "success" | "info" | "warning" | "error" | "default"> = {
+type ToastType = "success" | "info" | "warning" | "error" | "default";
+
+const variantMap: Record<NotificationVariant, ToastType> = {
   danger: "error",
   info: "info",
   primary: "default",
@@ -15,7 +17,7 @@ const variantMap: Record<NotificationVariant, "success" | "info" | "warning" | "
   warning: "warning",
 };
 
-let toastIdCounter = 1;
+let toastIdCounter: number = 1;
 
 export const NotificationProvider: React.FC<ProviderProps> = (props) => {
   const { children } = props;
@@ -34,7 +36,7 @@ export const NotificationProvider: React.FC<ProviderProps> = (props) => {
       return;
     }
     const toastId: number = toastIdCounter++;
-    const mappedType = variant ? variantMap[variant] ?? "default" : "default";
+    const mappedType: ToastType = variant ? (variantMap[variant] ?? "default") : "default";
     toast(message, {
       autoClose: duration,
       toastId,

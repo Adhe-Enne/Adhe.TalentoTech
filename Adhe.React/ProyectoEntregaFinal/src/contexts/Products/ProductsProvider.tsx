@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo } from "react";
 
 import type { Product } from "../../models";
-import type { ProviderProps } from "../../models/ProviderProps";
+import type { ProviderProps } from "../../types/ProviderProps";
 import type { ProductsContextType } from "./ProductsTypes";
 
 import useAsyncCollection from "../../hooks/useAsyncCollection";

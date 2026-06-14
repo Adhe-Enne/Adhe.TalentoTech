@@ -1,8 +1,7 @@
 import React, { useState, useCallback, useMemo } from "react";
 
-import type { Coupon } from "../../models";
-import type { ProviderProps } from "../../models/ProviderProps";
-import type { CouponCreatePayload, CouponUpdatePayload } from "../../services/couponService";
+import type { Coupon, CouponCreatePayload, CouponUpdatePayload } from "../../models";
+import type { ProviderProps } from "../../types/ProviderProps";
 import type { CouponsContextType } from "./CouponsTypes";
 
 import { couponService } from "../../services/couponService";

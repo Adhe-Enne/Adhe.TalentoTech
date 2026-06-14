@@ -1,14 +1,13 @@
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useMemo, useEffect, useRef, useState } from "react";
 import { useNavigate, useParams, type NavigateFunction } from "react-router-dom";
 
-import type { Product, Tag } from "../../../models";
+import type { Product } from "../../../models";
 import type { Currency, Fields, ProductFormPayload } from "../../product/product-form/ProductFormTypes";
 
 import useNotification from "../../../hooks/useNotification";
 import useProducts from "../../../hooks/useProducts";
+import useProductUpload from "../../../hooks/useProductUpload";
 import useTags from "../../../hooks/useTags";
-import { imageService } from "../../../services/imageService";
-import { useCancelable } from "../../product/product-form/hooks/useCancelable";
 import ProductFormWrapper from "../../product/product-form/ProductFormWrapper";
 import HelmetMeta from "../../ui/HelmetMeta";
 
@@ -24,11 +23,11 @@ const EditProductFlow: React.FC = () => {
   const { setNotification } = useNotification();
   const { findById, updateProduct } = useProducts();
   const { createTag } = useTags();
-  const { fileToDataUrl, simulateDelay } = useCancelable();
+  const { uploadMainImage, uploadAdditionalImages, resolveTagIds } = useProductUpload(createTag);
   const [loading, setLoading] = useState(false);
-  const mountedRef: React.RefObject<boolean> = React.useRef<boolean>(true);
+  const mountedRef: { current: boolean } = useRef(true) as { current: boolean };
 
-  React.useEffect((): (() => void) => {
+  useEffect((): (() => void) => {
     return (): void => {
       mountedRef.current = false;
     };
@@ -53,23 +52,6 @@ const EditProductFlow: React.FC = () => {
     };
   }, [product]);
 
-  const resolveTagIds: (tags?: string[], categoryId?: string) => Promise<string[]> = useCallback(
-    async (tags?: string[], categoryId?: string): Promise<string[]> => {
-      const ids: string[] = [];
-      if (!tags?.length) {
-        return ids;
-      }
-      for (const name of tags) {
-        const createdTag: Tag | undefined = await createTag(name, categoryId ?? "");
-        if (createdTag) {
-          ids.push(createdTag.id);
-        }
-      }
-      return ids;
-    },
-    [createTag],
-  );
-
   const onCreated: (p: ProductFormPayload) => Promise<void> = useCallback(
     async (p: ProductFormPayload): Promise<void> => {
       if (!id || !product) {
@@ -77,32 +59,9 @@ const EditProductFlow: React.FC = () => {
       }
       setLoading(true);
       try {
-        let imageUrl: string = product.image;
-        if (p.file) {
-          const imgbbKey: string | undefined = import.meta.env.VITE_IMGBB_API_KEY;
-          if (imgbbKey) {
-            imageUrl = await imageService.uploadImageToImgbb(p.file);
-          } else {
-            await simulateDelay(1500);
-            imageUrl = await fileToDataUrl(p.file);
-          }
-        }
-
-        const newImageUrls: string[] = [];
-        if (p.images && p.images.length > 0) {
-          const imgbbKey: string | undefined = import.meta.env.VITE_IMGBB_API_KEY;
-          const uploads: Promise<string>[] = p.images.map(async (f) => {
-            if (imgbbKey) {
-              return await imageService.uploadImageToImgbb(f);
-            }
-            await simulateDelay(800);
-            return await fileToDataUrl(f);
-          });
-          const urls: string[] = await Promise.all(uploads);
-          newImageUrls.push(...urls);
-        }
-
-        const images: string[] = [...(p.existingImageUrls ?? []), ...newImageUrls];
+        const imageUrl: string = p.file ? await uploadMainImage(p.file) : product.image;
+        const newImages: string[] = await uploadAdditionalImages(p.images ?? []);
+        const images: string[] = [...(p.existingImageUrls ?? []), ...newImages];
         const tagIds: string[] = p.tagIds?.length === (p.tags?.length ?? 0) ? p.tagIds : await resolveTagIds(p.tags, p.categoriaId);
 
         await updateProduct(id, {
@@ -130,7 +89,7 @@ const EditProductFlow: React.FC = () => {
         }
       }
     },
-    [id, product, updateProduct, resolveTagIds, fileToDataUrl, navigate, setNotification, simulateDelay],
+    [id, product, updateProduct, resolveTagIds, uploadMainImage, uploadAdditionalImages, navigate, setNotification],
   );
 
   const handleCancel: () => void = useCallback(() => {

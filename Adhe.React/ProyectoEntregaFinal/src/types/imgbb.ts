@@ -1,4 +1,3 @@
-//create a interface for the response of imgbb api
 export interface Image {
   extension: string;
   filename: string;
@@ -6,6 +5,7 @@ export interface Image {
   name: string;
   url: string;
 }
+
 export interface ImageData {
   delete_url: string;
   display_url: string;
@@ -22,9 +22,9 @@ export interface ImageData {
   url_viewer: string;
   width: number;
 }
+
 export interface ImgbbResponse {
   data: ImageData;
   status: number;
   success: boolean;
 }
-

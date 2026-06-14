@@ -30,9 +30,9 @@ const CouponList: React.FC<CouponListProps> = (props) => {
 
   if (error) {
     return (
-      <Alert variant="danger" className="d-flex align-items-center gap-2">
+      <Alert className="d-flex align-items-center gap-2" variant="danger">
         <span>{error}</span>
-        <Button aria-label="Reintentar carga de cupones" size="sm" variant="outline-danger" className="ms-auto" onClick={onRetry}>
+        <Button aria-label="Reintentar carga de cupones" className="ms-auto" onClick={onRetry} size="sm" variant="outline-danger">
           Reintentar
         </Button>
       </Alert>
@@ -40,12 +40,16 @@ const CouponList: React.FC<CouponListProps> = (props) => {
   }
 
   if (coupons.length === 0) {
-    return <Alert variant="info" className="text-center py-4">No hay cupones aun. Crea el primero usando el formulario de arriba.</Alert>;
+    return (
+      <Alert className="text-center py-4" variant="info">
+        No hay cupones aun. Crea el primero usando el formulario de arriba.
+      </Alert>
+    );
   }
 
   return (
     <div className="table-responsive">
-      <Table hover className="align-middle">
+      <Table className="align-middle" hover>
         <thead>
           <tr>
             <th>Codigo</th>
