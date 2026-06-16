@@ -1,21 +1,17 @@
-/**
- * Servicio de autenticación simulado con Firestore.
- *
- * La sesión activa se persiste en localStorage ("tt_current_user")
- * para evitar verificar Firestore en cada recarga.
- *
- * Los roles (admin/user) se configuran manualmente editando
- * el documento en Firebase Console → campo "rol".
- *
- * Para migrar a Firebase Auth real solo se modifica este archivo.
- */
-
-import { addDoc, collection, CollectionReference, DocumentReference, getDocs, Query, query, QuerySnapshot, where, type DocumentData } from "firebase/firestore";
+import {
+  createUserWithEmailAndPassword,
+  onAuthStateChanged as firebaseOnAuthStateChanged,
+  signInWithEmailAndPassword,
+  signOut,
+  type User as FirebaseUser,
+  type UserCredential,
+} from "firebase/auth";
+import { doc, getDoc, setDoc, type DocumentReference, type DocumentSnapshot } from "firebase/firestore";
 
 import type { User } from "../models/User";
 
 import { USERS_COLLECTION } from "../App.Constants";
-import { db } from "../firebase";
+import { auth, db } from "../firebase";
 
 const SESSION_KEY: string = "tt_current_user";
 
@@ -28,6 +24,8 @@ export interface UserInfo {
 type AuthStateListener = (user: UserInfo | null) => void;
 
 const listeners: Set<AuthStateListener> = new Set();
+let cachedUser: UserInfo | null = null;
+let authUnsubscribe: (() => void) | null = null;
 
 function getStoredSession(): UserInfo | null {
   try {
@@ -38,6 +36,7 @@ function getStoredSession(): UserInfo | null {
 }
 
 function setStoredSession(user: UserInfo | null): void {
+  cachedUser = user;
   if (user) {
     localStorage.setItem(SESSION_KEY, JSON.stringify(user));
   } else {
@@ -49,7 +48,65 @@ function notifyListeners(user: UserInfo | null): void {
   listeners.forEach((cb) => cb(user));
 }
 
-const usersCollection: CollectionReference<DocumentData> = collection(db, USERS_COLLECTION);
+cachedUser = getStoredSession();
+
+function translateAuthError(error: unknown): string {
+  if (error instanceof Error) {
+    const code: string = (error as { code?: string }).code ?? "";
+    switch (code) {
+      case "auth/email-already-in-use":
+        return "Este correo electrónico ya está registrado";
+      case "auth/user-not-found":
+        return "Usuario no encontrado";
+      case "auth/wrong-password":
+      case "auth/invalid-credential":
+        return "Correo electrónico o contraseña incorrectos";
+      case "auth/invalid-email":
+        return "Correo electrónico inválido";
+      case "auth/weak-password":
+        return "La contraseña debe tener al menos 6 caracteres";
+      case "auth/too-many-requests":
+        return "Demasiados intentos. Intentá de nuevo más tarde";
+      case "auth/network-request-failed":
+        return "Error de conexión. Verificá tu internet";
+      default:
+        return error.message;
+    }
+  }
+  return "Error desconocido";
+}
+
+function syncUserFromFirestore(firebaseUser: FirebaseUser): void {
+  const cached: UserInfo | null = getStoredSession();
+
+  if (cached?.uid === firebaseUser.uid) {
+    notifyListeners(cached);
+  }
+
+  const docRef: DocumentReference = doc(db, USERS_COLLECTION, firebaseUser.uid);
+
+  getDoc(docRef)
+    .then((docSnap: DocumentSnapshot) => {
+      let userInfo: UserInfo;
+
+      if (docSnap.exists()) {
+        const data: User = docSnap.data() as User;
+        userInfo = { uid: firebaseUser.uid, email: firebaseUser.email ?? data.email, rol: data.rol ?? "user" };
+      } else {
+        userInfo = { uid: firebaseUser.uid, email: firebaseUser.email ?? "", rol: "user" };
+      }
+
+      setStoredSession(userInfo);
+      notifyListeners(userInfo);
+    })
+    .catch(() => {
+      if (cached?.uid !== firebaseUser.uid) {
+        const fallback: UserInfo = { uid: firebaseUser.uid, email: firebaseUser.email ?? "", rol: "user" };
+        setStoredSession(fallback);
+        notifyListeners(fallback);
+      }
+    });
+}
 
 export const authService: {
   login: (email: string, password: string) => Promise<UserInfo>;
@@ -60,69 +117,86 @@ export const authService: {
 } = {
   login: async (email: string, password: string): Promise<UserInfo> => {
     const emailLower: string = email.toLowerCase();
+    let result: UserCredential;
 
-    const q: Query<DocumentData> = query(usersCollection, where("email", "==", emailLower));
-    const snapshot: QuerySnapshot<DocumentData> = await getDocs(q);
-
-    if (snapshot.empty) {
-      throw new Error("Usuario no encontrado");
+    try {
+      result = await signInWithEmailAndPassword(auth, emailLower, password);
+    } catch (error: unknown) {
+      throw new Error(translateAuthError(error));
     }
 
-    const { docs } = snapshot;
-    const [doc] = docs;
-    const data: User = doc.data() as User;
+    const firebaseUser: FirebaseUser = result.user;
+    const docRef: DocumentReference = doc(db, USERS_COLLECTION, firebaseUser.uid);
+    const docSnap: DocumentSnapshot = await getDoc(docRef);
+    let userInfo: UserInfo;
 
-    if (data.password !== password) {
-      throw new Error("Contraseña incorrecta");
+    if (docSnap.exists()) {
+      const data: User = docSnap.data() as User;
+      userInfo = { uid: firebaseUser.uid, email: firebaseUser.email ?? data.email, rol: data.rol ?? "user" };
+    } else {
+      userInfo = { uid: firebaseUser.uid, email: firebaseUser.email ?? emailLower, rol: "user" };
     }
-
-    const rol: "admin" | "user" = data.rol ?? "user";
-    const userInfo: UserInfo = { uid: doc.id, email: data.email, rol };
 
     setStoredSession(userInfo);
-    notifyListeners(userInfo);
+
     return userInfo;
   },
-
   signup: async (email: string, password: string): Promise<UserInfo> => {
     const emailLower: string = email.toLowerCase();
+    let result: UserCredential;
 
-    const q: Query<DocumentData> = query(usersCollection, where("email", "==", emailLower));
-    const snapshot: QuerySnapshot<DocumentData> = await getDocs(q);
-
-    if (!snapshot.empty) {
-      throw new Error("Este correo electrónico ya está registrado");
+    try {
+      result = await createUserWithEmailAndPassword(auth, emailLower, password);
+    } catch (error: unknown) {
+      throw new Error(translateAuthError(error));
     }
 
-    const docRef: DocumentReference<DocumentData> = await addDoc(usersCollection, {
+    const firebaseUser: FirebaseUser = result.user;
+    const { uid } = firebaseUser;
+
+    await setDoc(doc(db, USERS_COLLECTION, uid), {
       email: emailLower,
-      password,
       rol: "user",
       createdAt: new Date().toISOString(),
       updatedAt: null,
     });
 
-    const userInfo: UserInfo = { uid: docRef.id, email: emailLower, rol: "user" };
-
+    const userInfo: UserInfo = { uid, email: emailLower, rol: "user" };
     setStoredSession(userInfo);
-    notifyListeners(userInfo);
+
     return userInfo;
   },
 
   logout: async (): Promise<void> => {
-    setStoredSession(null);
-    notifyListeners(null);
+    await signOut(auth);
   },
-
   onAuthStateChanged: (cb: AuthStateListener): (() => void) => {
     listeners.add(cb);
-    cb(getStoredSession());
+
+    authUnsubscribe ??= firebaseOnAuthStateChanged(auth, (firebaseUser: FirebaseUser | null) => {
+      if (firebaseUser === null) {
+        setStoredSession(null);
+        notifyListeners(null);
+      } else {
+        syncUserFromFirestore(firebaseUser);
+      }
+    });
+
+    if (cachedUser) {
+      cb(cachedUser);
+    }
+
     return (): void => {
       listeners.delete(cb);
+
+      if (listeners.size === 0 && authUnsubscribe) {
+        authUnsubscribe();
+        authUnsubscribe = null;
+      }
     };
   },
 
   getCurrentSession: (): UserInfo | null => {
-    return getStoredSession();
+    return cachedUser;
   },
-};
+} as const;

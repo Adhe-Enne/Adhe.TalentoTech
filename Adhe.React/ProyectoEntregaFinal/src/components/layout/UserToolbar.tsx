@@ -27,13 +27,14 @@ const NavLinks: React.FC = () => {
           {showFavCount()}
         </Link>
       </li>
-
       <li className="nav-item">
-        <Link
-          aria-label={user ? "Perfil" : "Iniciar sesión"}
-          className="btn btn-ghost btn-sm me-2"
-          to={user ? "/perfil" : "/login"}
-        >
+        <Link aria-label="Carrito" className="btn btn-ghost btn-sm position-relative" to="/carrito">
+          <FaShoppingCart aria-hidden="true" className="nav-icon nav-cart-icon" />
+          {cartCount > 0 && <span className="cart-badge position-absolute top-0 start-100 translate-middle">{cartCount}</span>}
+        </Link>
+      </li>
+      <li className="nav-item">
+        <Link aria-label={user ? "Perfil" : "Iniciar sesión"} className="btn btn-ghost btn-sm me-2" to={user ? "/perfil" : "/login"}>
           <FaUser aria-hidden="true" className="nav-icon" />
         </Link>
       </li>
@@ -45,13 +46,6 @@ const NavLinks: React.FC = () => {
           </Link>
         </li>
       )}
-
-      <li className="nav-item">
-        <Link aria-label="Carrito" className="btn btn-ghost btn-sm position-relative" to="/carrito">
-          <FaShoppingCart aria-hidden="true" className="nav-icon nav-cart-icon" />
-          {cartCount > 0 && <span className="cart-badge position-absolute top-0 start-100 translate-middle">{cartCount}</span>}
-        </Link>
-      </li>
     </ul>
   );
 };
