@@ -1,25 +1,20 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback } from "react";
 import { FaCloudUploadAlt, FaPlus } from "react-icons/fa";
 import { useNavigate, type NavigateFunction } from "react-router-dom";
 
-import type { Currency, FormMode, ProductFormPayload, Fields } from "./ProductFormTypes";
+import type { FormMode, ProductFormPayload, Fields } from "./ProductFormTypes";
 
 import useCategories from "../../../hooks/useCategories";
-import useNotification from "../../../hooks/useNotification";
 import useTags from "../../../hooks/useTags";
+import { parseCurrency } from "../../../utils/currency";
 import AdditionalImagesInput from "./AdditionalImagesInput";
 import CategoryCreateModal from "./CategoryCreateModal";
+import useCategoryCreate from "./hooks/useCategoryCreate";
 import { useProductForm } from "./hooks/useProductForm";
 import { useTagManager } from "./hooks/useTagManager";
 import styles from "./Product.module.css";
 import ProductImagePreview from "./ProductImagePreview";
 import TagAutocomplete from "./TagAutocomplete";
-
-const VALID_CURRENCIES: readonly Currency[] = ["USD", "ARS", "BTC"] as const;
-
-function parseCurrency(value: string): Currency {
-  return VALID_CURRENCIES.includes(value as Currency) ? (value as Currency) : "USD";
-}
 
 interface ProductFormProps {
   existingImageUrl?: string;
@@ -36,9 +31,13 @@ const ProductForm: React.FC<ProductFormProps> = (props) => {
   const navigate: NavigateFunction = useNavigate();
   const { categories, createCategory } = useCategories();
   const { tags, createTag } = useTags();
-  const { setNotification } = useNotification();
-  const [showCategoryModal, setShowCategoryModal] = useState(false);
-  const [isCreatingCategory, setIsCreatingCategory] = useState<boolean>(false);
+  const {
+    isCreating: isCreatingCategory,
+    show: showCategoryModal,
+    handleClose: handleCloseCategory,
+    handleOpen: handleOpenCategory,
+    handleCreate: handleCreateCategory,
+  } = useCategoryCreate(createCategory, setField);
   const addInputId: string = React.useId();
   const displayUrl: string | undefined = previewUrl ?? existingImageUrl;
 
@@ -64,14 +63,14 @@ const ProductForm: React.FC<ProductFormProps> = (props) => {
     [fields.categoriaId, setField],
   );
 
-  const submitLabel: string = loading ? (isEdit ? "Actualizando..." : "Subiendo...") : isEdit ? "Actualizar producto" : "Subir producto";
+  const isLoadingAndEdit: (loading: boolean | undefined) => string = (loading: boolean | undefined) => {
+    if (loading) {
+      return isEdit ? "Actualizando..." : "Subiendo...";
+    }
+    return isEdit ? "Actualizar producto" : "Subir producto";
+  };
 
-  const handleExistingImagesChange: (urls: string[]) => void = useCallback(
-    (urls: string[]) => {
-      setField("existingImageUrls", urls);
-    },
-    [setField],
-  );
+  const submitLabel: string = isLoadingAndEdit(loading);
 
   const { tagQuery, showSuggestions, suggestionsRef, setTagQuery, setShowSuggestions, onAddTagFromInput, onRemoveTag } = useTagManager(
     {
@@ -101,8 +100,8 @@ const ProductForm: React.FC<ProductFormProps> = (props) => {
           )}
         </div>
         <div className={styles.additionalArea}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            <h5 style={{ margin: 0 }}>Imágenes adicionales</h5>
+          <div className={styles.additionalHeader}>
+            <h5 className="m-0">Imágenes adicionales</h5>
             <label className={`btn btn-sm btn-outline-primary ${styles.uploadLabel}`} htmlFor={addInputId}>
               Seleccionar imágenes
             </label>
@@ -113,7 +112,7 @@ const ProductForm: React.FC<ProductFormProps> = (props) => {
             hideUploadButton
             inputId={addInputId}
             onChange={(files: File[]) => setField("images", files)}
-            onExistingChange={handleExistingImagesChange}
+            onExistingChange={(urls) => setField("existingImageUrls", urls)}
           />
         </div>
       </div>
@@ -140,7 +139,7 @@ const ProductForm: React.FC<ProductFormProps> = (props) => {
                 </option>
               ))}
             </select>
-            <button className="btn btn-outline-secondary" onClick={() => setShowCategoryModal(true)} type="button">
+            <button className="btn btn-outline-secondary" onClick={handleOpenCategory} type="button">
               <FaPlus className="me-1" />
               Nueva
             </button>
@@ -164,13 +163,13 @@ const ProductForm: React.FC<ProductFormProps> = (props) => {
             />
             {errors.precio && <div className="invalid-feedback">{errors.precio}</div>}
           </div>
-          <div style={{ minWidth: 100 }}>
+          <div className={styles.stockField}>
             <label className="form-label" htmlFor="stock">
               Stock
             </label>
             <input className="form-control" id="stock" min="0" onChange={(e) => setField("stock", e.target.value)} step="1" type="number" value={fields.stock} />
           </div>
-          <div style={{ minWidth: 120 }}>
+          <div className={styles.currencyField}>
             <label className="form-label" htmlFor="currency">
               Moneda
             </label>
@@ -215,28 +214,7 @@ const ProductForm: React.FC<ProductFormProps> = (props) => {
         </div>
       </div>
 
-      <CategoryCreateModal
-        isCreating={isCreatingCategory}
-        onClose={() => setShowCategoryModal(false)}
-        onCreate={async (name, slug) => {
-          setIsCreatingCategory(true);
-          try {
-            const created: { id: string } | undefined = await createCategory(name, slug);
-            if (created) {
-              setField("categoriaId", created.id);
-              setShowCategoryModal(false);
-              setNotification(`Categoría "${name}" creada!`, 3000, "info");
-            } else {
-              setNotification("No se pudo crear la categoría", 3000, "danger");
-            }
-          } catch {
-            setNotification("Error al crear la categoría", 3000, "danger");
-          } finally {
-            setIsCreatingCategory(false);
-          }
-        }}
-        show={showCategoryModal}
-      />
+      <CategoryCreateModal isCreating={isCreatingCategory} onClose={handleCloseCategory} onCreate={handleCreateCategory} show={showCategoryModal} />
     </form>
   );
 };

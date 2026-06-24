@@ -5,7 +5,7 @@ export const parseFavorites: (raw: string | null) => Set<string> = (raw: string 
 
   const parsed: unknown = JSON.parse(raw);
   if (Array.isArray(parsed)) {
-    return new Set(parsed.map(String).filter((n) => n));
+    return new Set(parsed.map(String).filter(Boolean));
   }
 
   if (parsed && typeof parsed === "object") {
@@ -13,7 +13,7 @@ export const parseFavorites: (raw: string | null) => Set<string> = (raw: string 
       Object.keys(parsed)
         .filter((k) => (parsed as Record<string, unknown>)[k])
         .map(String)
-        .filter((n) => n),
+        .filter(Boolean),
     );
   }
 

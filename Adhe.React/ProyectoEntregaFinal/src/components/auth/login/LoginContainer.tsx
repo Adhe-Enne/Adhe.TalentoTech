@@ -1,8 +1,8 @@
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useState } from "react";
 import { useLocation, useNavigate, type Location, type NavigateFunction } from "react-router-dom";
 
-import useAuth from "../../hooks/useAuth";
-import useNotification from "../../hooks/useNotification";
+import useAuth from "../../../hooks/useAuth";
+import useNotification from "../../../hooks/useNotification";
 import Login from "./Login";
 
 const LoginContainer: React.FC = () => {
@@ -18,12 +18,7 @@ const LoginContainer: React.FC = () => {
 
   const from: string = (location.state as { from?: { pathname: string } })?.from?.pathname ?? "/";
 
-  const redirectMessage: string | null = useMemo<string | null>(() => {
-    if (from !== "/") {
-      return "Debés iniciar sesión para acceder a esta página";
-    }
-    return null;
-  }, [from]);
+  const redirectMessage: string | null = from === "/" ? null : "Debés iniciar sesión para acceder a esta página";
 
   const handleSubmit: (e: React.SubmitEvent) => Promise<void> = useCallback(
     async (e: React.SubmitEvent) => {

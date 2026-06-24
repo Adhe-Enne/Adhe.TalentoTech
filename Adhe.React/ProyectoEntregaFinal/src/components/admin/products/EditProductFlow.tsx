@@ -1,21 +1,17 @@
-import React, { useCallback, useMemo, useEffect, useRef, useState } from "react";
+import React, { useCallback, useMemo } from "react";
 import { useNavigate, useParams, type NavigateFunction } from "react-router-dom";
 
 import type { Product } from "../../../models";
-import type { Currency, Fields, ProductFormPayload } from "../../product/product-form/ProductFormTypes";
+import type { Fields, ProductFormPayload } from "../../product/product-form/ProductFormTypes";
 
 import useNotification from "../../../hooks/useNotification";
+import useProductFormSubmit from "../../../hooks/useProductFormSubmit";
 import useProducts from "../../../hooks/useProducts";
 import useProductUpload from "../../../hooks/useProductUpload";
 import useTags from "../../../hooks/useTags";
-import ProductFormWrapper from "../../product/product-form/ProductFormWrapper";
+import { parseCurrency } from "../../../utils/currency";
+import ProductForm from "../../product/product-form/ProductForm";
 import HelmetMeta from "../../ui/HelmetMeta";
-
-const VALID_CURRENCIES: Set<Currency> = new Set(["USD", "ARS", "BTC"]);
-
-function parseCurrency(value: string): Currency {
-  return VALID_CURRENCIES.has(value as Currency) ? (value as Currency) : "USD";
-}
 
 const EditProductFlow: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -24,14 +20,7 @@ const EditProductFlow: React.FC = () => {
   const { findById, updateProduct } = useProducts();
   const { createTag } = useTags();
   const { uploadMainImage, uploadAdditionalImages, resolveTagIds } = useProductUpload(createTag);
-  const [loading, setLoading] = useState(false);
-  const mountedRef: { current: boolean } = useRef(true) as { current: boolean };
-
-  useEffect((): (() => void) => {
-    return (): void => {
-      mountedRef.current = false;
-    };
-  }, []);
+  const { loading, safeSubmit } = useProductFormSubmit();
 
   const product: Product | undefined = id ? findById(id) : undefined;
 
@@ -57,39 +46,33 @@ const EditProductFlow: React.FC = () => {
       if (!id || !product) {
         return;
       }
-      setLoading(true);
       try {
-        const imageUrl: string = p.file ? await uploadMainImage(p.file) : product.image;
-        const newImages: string[] = await uploadAdditionalImages(p.images ?? []);
-        const images: string[] = [...(p.existingImageUrls ?? []), ...newImages];
-        const tagIds: string[] = p.tagIds?.length === (p.tags?.length ?? 0) ? p.tagIds : await resolveTagIds(p.tags, p.categoriaId);
+        await safeSubmit(async () => {
+          const imageUrl: string = p.file ? await uploadMainImage(p.file) : product.image;
+          const newImages: string[] = await uploadAdditionalImages(p.images ?? []);
+          const images: string[] = [...(p.existingImageUrls ?? []), ...newImages];
+          const tagIds: string[] = p.tagIds?.length === (p.tags?.length ?? 0) ? p.tagIds : await resolveTagIds(p.tags, p.categoriaId);
 
-        await updateProduct(id, {
-          name: p.nombre,
-          price: p.precio,
-          stock: p.stock,
-          description: p.descripcion,
-          image: imageUrl,
-          images,
-          currency: p.currency,
-          categoryId: p.categoriaId,
-          tagIds,
+          await updateProduct(id, {
+            name: p.nombre,
+            price: p.precio,
+            stock: p.stock,
+            description: p.descripcion,
+            image: imageUrl,
+            images,
+            currency: p.currency,
+            categoryId: p.categoriaId,
+            tagIds,
+          });
+
+          setNotification("Producto actualizado!", 3000, "success");
+          navigate("/admin/productos");
         });
-
-        setNotification("Producto actualizado!", 3000, "success");
-        navigate("/admin/productos");
-      } catch (err: unknown) {
-        if (err instanceof DOMException && err.name === "AbortError") {
-          return;
-        }
+      } catch {
         setNotification("Error al actualizar el producto", 3000, "danger");
-      } finally {
-        if (mountedRef.current) {
-          setLoading(false);
-        }
       }
     },
-    [id, product, updateProduct, resolveTagIds, uploadMainImage, uploadAdditionalImages, navigate, setNotification],
+    [id, product, safeSubmit, updateProduct, resolveTagIds, uploadMainImage, uploadAdditionalImages, navigate, setNotification],
   );
 
   const handleCancel: () => void = useCallback(() => {
@@ -112,7 +95,10 @@ const EditProductFlow: React.FC = () => {
   return (
     <>
       <HelmetMeta description={`Edita los detalles de ${product.name}`} title={`Editar ${product.name}`} />
-      <ProductFormWrapper existingImageUrl={product.image} initialData={initialData} loading={loading} mode="edit" onCancel={handleCancel} onCreated={onCreated} />
+      <div className="container py-4">
+        <h2>Editar producto</h2>
+        <ProductForm existingImageUrl={product.image} initialData={initialData} loading={loading} mode="edit" onCancel={handleCancel} onSubmit={onCreated} />
+      </div>
     </>
   );
 };

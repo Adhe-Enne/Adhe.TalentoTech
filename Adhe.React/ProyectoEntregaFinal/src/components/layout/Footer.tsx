@@ -7,7 +7,7 @@ import useNotification from "../../hooks/useNotification";
 const Footer: React.FC = () => {
   const { setNotification } = useNotification();
 
-  const HandleAction: (message: string) => void = (message: string): void => {
+  const handleAction: (message: string) => void = (message: string): void => {
     setNotification(`${message} (Dummy Notification)`, 3000, "success");
   };
 
@@ -41,13 +41,19 @@ const Footer: React.FC = () => {
               <h6 className="mb-2">Navegación</h6>
               <ul className="list-unstyled footer-links mb-0">
                 <li>
-                  <Link aria-label="Ir a productos" to="/productos">Productos</Link>
+                  <Link aria-label="Ir a productos" to="/productos">
+                    Productos
+                  </Link>
                 </li>
                 <li>
-                  <Link aria-label="Ir a contacto" to="/contacto">Contacto</Link>
+                  <Link aria-label="Ir a contacto" to="/contacto">
+                    Contacto
+                  </Link>
                 </li>
                 <li>
-                  <Link aria-label="Ir al carrito" to="/carrito">Carrito</Link>
+                  <Link aria-label="Ir al carrito" to="/carrito">
+                    Carrito
+                  </Link>
                 </li>
               </ul>
             </div>
@@ -65,7 +71,7 @@ const Footer: React.FC = () => {
               <h6 className="mb-2">Newsletter</h6>
               <form className="d-flex footer-newsletter" onSubmit={(e) => e.preventDefault()}>
                 <input aria-label="Email" className="form-control form-control-sm" placeholder="Tu email" />
-                <button aria-label="Suscribirse al newsletter" className="btn btn-cta btn-sm ms-2" onClick={() => HandleAction("¡Gracias por suscribirte!")} type="submit">
+                <button aria-label="Suscribirse al newsletter" className="btn btn-cta btn-sm ms-2" onClick={() => handleAction("¡Gracias por suscribirte!")} type="submit">
                   Suscribirse
                 </button>
               </form>
@@ -79,10 +85,10 @@ const Footer: React.FC = () => {
         <div className="container container-tight d-flex flex-column flex-md-row justify-content-between align-items-center gap-2">
           <small className="text-muted">© {new Date().getFullYear()} Adhe.E-commerce. Todos los derechos reservados.</small>
           <div className="d-flex gap-3 align-items-center">
-            <Link aria-label="Términos y condiciones" className="text-muted" onClick={() => HandleAction("Go To 'Terminos' Success")} to="/">
+            <Link aria-label="Términos y condiciones" className="text-muted" onClick={() => handleAction("Go To 'Terminos' Success")} to="/">
               Términos
             </Link>
-            <Link aria-label="Política de privacidad" className="text-muted" onClick={() => HandleAction("Go To 'Privacidad' Success")} to="/">
+            <Link aria-label="Política de privacidad" className="text-muted" onClick={() => handleAction("Go To 'Privacidad' Success")} to="/">
               Privacidad
             </Link>
           </div>

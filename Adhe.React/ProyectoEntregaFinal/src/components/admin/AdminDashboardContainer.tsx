@@ -1,13 +1,12 @@
 import React from "react";
 
-import useAsyncCollection from "../../hooks/useAsyncCollection";
+import useCoupons from "../../hooks/useCoupons";
 import useProducts from "../../hooks/useProducts";
-import { couponService } from "../../services/couponService";
 import AdminDashboard from "./AdminDashboard";
 
 const AdminDashboardContainer: React.FC = () => {
   const { products, loading: productsLoading } = useProducts();
-  const { data: coupons, loading: couponsLoading } = useAsyncCollection(() => couponService.fetchCoupons());
+  const { coupons, loading: couponsLoading } = useCoupons();
 
   const totalProducts: number = products?.length ?? 0;
   const activeProducts: number = products?.filter((p) => p.isEnabled).length ?? 0;

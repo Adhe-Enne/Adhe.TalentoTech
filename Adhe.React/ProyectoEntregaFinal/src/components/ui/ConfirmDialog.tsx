@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, type RefObject } from "react";
 
 interface ConfirmDialogProps {
   message: string;
@@ -8,90 +8,87 @@ interface ConfirmDialogProps {
   confirmLabel?: string;
   confirmVariant?: string;
   loading?: boolean;
+  loadingLabel?: string;
   onCancel: () => void;
   onConfirm: () => void;
 }
 
 const ConfirmDialog: React.FC<ConfirmDialogProps> = (props) => {
-  const { open, title, message, confirmLabel = "Eliminar", cancelLabel = "Cancelar", confirmVariant = "danger", onConfirm, onCancel, loading = false } = props;
-  const confirmRef: React.RefObject<HTMLButtonElement | null> = useRef<HTMLButtonElement | null>(null);
+  const { open, title, message, confirmLabel = "Eliminar", cancelLabel = "Cancelar", confirmVariant = "danger", onConfirm, onCancel, loading = false, loadingLabel = "Eliminando..." } = props;
+  const dialogRef: RefObject<HTMLDialogElement | null> = useRef<HTMLDialogElement>(null);
+  const confirmRef: RefObject<HTMLButtonElement | null> = useRef<HTMLButtonElement>(null);
 
-  useEffect(() => {
-    if (open) {
-      confirmRef.current?.focus();
-      document.body.classList.add("modal-open");
-    } else {
-      document.body.classList.remove("modal-open");
+  useEffect((): void => {
+    const dialog: HTMLDialogElement | null = dialogRef.current;
+    if (!dialog) {
+      return;
     }
-    return (): void => {
-      document.body.classList.remove("modal-open");
-    };
+    if (open && !dialog.open) {
+      dialog.showModal();
+      confirmRef.current?.focus();
+    } else if (!open && dialog.open) {
+      dialog.close();
+    }
   }, [open]);
 
-  useEffect(() => {
-    const handler: (e: KeyboardEvent) => void = (e: KeyboardEvent) => {
-      if (!open) {
-        return;
-      }
-      if (e.key === "Escape") {
-        onCancel();
-      }
+  useEffect((): (() => void) => {
+    const dialog: HTMLDialogElement | null = dialogRef.current;
+    if (!dialog) {
+      return (): void => undefined;
+    }
+    const handler: (e: KeyboardEvent) => void = (e: KeyboardEvent): void => {
       if (e.key === "Enter" && !loading) {
         onConfirm();
       }
     };
-    document.addEventListener("keydown", handler);
-    return (): void => {
-      document.removeEventListener("keydown", handler);
-    };
-  }, [open, onCancel, onConfirm, loading]);
+    dialog.addEventListener("keydown", handler);
+    return (): void => dialog.removeEventListener("keydown", handler);
+  }, [loading, onConfirm]);
 
-  if (!open) {
-    return null;
-  }
+  useEffect((): (() => void) => {
+    const dialog: HTMLDialogElement | null = dialogRef.current;
+    return (): void => {
+      if (dialog?.open) {
+        dialog.close();
+      }
+    };
+  }, []);
+
+  const handleCancel: () => void = (): void => {
+    if (!loading) {
+      onCancel();
+    }
+  };
 
   return (
-    <>
-      <button aria-label="Cerrar" className="modal-backdrop fade show" onClick={loading ? undefined : onCancel} tabIndex={-1} type="button" />
-      <dialog
-        aria-labelledby="confirm-dialog-title"
-        className="modal fade show"
-        onClick={loading ? undefined : onCancel}
-        onKeyDown={
-          loading
-            ? undefined
-            : (e: React.KeyboardEvent<HTMLElement>): void => {
-                if (e.key === "Escape") {
-                  onCancel();
-                }
-              }
-        }
-        open
-        style={{ display: "block" }}
-      >
-        <div className="modal-dialog modal-dialog-centered" onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()} role="none">
-          <div className="modal-content shadow">
-            <div className="modal-header">
-              <h5 className="modal-title" id="confirm-dialog-title">
-                {title}
-              </h5>
-              <button aria-label="Cerrar" className="btn-close" disabled={loading} onClick={onCancel} type="button" />
-            </div>
-            <div className="modal-body">
-              <p className="mb-0">{message}</p>
-            </div>
-            <div className="modal-footer">
-              <button className="btn btn-secondary" disabled={loading} onClick={onCancel} type="button">
-                {cancelLabel}
-              </button>
-              <button className={`btn btn-${confirmVariant}`} disabled={loading} onClick={onConfirm} ref={confirmRef} type="button">
-                {loading ? "Eliminando..." : confirmLabel}
-              </button>
-            </div>
+    <dialog
+      aria-labelledby="confirm-dialog-title"
+      onClose={handleCancel}
+      ref={dialogRef}
+      role="alertdialog"
+    >
+      <div className="modal-dialog modal-dialog-centered" role="none">
+        <div className="modal-content shadow">
+          <div className="modal-header">
+            <h5 className="modal-title" id="confirm-dialog-title">
+              {title}
+            </h5>
+            <button aria-label="Cerrar" className="btn-close" disabled={loading} onClick={handleCancel} type="button" />
+          </div>
+          <div className="modal-body">
+            <p className="mb-0">{message}</p>
+          </div>
+          <div className="modal-footer">
+            <button className="btn btn-secondary" disabled={loading} onClick={handleCancel} type="button">
+              {cancelLabel}
+            </button>
+            <button className={`btn btn-${confirmVariant}`} disabled={loading} onClick={onConfirm} ref={confirmRef} type="button">
+              {loading ? loadingLabel : confirmLabel}
+            </button>
           </div>
         </div>
-      </dialog>
-    </>
+      </div>
+    </dialog>
   );
 };
 

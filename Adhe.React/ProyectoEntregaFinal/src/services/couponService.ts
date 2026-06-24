@@ -1,5 +1,6 @@
 import {
   collection,
+  getDoc,
   getDocs,
   addDoc,
   doc,
@@ -9,8 +10,8 @@ import {
   where,
   type DocumentData,
   type DocumentReference,
+  type DocumentSnapshot,
   type QuerySnapshot,
-  QueryDocumentSnapshot,
   Query,
 } from "firebase/firestore";
 
@@ -103,13 +104,12 @@ export const couponService: {
       return { valid: false, error: "Este cupón ha alcanzado su límite de usos" };
     }
 
-    return { valid: true, discountValue: coupon.discountValue };
+    return { valid: true, discountValue: coupon.discountValue, id: coupon.id, expiresAt: coupon.expiresAt ?? null };
   },
 
   incrementUsedCount: async (id: string): Promise<void> => {
-    const snap: QuerySnapshot<DocumentData> = await getDocs(collection(db, COUPONS_COLLECTION));
-    const coup: QueryDocumentSnapshot<DocumentData> | undefined = snap.docs.find((d) => d.id === id);
-    if (coup) {
+    const coup: DocumentSnapshot<DocumentData> = await getDoc(doc(db, COUPONS_COLLECTION, id));
+    if (coup.exists()) {
       const currentCount: number = Number(coup.data().usedCount ?? 0);
       await updateDoc(doc(db, COUPONS_COLLECTION, id), { usedCount: currentCount + 1, updatedAt: new Date().toISOString() });
     }

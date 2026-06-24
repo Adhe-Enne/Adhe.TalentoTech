@@ -1,13 +1,21 @@
-import React from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Badge, Button } from "react-bootstrap";
 import { FaTrash } from "react-icons/fa";
 
 import type { Coupon } from "../../../models";
 
+import useCoupons from "../../../hooks/useCoupons";
+import useNotification from "../../../hooks/useNotification";
+import ToggleSwitch from "../../ui/ToggleSwitch";
+
+const today: string = ((): string => {
+  const d: Date = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+})();
+
 interface CouponItemProps {
   coupon: Coupon;
-  onDelete: (id: string) => void;
-  onToggle: (id: string, current: boolean) => void;
+  onDeleteRequest: (id: string, label: string) => void;
 }
 
 const getStatusBadge: (coupon: Coupon) => { label: string; variant: string } = (coupon: Coupon) => {
@@ -24,8 +32,50 @@ const getStatusBadge: (coupon: Coupon) => { label: string; variant: string } = (
 };
 
 const CouponItem: React.FC<CouponItemProps> = (props) => {
-  const { coupon, onDelete, onToggle } = props;
+  const { coupon, onDeleteRequest } = props;
   const badge: { label: string; variant: string } = getStatusBadge(coupon);
+  const { updateCoupon } = useCoupons();
+  const { setNotification } = useNotification();
+  const [isEditingDate, setIsEditingDate] = useState(false);
+  const [editDate, setEditDate] = useState("");
+  const dateInputRef: React.RefObject<HTMLInputElement | null> = useRef<HTMLInputElement | null>(null);
+
+  useEffect((): void => {
+    if (isEditingDate && dateInputRef.current) {
+      dateInputRef.current.focus();
+    }
+  }, [isEditingDate]);
+
+  const handleToggle: () => void = useCallback((): void => {
+    updateCoupon(coupon.id, { isEnabled: !coupon.isEnabled });
+    setNotification(coupon.isEnabled ? "Cupon desactivado" : "Cupon activado", 2000, "info");
+  }, [coupon.id, coupon.isEnabled, updateCoupon, setNotification]);
+
+  const handleDateClick: () => void = useCallback((): void => {
+    setEditDate(coupon.expiresAt ?? "");
+    setIsEditingDate(true);
+  }, [coupon.expiresAt]);
+
+  const handleDateSave: () => void = useCallback((): void => {
+    setIsEditingDate(false);
+    const newDate: string | null = editDate || null;
+    if (newDate === (coupon.expiresAt ?? null)) { return; }
+    updateCoupon(coupon.id, { expiresAt: newDate });
+    setNotification(newDate ? "Fecha de vencimiento actualizada" : "Vencimiento eliminado", 2000, "success");
+  }, [editDate, coupon.id, coupon.expiresAt, updateCoupon, setNotification]);
+
+  const handleDateCancel: () => void = useCallback((): void => {
+    setIsEditingDate(false);
+    setEditDate(coupon.expiresAt ?? "");
+  }, [coupon.expiresAt]);
+
+  const handleDateKeyDown: (e: React.KeyboardEvent) => void = useCallback(
+    (e: React.KeyboardEvent): void => {
+      if (e.key === "Enter") { handleDateSave(); }
+      if (e.key === "Escape") { handleDateCancel(); }
+    },
+    [handleDateSave, handleDateCancel],
+  );
 
   return (
     <tr>
@@ -42,43 +92,40 @@ const CouponItem: React.FC<CouponItemProps> = (props) => {
         {coupon.usedCount}
         {coupon.usageLimit !== null && coupon.usageLimit !== undefined ? ` / ${coupon.usageLimit}` : ""}
       </td>
-      <td>{coupon.expiresAt ? new Date(coupon.expiresAt).toLocaleDateString() : "Sin vencimiento"}</td>
       <td>
-        <button
-          aria-checked={coupon.isEnabled}
-          aria-label={`${coupon.isEnabled ? "Desactivar" : "Activar"} cupon ${coupon.code}`}
-          className="btn btn-sm"
-          onClick={() => onToggle(coupon.id, coupon.isEnabled)}
-          role="switch"
-          style={{
-            width: 44,
-            height: 24,
-            borderRadius: 999,
-            background: coupon.isEnabled ? "#0f6670" : "#6c757d",
-            border: "none",
-            cursor: "pointer",
-            position: "relative",
-            padding: 0,
-            transition: "background 200ms ease",
-          }}
-        >
-          <span
-            style={{
-              position: "absolute",
-              top: 2,
-              left: coupon.isEnabled ? 22 : 2,
-              width: 20,
-              height: 20,
-              borderRadius: "50%",
-              background: "#fff",
-              boxShadow: "0 1px 3px rgba(0,0,0,0.12)",
-              transition: "transform 200ms ease",
-            }}
+        {isEditingDate ? (
+          <input
+            className="form-control form-control-sm"
+            min={today}
+            onBlur={handleDateSave}
+            onChange={(e) => setEditDate(e.target.value)}
+            onKeyDown={handleDateKeyDown}
+            ref={dateInputRef}
+            type="date"
+            value={editDate}
           />
-        </button>
+        ) : (
+          <span
+            aria-label="Editar fecha de vencimiento"
+            onClick={handleDateClick}
+            onKeyDown={(e: React.KeyboardEvent) => { if (e.key === "Enter") { handleDateClick(); } }}
+            role="button"
+            style={{ cursor: "pointer", borderBottom: "1px dashed #aaa" }}
+            tabIndex={0}
+          >
+            {coupon.expiresAt ? new Date(coupon.expiresAt).toLocaleDateString() : "Sin vencimiento"}
+          </span>
+        )}
       </td>
       <td>
-        <Button aria-label={`Eliminar cupon ${coupon.code}`} onClick={() => onDelete(coupon.id)} size="sm" variant="outline-danger">
+        <ToggleSwitch
+          checked={coupon.isEnabled}
+          label={`${coupon.isEnabled ? "Desactivar" : "Activar"} cupon ${coupon.code}`}
+          onToggle={handleToggle}
+        />
+      </td>
+      <td>
+        <Button aria-label={`Eliminar cupon ${coupon.code}`} onClick={() => onDeleteRequest(coupon.id, coupon.code)} size="sm" variant="outline-danger">
           <FaTrash className="me-1" />
           Eliminar
         </Button>

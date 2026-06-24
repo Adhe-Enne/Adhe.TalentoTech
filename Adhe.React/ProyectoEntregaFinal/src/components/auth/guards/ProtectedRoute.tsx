@@ -1,33 +1,28 @@
 import React from "react";
 import { Navigate, useLocation, type Location } from "react-router-dom";
 
-import useAuth from "../../hooks/useAuth";
+import useAuth from "../../../hooks/useAuth";
+import LoadingSpinner from "../../ui/LoadingSpinner";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
-  rolesPermitidos?: ("admin" | "user")[];
+  allowedRoles?: ("admin" | "user")[];
 }
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = (props) => {
-  const { children, rolesPermitidos } = props;
+  const { allowedRoles, children } = props;
   const { user, loading } = useAuth();
   const location: Location = useLocation();
 
   if (loading) {
-    return (
-      <div className="d-flex justify-content-center align-items-center" style={{ minHeight: "60vh" }}>
-        <div className="spinner-border" role="status">
-          <span className="visually-hidden">Verificando sesión...</span>
-        </div>
-      </div>
-    );
+    return <LoadingSpinner message="Verificando sesión..." />;
   }
 
   if (!user) {
     return <Navigate replace state={{ from: location }} to="/login" />;
   }
 
-  if (rolesPermitidos && !rolesPermitidos.includes(user.rol)) {
+  if (allowedRoles && !allowedRoles.includes(user.rol)) {
     return <Navigate replace to="/" />;
   }
 

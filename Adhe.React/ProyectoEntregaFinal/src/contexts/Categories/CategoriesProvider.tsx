@@ -33,5 +33,3 @@ export const CategoriesProvider: React.FC<ProviderProps> = (props) => {
 
   return <CategoriesContext.Provider value={value}>{children}</CategoriesContext.Provider>;
 };
-
-export default CategoriesProvider;

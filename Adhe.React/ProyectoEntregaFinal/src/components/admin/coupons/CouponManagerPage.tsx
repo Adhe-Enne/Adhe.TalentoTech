@@ -1,76 +1,51 @@
-import React from "react";
+import React, { useCallback, useMemo } from "react";
 
-import type { Coupon } from "../../../models";
-
+import useConfirmDelete from "../../../hooks/useConfirmDelete";
+import useCoupons from "../../../hooks/useCoupons";
+import useNotification from "../../../hooks/useNotification";
+import { couponService } from "../../../services/couponService";
 import ConfirmDialog from "../../ui/ConfirmDialog";
 import HelmetMeta from "../../ui/HelmetMeta";
 import CouponForm from "./CouponForm";
 import CouponList from "./CouponList";
 
-interface CouponManagerPageProps {
-  code: string;
-  coupons: Coupon[];
-  deleteTarget: { id: string; code: string } | null;
-  deleting: boolean;
-  discountValue: string;
-  error: string | null;
-  errors: { code?: string; discount?: string };
-  loading: boolean;
-  submitting: boolean;
-  onCodeChange: (v: string) => void;
-  onCreate: () => Promise<void>;
-  onDeleteCancel: () => void;
-  onDeleteConfirm: () => Promise<void>;
-  onDeleteRequest: (id: string) => void;
-  onDiscountChange: (v: string) => void;
-  onRetry: () => void;
-  onToggle: (id: string, current: boolean) => void;
-}
+const CouponManagerPage: React.FC = () => {
+  const { fetchCoupons } = useCoupons();
+  const { setNotification } = useNotification();
+  const { deleteTarget: rawDeleteTarget, deleting, handleDeleteRequest: baseDeleteRequest, handleDeleteCancel, handleDeleteConfirm: baseDeleteConfirm } = useConfirmDelete();
 
-const CouponManagerPage: React.FC<CouponManagerPageProps> = (props) => {
-  const {
-    code,
-    coupons,
-    deleteTarget,
-    deleting,
-    discountValue,
-    error,
-    errors,
-    loading,
-    submitting,
-    onCodeChange,
-    onCreate,
-    onDeleteCancel,
-    onDeleteConfirm,
-    onDeleteRequest,
-    onDiscountChange,
-    onRetry,
-    onToggle,
-  } = props;
+  const deleteTarget: { id: string; code: string } | null = useMemo(
+    () => (rawDeleteTarget ? { id: rawDeleteTarget.id, code: rawDeleteTarget.label } : null),
+    [rawDeleteTarget],
+  );
+
+  const handleDeleteConfirm: () => Promise<void> = useCallback(async () => {
+    const success: boolean = await baseDeleteConfirm(
+      (id: string) => couponService.deleteCoupon(id),
+      () => { fetchCoupons(); },
+    );
+    if (success && deleteTarget) {
+      setNotification(`Cupon ${deleteTarget.code} eliminado`, 3000, "success");
+    } else if (!success) {
+      setNotification("Error al eliminar cupon", 3000, "danger");
+    }
+  }, [baseDeleteConfirm, deleteTarget, fetchCoupons, setNotification]);
 
   return (
     <div>
       <HelmetMeta description="Gestiona tus cupones en Talento Tech." title="Admin | Cupones" />
       <h3 className="mb-4">Gestion de Cupones</h3>
-      <CouponForm
-        code={code}
-        discountValue={discountValue}
-        errors={errors}
-        onCodeChange={onCodeChange}
-        onDiscountChange={onDiscountChange}
-        onSubmit={onCreate}
-        submitting={submitting}
-      />
-      <CouponList coupons={coupons} error={error} loading={loading} onDelete={onDeleteRequest} onRetry={onRetry} onToggle={onToggle} />
+      <CouponForm />
+      <CouponList onDeleteRequest={baseDeleteRequest} />
       <ConfirmDialog
         confirmLabel="Eliminar"
         confirmVariant="danger"
         loading={deleting}
-        message={`¿Eliminar el cupón ${deleteTarget?.code}? No se podrá deshacer.`}
-        onCancel={onDeleteCancel}
-        onConfirm={onDeleteConfirm}
+        message={`¿Eliminar el cupon ${deleteTarget?.code}? No se podra deshacer.`}
+        onCancel={handleDeleteCancel}
+        onConfirm={handleDeleteConfirm}
         open={deleteTarget !== null}
-        title="Eliminar cupón"
+        title="Eliminar cupon"
       />
     </div>
   );

@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 
-import type { UserInfo } from "../../services/authService";
+import type { UserInfo } from "../../types/auth";
 import type { ProviderProps } from "../../types/ProviderProps";
 import type { AuthContextType } from "./AuthTypes";
 
@@ -20,21 +20,15 @@ export const AuthProvider: React.FC<ProviderProps> = (props) => {
     return unsubscribe;
   }, []);
 
-  const login: (email: string, password: string) => Promise<UserInfo> = useCallback(
-    async (email: string, password: string): Promise<UserInfo> => {
-      const userInfo: UserInfo = await authService.login(email, password);
-      return userInfo;
-    },
-    [],
-  );
+  const login: (email: string, password: string) => Promise<UserInfo> = useCallback(async (email: string, password: string): Promise<UserInfo> => {
+    const userInfo: UserInfo = await authService.login(email, password);
+    return userInfo;
+  }, []);
 
-  const signup: (email: string, password: string) => Promise<UserInfo> = useCallback(
-    async (email: string, password: string): Promise<UserInfo> => {
-      const userInfo: UserInfo = await authService.signup(email, password);
-      return userInfo;
-    },
-    [],
-  );
+  const signup: (email: string, password: string) => Promise<UserInfo> = useCallback(async (email: string, password: string): Promise<UserInfo> => {
+    const userInfo: UserInfo = await authService.signup(email, password);
+    return userInfo;
+  }, []);
 
   const logout: () => Promise<void> = useCallback(async () => {
     await authService.logout();
@@ -42,10 +36,7 @@ export const AuthProvider: React.FC<ProviderProps> = (props) => {
 
   const isAdmin: boolean = user?.rol === "admin";
 
-  const value: AuthContextType = useMemo(
-    () => ({ user, loading, login, signup, logout, isAdmin }),
-    [user, loading, login, signup, logout, isAdmin],
-  );
+  const value: AuthContextType = useMemo(() => ({ user, loading, login, signup, logout, isAdmin }), [user, loading, login, signup, logout, isAdmin]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };

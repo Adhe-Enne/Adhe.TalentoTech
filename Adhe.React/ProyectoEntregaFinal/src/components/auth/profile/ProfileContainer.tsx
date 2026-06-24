@@ -1,8 +1,8 @@
 import React, { useCallback, useState } from "react";
 import { useNavigate, type NavigateFunction } from "react-router-dom";
 
-import useAuth from "../../hooks/useAuth";
-import useNotification from "../../hooks/useNotification";
+import useAuth from "../../../hooks/useAuth";
+import useNotification from "../../../hooks/useNotification";
 import Profile from "./Profile";
 
 const ProfileContainer: React.FC = () => {
@@ -13,6 +13,7 @@ const ProfileContainer: React.FC = () => {
   const [loggingOut, setLoggingOut] = useState<boolean>(false);
 
   const handleLogout: () => Promise<void> = useCallback(async () => {
+    setShowConfirm(false);
     setLoggingOut(true);
     try {
       await logout();
@@ -22,7 +23,6 @@ const ProfileContainer: React.FC = () => {
       setNotification("Error al cerrar sesión", 3000, "danger");
     } finally {
       setLoggingOut(false);
-      setShowConfirm(false);
     }
   }, [logout, navigate, setNotification]);
 

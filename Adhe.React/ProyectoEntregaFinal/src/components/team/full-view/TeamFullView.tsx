@@ -2,7 +2,7 @@ import React, { useState } from "react";
 
 import type { Person } from "../../../models";
 
-import ContactBioModal from "./bioModal/ContactBioModal";
+import ContactBioModal from "./bio-modal/ContactBioModal";
 import styles from "./TeamFullView.module.css";
 import TeamMemberCardExpanded from "./TeamMemberCardExpanded";
 
@@ -28,10 +28,18 @@ const TeamFullView: React.FC<Props> = (props) => {
   }
 
   if (loading) {
-    return <div aria-live="polite" className={styles.loading} role="status">Cargando equipo...</div>;
+    return (
+      <div aria-live="polite" className={styles.loading} role="status">
+        Cargando equipo...
+      </div>
+    );
   }
   if (error) {
-    return <div aria-live="assertive" className={styles.error} role="alert">Error: {error}</div>;
+    return (
+      <div aria-live="assertive" className={styles.error} role="alert">
+        Error: {error}
+      </div>
+    );
   }
 
   return (

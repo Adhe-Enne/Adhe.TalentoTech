@@ -2,7 +2,7 @@ import React, { useCallback, useState } from "react";
 import { Alert, Button, Spinner } from "react-bootstrap";
 import { Link } from "react-router-dom";
 
-import HelmetMeta from "../ui/HelmetMeta";
+import HelmetMeta from "../../ui/HelmetMeta";
 
 interface LoginProps {
   email: string;

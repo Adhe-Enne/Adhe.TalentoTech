@@ -1,4 +1,4 @@
-import type { UserInfo } from "../../services/authService";
+import type { UserInfo } from "../../types/auth";
 
 export type AuthContextType = {
   user: UserInfo | null;

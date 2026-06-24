@@ -18,7 +18,6 @@ interface TagAutocompleteProps {
 }
 
 const TagAutocomplete: React.FC<TagAutocompleteProps> = (props) => {
-  
   const { allTags, categoriaId, selectedTags, tagQuery, onAdd, onQueryChange, onRemove, showSuggestions, onShowSuggestions, suggestionsRef } = props;
 
   const queryLower: string = tagQuery.trim().toLowerCase();
@@ -90,14 +89,16 @@ const TagAutocomplete: React.FC<TagAutocompleteProps> = (props) => {
         )}
       </div>
       <div className="mt-2">
-        {selectedTags.map((t: string) => (
-          <span className="badge bg-secondary me-1" key={t}>
-            {t}{" "}
-            <button aria-label={`Eliminar tag ${t}`} className="btn btn-sm btn-link text-white ms-1" onClick={() => onRemove(t)} type="button">
-              ×
-            </button>
-          </span>
-        ))}
+        {allTags
+          .filter((t) => selectedTags.includes(t.id))
+          .map((t) => (
+            <span className="badge bg-secondary me-1" key={t.id}>
+              {t.name}{" "}
+              <button aria-label={`Eliminar tag ${t.name}`} className="btn btn-sm btn-link text-white ms-1" onClick={() => onRemove(t.id)} type="button">
+                ×
+              </button>
+            </span>
+          ))}
       </div>
     </div>
   );

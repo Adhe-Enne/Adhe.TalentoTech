@@ -1,8 +1,8 @@
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useMemo } from "react";
 import { toast } from "react-toastify";
 
 import type { ProviderProps } from "../../types/ProviderProps";
-import type { NotificationContextType, NotificationItem, NotificationVariant, SetNotificationFn } from "./NotificationTypes";
+import type { NotificationContextType, NotificationVariant, SetNotificationFn } from "./NotificationTypes";
 
 import NotificationContext from "./NotificationContext";
 
@@ -21,15 +21,6 @@ let toastIdCounter: number = 1;
 
 export const NotificationProvider: React.FC<ProviderProps> = (props) => {
   const { children } = props;
-  const [notifs] = useState<NotificationItem[]>([]);
-
-  const dismiss: (id?: number) => void = useCallback((id?: number) => {
-    if (id === undefined) {
-      toast.dismiss();
-    } else {
-      toast.dismiss(id);
-    }
-  }, []);
 
   const setNotification: SetNotificationFn = useCallback((message: string | null, duration = 3000, variant?: NotificationVariant): void => {
     if (message === null) {
@@ -44,7 +35,7 @@ export const NotificationProvider: React.FC<ProviderProps> = (props) => {
     });
   }, []);
 
-  const value: NotificationContextType = useMemo(() => ({ notifications: notifs, setNotification, dismiss }), [notifs, setNotification, dismiss]);
+  const value: NotificationContextType = useMemo(() => ({ setNotification }), [setNotification]);
 
   return <NotificationContext.Provider value={value}>{children}</NotificationContext.Provider>;
 };

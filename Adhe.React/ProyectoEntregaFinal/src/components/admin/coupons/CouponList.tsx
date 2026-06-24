@@ -1,21 +1,16 @@
 import React from "react";
 import { Alert, Button, Spinner, Table } from "react-bootstrap";
 
-import type { Coupon } from "../../../models";
-
+import useCoupons from "../../../hooks/useCoupons";
 import CouponItem from "./CouponItem";
 
 interface CouponListProps {
-  coupons: Coupon[];
-  error: string | null;
-  loading: boolean;
-  onDelete: (id: string) => void;
-  onRetry: () => void;
-  onToggle: (id: string, current: boolean) => void;
+  onDeleteRequest: (id: string, label: string) => void;
 }
 
 const CouponList: React.FC<CouponListProps> = (props) => {
-  const { coupons, loading, error, onDelete, onToggle, onRetry } = props;
+  const { onDeleteRequest } = props;
+  const { coupons, loading, error, fetchCoupons } = useCoupons();
 
   if (loading) {
     return (
@@ -32,7 +27,7 @@ const CouponList: React.FC<CouponListProps> = (props) => {
     return (
       <Alert className="d-flex align-items-center gap-2" variant="danger">
         <span>{error}</span>
-        <Button aria-label="Reintentar carga de cupones" className="ms-auto" onClick={onRetry} size="sm" variant="outline-danger">
+        <Button aria-label="Reintentar carga de cupones" className="ms-auto" onClick={fetchCoupons} size="sm" variant="outline-danger">
           Reintentar
         </Button>
       </Alert>
@@ -63,7 +58,7 @@ const CouponList: React.FC<CouponListProps> = (props) => {
         </thead>
         <tbody>
           {coupons.map((c) => (
-            <CouponItem coupon={c} key={c.id} onDelete={onDelete} onToggle={onToggle} />
+            <CouponItem coupon={c} key={c.id} onDeleteRequest={onDeleteRequest} />
           ))}
         </tbody>
       </Table>

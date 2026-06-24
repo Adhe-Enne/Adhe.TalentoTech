@@ -1,6 +1,7 @@
-import React, { useEffect, useMemo, useRef, useState, useCallback } from "react";
+import React, { useEffect, useMemo } from "react";
 import { FaChevronLeft, FaChevronRight, FaTimes } from "react-icons/fa";
 
+import useHorizontalScroll from "../../../hooks/useHorizontalScroll";
 import styles from "./Product.module.css";
 
 interface Props {
@@ -24,22 +25,9 @@ const AdditionalImagesInput: React.FC<Props> = (props) => {
   const uid: string = React.useId();
   const id: string = inputId ?? uid;
   const previews: string[] = useMemo(() => files.map((f) => URL.createObjectURL(f)), [files]);
-  const scrollRef: React.RefObject<HTMLDivElement | null> = useRef<HTMLDivElement | null>(null);
-  const [canScrollLeft, setCanScrollLeft] = useState(false);
-  const [canScrollRight, setCanScrollRight] = useState(false);
+  const { canScrollLeft, canScrollRight, scrollRef, refreshScrollState, scrollByOffset } = useHorizontalScroll();
 
   const hasItems: boolean = (existingUrls?.length ?? 0) > 0 || previews.length > 0;
-
-  const updateScrollState: () => void = useCallback(() => {
-    const el: HTMLDivElement | null = scrollRef.current;
-    if (!el) {
-      setCanScrollLeft(false);
-      setCanScrollRight(false);
-      return;
-    }
-    setCanScrollLeft(el.scrollLeft > 0);
-    setCanScrollRight(el.scrollLeft + el.clientWidth < el.scrollWidth - 1);
-  }, []);
 
   useEffect(() => {
     return (): void => {
@@ -47,20 +35,9 @@ const AdditionalImagesInput: React.FC<Props> = (props) => {
     };
   }, [previews]);
 
-  useEffect(() => {
-    updateScrollState();
-    const el: HTMLDivElement | null = scrollRef.current;
-    if (!el) {
-      return undefined;
-    }
-    const onScroll: () => void = () => updateScrollState();
-    el.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", updateScrollState);
-    return (): void => {
-      el.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", updateScrollState);
-    };
-  }, [previews, existingUrls, updateScrollState]);
+  useEffect((): void => {
+    refreshScrollState();
+  }, [previews, existingUrls, refreshScrollState]);
 
   function handleFiles(e: React.ChangeEvent<HTMLInputElement>): void {
     const list: FileList | null = e.target.files;
@@ -81,14 +58,6 @@ const AdditionalImagesInput: React.FC<Props> = (props) => {
       return;
     }
     onExistingChange(existingUrls.filter((_, idx) => idx !== i));
-  }
-
-  function scrollByOffset(offset: number): void {
-    const el: HTMLDivElement | null = scrollRef.current;
-    if (!el) {
-      return;
-    }
-    el.scrollBy({ left: offset, behavior: "smooth" });
   }
 
   return (

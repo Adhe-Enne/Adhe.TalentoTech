@@ -8,7 +8,7 @@ import useAsyncCollection from "../../hooks/useAsyncCollection";
 import { teamService } from "../../services/teamService";
 import TeamContext from "./TeamContext";
 
-const TeamProvider: React.FC<ProviderProps> = (props) => {
+export const TeamProvider: React.FC<ProviderProps> = (props) => {
   const { children } = props;
   const fetchAllTeam: () => Promise<Person[]> = useCallback(() => teamService.fetchTeam(), []);
   const { data: team, error, loading, reload } = useAsyncCollection(fetchAllTeam);
@@ -17,5 +17,3 @@ const TeamProvider: React.FC<ProviderProps> = (props) => {
 
   return <TeamContext.Provider value={value}>{children}</TeamContext.Provider>;
 };
-
-export default TeamProvider;

@@ -177,3 +177,29 @@ input[type="number"],
 textarea {
   border-radius: 8px;
 }
+
+/* Cart list styles */
+.cart-list .list-group {
+  margin-top: 1rem;
+  border: none;
+}
+
+.cart-list .list-group-item {
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 8px;
+  margin-bottom: 0.75rem;
+  padding: 0.85rem 1rem;
+  background: #ffffff;
+}
+
+.cart-list .list-group-item img {
+  width: 64px;
+  height: 64px;
+  object-fit: cover;
+  border-radius: 6px;
+}
+
+.cart-list .d-flex.justify-content-between.mt-3 {
+  border-top: 1px dashed rgba(0, 0, 0, 0.06);
+  padding-top: 12px;
+}

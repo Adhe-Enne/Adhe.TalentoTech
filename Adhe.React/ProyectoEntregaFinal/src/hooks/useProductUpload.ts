@@ -13,9 +13,7 @@ interface UseProductUploadReturn {
   uploadMainImage: (file: File) => Promise<string>;
 }
 
-const useProductUpload: (
-  createTag: (name: string, categoryId: string) => Promise<Tag | undefined>,
-) => UseProductUploadReturn = (
+const useProductUpload: (createTag: (name: string, categoryId: string) => Promise<Tag | undefined>) => UseProductUploadReturn = (
   createTag: (name: string, categoryId: string) => Promise<Tag | undefined>,
 ): UseProductUploadReturn => {
   const { fileToDataUrl, simulateDelay } = useCancelable();

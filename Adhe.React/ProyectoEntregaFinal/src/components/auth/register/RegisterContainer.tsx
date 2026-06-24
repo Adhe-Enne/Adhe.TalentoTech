@@ -1,10 +1,10 @@
 import React, { useCallback, useState } from "react";
 import { useNavigate, type NavigateFunction } from "react-router-dom";
 
-import type { UserInfo } from "../../services/authService";
+import type { UserInfo } from "../../../types/auth";
 
-import useAuth from "../../hooks/useAuth";
-import useNotification from "../../hooks/useNotification";
+import useAuth from "../../../hooks/useAuth";
+import useNotification from "../../../hooks/useNotification";
 import Register from "./Register";
 
 const RegisterContainer: React.FC = () => {

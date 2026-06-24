@@ -1,10 +1,10 @@
 import React from "react";
 import { Badge, Button } from "react-bootstrap";
 
-import type { UserInfo } from "../../services/authService";
+import type { UserInfo } from "../../../types/auth";
 
-import ConfirmDialog from "../ui/ConfirmDialog";
-import HelmetMeta from "../ui/HelmetMeta";
+import ConfirmDialog from "../../ui/ConfirmDialog";
+import HelmetMeta from "../../ui/HelmetMeta";
 
 interface ProfileProps {
   loggingOut: boolean;
@@ -51,6 +51,7 @@ const Profile: React.FC<ProfileProps> = (props) => {
         confirmLabel="Cerrar sesión"
         confirmVariant="danger"
         loading={loggingOut}
+        loadingLabel="Cerrando sesión..."
         message="¿Estás seguro de que querés cerrar la sesión?"
         onCancel={onConfirmClose}
         onConfirm={onLogout}

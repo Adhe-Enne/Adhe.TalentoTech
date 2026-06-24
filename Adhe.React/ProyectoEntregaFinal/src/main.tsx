@@ -5,16 +5,13 @@ import { createRoot } from "react-dom/client";
 import { HelmetProvider } from "react-helmet-async";
 
 import App from "./App.tsx";
-import { CartProvider } from "./contexts/Cart/CartProvider.tsx";
 
 const rootElement: HTMLElement | null = document.getElementById("root");
 if (rootElement) {
   createRoot(rootElement).render(
     <StrictMode>
       <HelmetProvider>
-        <CartProvider>
-          <App />
-        </CartProvider>
+        <App />
       </HelmetProvider>
     </StrictMode>,
   );

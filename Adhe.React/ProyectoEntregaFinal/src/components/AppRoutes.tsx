@@ -2,10 +2,10 @@ import React, { lazy, Suspense, type JSX } from "react";
 import { Navigate, Routes, Route } from "react-router-dom";
 
 import AppProviders from "./AppProviders";
-import GuestRoute from "./auth/GuestRoute";
-import ProtectedRoute from "./auth/ProtectedRoute";
-import CartContainer from "./cart/CartContainer";
-import HomeContainer from "./home/HomeContainer";
+import GuestRoute from "./auth/guards/GuestRoute";
+import ProtectedRoute from "./auth/guards/ProtectedRoute";
+import Cart from "./cart/Cart";
+import Home from "./home/Home";
 import Layout from "./layout/Layout";
 import HelmetMeta from "./ui/HelmetMeta";
 import NotificationStack from "./ui/NotificationStack";
@@ -16,16 +16,15 @@ const ContactContainer: React.LazyExoticComponent<React.ComponentType> = lazy(()
 const TeamFullViewContainer: React.LazyExoticComponent<React.ComponentType> = lazy(() => import("./team/full-view/TeamFullViewContainer"));
 const CreateProductFlow: React.LazyExoticComponent<React.ComponentType> = lazy(() => import("./admin/products/CreateProductFlow"));
 const ProductDetailContainer: React.LazyExoticComponent<React.ComponentType> = lazy(() => import("./product/product-detail/ProductDetailContainer"));
-const CouponManager: React.LazyExoticComponent<React.ComponentType> = lazy(() => import("./admin/coupons/CouponManagerContainer"));
-const AdminProductListContainer: React.LazyExoticComponent<React.ComponentType> = lazy(() => import("./admin/products/AdminProductListContainer"));
+const CouponManager: React.LazyExoticComponent<React.ComponentType> = lazy(() => import("./admin/coupons/CouponManagerPage"));
+const AdminProductList: React.LazyExoticComponent<React.ComponentType> = lazy(() => import("./admin/products/AdminProductList"));
 const EditProductFlow: React.LazyExoticComponent<React.ComponentType> = lazy(() => import("./admin/products/EditProductFlow"));
-const LoginContainer: React.LazyExoticComponent<React.ComponentType> = lazy(() => import("./auth/LoginContainer"));
-const RegisterContainer: React.LazyExoticComponent<React.ComponentType> = lazy(() => import("./auth/RegisterContainer"));
-const ProfileContainer: React.LazyExoticComponent<React.ComponentType> = lazy(() => import("./auth/ProfileContainer"));
+const LoginContainer: React.LazyExoticComponent<React.ComponentType> = lazy(() => import("./auth/login/LoginContainer"));
+const RegisterContainer: React.LazyExoticComponent<React.ComponentType> = lazy(() => import("./auth/register/RegisterContainer"));
+const ProfileContainer: React.LazyExoticComponent<React.ComponentType> = lazy(() => import("./auth/profile/ProfileContainer"));
 
 const adminFallback: JSX.Element = <div className="text-center p-4">Cargando panel admin...</div>;
 const pageFallback: JSX.Element = <div className="text-center p-4">Cargando...</div>;
-const authFallback: JSX.Element = <div className="text-center p-4">Cargando...</div>;
 
 const AppRoutes: React.FC = (): JSX.Element => {
   return (
@@ -36,7 +35,7 @@ const AppRoutes: React.FC = (): JSX.Element => {
         <Route
           element={
             <GuestRoute>
-              <Suspense fallback={authFallback}>
+              <Suspense fallback={pageFallback}>
                 <LoginContainer />
               </Suspense>
             </GuestRoute>
@@ -46,7 +45,7 @@ const AppRoutes: React.FC = (): JSX.Element => {
         <Route
           element={
             <GuestRoute>
-              <Suspense fallback={authFallback}>
+              <Suspense fallback={pageFallback}>
                 <RegisterContainer />
               </Suspense>
             </GuestRoute>
@@ -61,9 +60,9 @@ const AppRoutes: React.FC = (): JSX.Element => {
             </ProtectedRoute>
           }
         >
-          <Route element={<HomeContainer />} index />
-          <Route element={<HomeContainer />} path="/" />
-          <Route element={<HomeContainer />} path="productos" />
+          <Route element={<Home />} index />
+          <Route element={<Home />} path="/" />
+          <Route element={<Home />} path="productos" />
           <Route
             element={
               <Suspense fallback={pageFallback}>
@@ -72,7 +71,7 @@ const AppRoutes: React.FC = (): JSX.Element => {
             }
             path="contacto"
           />
-          <Route element={<CartContainer />} path="carrito" />
+          <Route element={<Cart />} path="carrito" />
           <Route
             element={
               <Suspense fallback={pageFallback}>
@@ -101,7 +100,7 @@ const AppRoutes: React.FC = (): JSX.Element => {
 
         <Route
           element={
-            <ProtectedRoute rolesPermitidos={["admin"]}>
+            <ProtectedRoute allowedRoles={["admin"]}>
               <Suspense fallback={adminFallback}>
                 <AdminLayout />
               </Suspense>
@@ -110,7 +109,7 @@ const AppRoutes: React.FC = (): JSX.Element => {
           path="admin"
         >
           <Route element={<AdminDashboardContainer />} index />
-          <Route element={<AdminProductListContainer />} path="productos" />
+          <Route element={<AdminProductList />} path="productos" />
           <Route
             element={
               <Suspense fallback={pageFallback}>

@@ -1,10 +1,12 @@
-import React from "react";
-import { useParams } from "react-router-dom";
+import React, { useCallback } from "react";
+import { useNavigate, useParams, type NavigateFunction } from "react-router-dom";
 
 import type { Product } from "../../../models";
 import type { Tag } from "../../../models/Tag";
 
+import useCart from "../../../hooks/useCart";
 import useCategories from "../../../hooks/useCategories";
+import useNotification from "../../../hooks/useNotification";
 import { useProduct } from "../../../hooks/useProduct";
 import useProducts from "../../../hooks/useProducts";
 import useTags from "../../../hooks/useTags";
@@ -16,6 +18,28 @@ const ProductDetailContainer: React.FC = () => {
   const { loading } = useProducts();
   const { findById: findCategory } = useCategories();
   const { findById: findTag } = useTags();
+  const { addToCart } = useCart();
+  const { setNotification } = useNotification();
+  const navigate: NavigateFunction = useNavigate();
+
+  const handleAddToCart: (cantidad: number) => void = useCallback(
+    (cantidad: number) => {
+      if (!product) {
+        return;
+      }
+      if (product.stock <= 0) {
+        setNotification("Producto sin stock", 3000, "warning");
+        return;
+      }
+      addToCart(product, cantidad);
+      setNotification(`${product.name} fue agregado al carrito`, 3000, "success");
+    },
+    [addToCart, product, setNotification],
+  );
+
+  const handleBack: () => void = useCallback(() => {
+    navigate("/");
+  }, [navigate]);
 
   if (loading) {
     return (
@@ -63,7 +87,7 @@ const ProductDetailContainer: React.FC = () => {
   const categoryName: string | undefined = product?.categoryId ? findCategory(product.categoryId)?.name : undefined;
   const tags: Tag[] | undefined = product?.tagIds ? (product.tagIds.map((t) => findTag(t)).filter(Boolean) as Tag[]) : undefined;
 
-  return <ProductDetail categoryName={categoryName} product={product} tags={tags} />;
+  return <ProductDetail categoryName={categoryName} onAddToCart={handleAddToCart} onBack={handleBack} product={product} tags={tags} />;
 };
 
 export default ProductDetailContainer;

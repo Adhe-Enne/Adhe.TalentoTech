@@ -15,24 +15,24 @@ const AdminLayout: React.FC = () => {
         </NavLink>
       </header>
       <div className={styles.adminBody}>
-          <nav aria-label="Panel de administración" className={styles.sidebar}>
-            <NavLink aria-label="Dashboard" className={(props) => `${styles.sidebarLink}${props.isActive ? " " + styles.active : ""}`} end to="/admin">
-              <FaTachometerAlt aria-hidden="true" className="me-1" />
-              Dashboard
-            </NavLink>
-            <NavLink aria-label="Productos" className={(props) => `${styles.sidebarLink}${props.isActive ? " " + styles.active : ""}`} to="/admin/productos">
-              <FaBox aria-hidden="true" className="me-1" />
-              Productos
-            </NavLink>
-            <NavLink aria-label="Nuevo Producto" className={(props) => `${styles.sidebarLink}${props.isActive ? " " + styles.active : ""}`} to="/admin/productos/nuevo">
-              <FaPlus aria-hidden="true" className="me-1" />
-              Nuevo Producto
-            </NavLink>
-            <NavLink aria-label="Cupones" className={(props) => `${styles.sidebarLink}${props.isActive ? " " + styles.active : ""}`} to="/admin/cupones">
-              <FaTicketAlt aria-hidden="true" className="me-1" />
-              Cupones
-            </NavLink>
-          </nav>
+        <nav aria-label="Panel de administración" className={styles.sidebar}>
+          <NavLink aria-label="Dashboard" className={(props) => `${styles.sidebarLink}${props.isActive ? " " + styles.active : ""}`} end to="/admin">
+            <FaTachometerAlt aria-hidden="true" className="me-1" />
+            Dashboard
+          </NavLink>
+          <NavLink aria-label="Productos" className={(props) => `${styles.sidebarLink}${props.isActive ? " " + styles.active : ""}`} to="/admin/productos">
+            <FaBox aria-hidden="true" className="me-1" />
+            Productos
+          </NavLink>
+          <NavLink aria-label="Nuevo Producto" className={(props) => `${styles.sidebarLink}${props.isActive ? " " + styles.active : ""}`} to="/admin/productos/nuevo">
+            <FaPlus aria-hidden="true" className="me-1" />
+            Nuevo Producto
+          </NavLink>
+          <NavLink aria-label="Cupones" className={(props) => `${styles.sidebarLink}${props.isActive ? " " + styles.active : ""}`} to="/admin/cupones">
+            <FaTicketAlt aria-hidden="true" className="me-1" />
+            Cupones
+          </NavLink>
+        </nav>
         <main className={styles.content}>
           <Outlet />
         </main>

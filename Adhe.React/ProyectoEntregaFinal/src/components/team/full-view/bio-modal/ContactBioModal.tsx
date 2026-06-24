@@ -1,5 +1,4 @@
-import React, { useEffect } from "react";
-import { createPortal } from "react-dom";
+import React, { useEffect, useRef, type RefObject } from "react";
 
 import type { Person } from "../../../../models";
 
@@ -13,28 +12,40 @@ interface Props {
 
 const ContactBioModal: React.FC<Props> = (props) => {
   const { show, person, onClose } = props;
+  const dialogRef: RefObject<HTMLDialogElement | null> = useRef<HTMLDialogElement>(null);
 
-  useEffect(() => {
-    if (!show) {
-      return undefined;
+  useEffect((): void => {
+    const dialog: HTMLDialogElement | null = dialogRef.current;
+    if (!dialog) {
+      return;
     }
+    if (show && !dialog.open) {
+      dialog.showModal();
+    } else if (!show && dialog.open) {
+      dialog.close();
+    }
+  }, [show]);
 
-    function onKey(e: KeyboardEvent): void {
-      if (e.key === "Escape" || e.key === "Enter") {
+  useEffect((): (() => void) => {
+    const dialog: HTMLDialogElement | null = dialogRef.current;
+    if (!dialog) {
+      return (): void => undefined;
+    }
+    const onKey: (e: KeyboardEvent) => void = (e: KeyboardEvent): void => {
+      if (e.key === "Enter") {
         onClose();
       }
-    }
+    };
+    dialog.addEventListener("keydown", onKey);
+    return (): void => dialog.removeEventListener("keydown", onKey);
+  }, [onClose]);
 
-    document.addEventListener("keydown", onKey);
-    return (): void => document.removeEventListener("keydown", onKey);
-  }, [show, onClose]);
-
-  if (!show || !person) {
+  if (!person) {
     return null;
   }
 
-  const modal: React.ReactNode = (
-    <dialog aria-modal="true" className={modalStyles.modalOverlay} open>
+  return (
+    <dialog aria-modal="true" className={modalStyles.modalOverlay} onClose={onClose} ref={dialogRef}>
       <div className={modalStyles.modalDialog}>
         <div className={modalStyles.modalHeader}>
           <h4 className={modalStyles.modalTitle}>{person.name}</h4>
@@ -61,12 +72,6 @@ const ContactBioModal: React.FC<Props> = (props) => {
       </div>
     </dialog>
   );
-
-  if (typeof document === "undefined") {
-    return modal as React.ReactElement | null;
-  }
-
-  return createPortal(modal, document.body);
 };
 
 export default ContactBioModal;

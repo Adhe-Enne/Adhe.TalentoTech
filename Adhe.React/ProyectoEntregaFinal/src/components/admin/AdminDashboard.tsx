@@ -4,6 +4,7 @@ import { FaBox, FaCheckCircle, FaTag } from "react-icons/fa";
 import { Link } from "react-router-dom";
 
 import HelmetMeta from "../ui/HelmetMeta";
+import styles from "./AdminDashboard.module.css";
 
 interface AdminDashboardProps {
   activeCoupons: number;
@@ -41,17 +42,12 @@ const AdminDashboard: React.FC<AdminDashboardProps> = (props) => {
       <Row className="g-3">
         {metrics.map((m) => (
           <Col key={m.label} lg={3} sm={6} xs={12}>
-            <div className="card h-100 shadow-sm" style={{ borderRadius: 12 }}>
+            <div className={`${styles.card} card h-100 shadow-sm`}>
               <div className="card-body d-flex align-items-center gap-3 p-3">
-                <div
-                  className="d-flex align-items-center justify-content-center rounded-circle"
-                  style={{ width: 48, height: 48, background: "rgba(15, 102, 112, 0.08)", color: "#0f6670", fontSize: "1.25rem" }}
-                >
-                  {m.icon}
-                </div>
+                <div className={styles.iconWrapper}>{m.icon}</div>
                 <div>
-                  <div style={{ fontSize: "1.75rem", fontWeight: 700, lineHeight: 1, color: "#212529" }}>{m.value}</div>
-                  <div style={{ fontSize: "0.85rem", color: "#6c757d", marginTop: 2 }}>{m.label}</div>
+                  <div className={styles.value}>{m.value}</div>
+                  <div className={styles.label}>{m.label}</div>
                 </div>
               </div>
               {m.link && <Link aria-label={`Ir a ${m.label}`} className="stretched-link" to={m.link} />}

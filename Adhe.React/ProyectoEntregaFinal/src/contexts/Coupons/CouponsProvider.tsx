@@ -1,30 +1,17 @@
-import React, { useState, useCallback, useMemo } from "react";
+import React, { useCallback, useMemo } from "react";
 
 import type { Coupon, CouponCreatePayload, CouponUpdatePayload } from "../../models";
 import type { ProviderProps } from "../../types/ProviderProps";
 import type { CouponsContextType } from "./CouponsTypes";
 
+import useAsyncCollection from "../../hooks/useAsyncCollection";
 import { couponService } from "../../services/couponService";
 import CouponsContext from "./CouponsContext";
 
-const CouponsProvider: React.FC<ProviderProps> = (props) => {
+export const CouponsProvider: React.FC<ProviderProps> = (props) => {
   const { children } = props;
-  const [coupons, setCoupons] = useState<Coupon[]>([]);
-  const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
-
-  const fetchCoupons: () => Promise<void> = useCallback(async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const data: Coupon[] = await couponService.fetchCoupons();
-      setCoupons(data);
-    } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "Error al cargar cupones");
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+  const fetchAll: () => Promise<Coupon[]> = useCallback(() => couponService.fetchCoupons(), []);
+  const { data: coupons, loading, error, setData: setCoupons, setError, reload: fetchCoupons } = useAsyncCollection<Coupon>(fetchAll);
 
   const createCoupon: (data: CouponCreatePayload) => Promise<Coupon | undefined> = useCallback(async (data: CouponCreatePayload): Promise<Coupon | undefined> => {
     try {
@@ -32,28 +19,28 @@ const CouponsProvider: React.FC<ProviderProps> = (props) => {
       setCoupons((prev) => [created, ...prev]);
       return created;
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "Error al crear cupón");
+      setError(err instanceof Error ? err.message : "Error al crear cupon");
       return undefined;
     }
-  }, []);
+  }, [setCoupons, setError]);
 
   const deleteCoupon: (id: string) => Promise<void> = useCallback(async (id: string): Promise<void> => {
     try {
       await couponService.deleteCoupon(id);
       setCoupons((prev) => prev.filter((c) => c.id !== id));
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "Error al eliminar cupón");
+      setError(err instanceof Error ? err.message : "Error al eliminar cupon");
     }
-  }, []);
+  }, [setCoupons, setError]);
 
   const updateCoupon: (id: string, data: CouponUpdatePayload) => Promise<void> = useCallback(async (id: string, data: CouponUpdatePayload): Promise<void> => {
     try {
       await couponService.updateCoupon(id, data);
       setCoupons((prev) => prev.map((c) => (c.id === id ? { ...c, ...data } : c)));
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "Error al actualizar cupón");
+      setError(err instanceof Error ? err.message : "Error al actualizar cupon");
     }
-  }, []);
+  }, [setCoupons, setError]);
 
   const value: CouponsContextType = useMemo(
     () => ({ coupons, loading, error, fetchCoupons, createCoupon, deleteCoupon, updateCoupon }),
@@ -62,5 +49,3 @@ const CouponsProvider: React.FC<ProviderProps> = (props) => {
 
   return <CouponsContext.Provider value={value}>{children}</CouponsContext.Provider>;
 };
-
-export default CouponsProvider;

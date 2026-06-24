@@ -4,8 +4,8 @@ import { NavLink, Outlet, useLocation } from "react-router-dom";
 
 import "./Layout.css";
 import Footer from "./Footer";
+import NavLinks from "./NavLinks";
 import SearchForm from "./SearchForm";
-import UserToolbar from "./UserToolbar";
 
 interface LayoutProps {
   children?: React.ReactNode;
@@ -68,7 +68,7 @@ const Layout: React.FC<LayoutProps> = (props) => {
               </ul>
 
               <SearchForm baseSearch={location.search} initialQ={urlQuery} />
-              <UserToolbar />
+              <NavLinks />
             </div>
           </Container>
         </nav>

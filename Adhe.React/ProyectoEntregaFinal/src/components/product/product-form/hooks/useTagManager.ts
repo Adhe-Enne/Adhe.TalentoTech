@@ -21,18 +21,16 @@ interface TagManagerActions {
 
 type SetFieldFn = (field: "tags" | "tagIds", value: string[]) => void;
 
-export function useTagManager(
-  fields: TagManagerDeps,
-  setField: SetFieldFn,
-  createTag: (name: string, categoryId: string) => Promise<Tag | undefined>,
-): TagManagerActions {
+export function useTagManager(fields: TagManagerDeps, setField: SetFieldFn, createTag: (name: string, categoryId: string) => Promise<Tag | undefined>): TagManagerActions {
   const [tagQuery, setTagQuery] = useState<string>("");
   const [showSuggestions, setShowSuggestions] = useState<boolean>(false);
   const suggestionsRef: RefObject<HTMLUListElement | null> = useRef<HTMLUListElement | null>(null);
 
   useEffect((): (() => void) => {
     function onDocClick(e: MouseEvent): void {
-      if (!suggestionsRef.current || !(e.target instanceof Node)) {return;}
+      if (!suggestionsRef.current || !(e.target instanceof Node)) {
+        return;
+      }
       if (!suggestionsRef.current.contains(e.target)) {
         setShowSuggestions(false);
       }
@@ -43,7 +41,9 @@ export function useTagManager(
 
   async function onAddTagFromInput(tag: string): Promise<void> {
     const t: string = tag.trim();
-    if (!t || fields.tags.includes(t)) {return;}
+    if (!t || fields.tags.includes(t)) {
+      return;
+    }
 
     const existing: Tag | undefined = fields.allTags.find((x) => x.name.toLowerCase() === t.toLowerCase());
     if (existing) {
@@ -71,10 +71,17 @@ export function useTagManager(
 
   function onRemoveTag(tag: string): void {
     const idx: number = fields.tags.indexOf(tag);
-    if (idx === -1) {return;}
-    setField("tags", fields.tags.filter((x: string) => x !== tag));
+    if (idx === -1) {
+      return;
+    }
+    setField(
+      "tags",
+      fields.tags.filter((x: string) => x !== tag),
+    );
     const newTagIds: string[] = [...fields.tagIds];
-    if (fields.tagIds.length > idx) {newTagIds.splice(idx, 1);}
+    if (fields.tagIds.length > idx) {
+      newTagIds.splice(idx, 1);
+    }
     setField("tagIds", newTagIds);
   }
 

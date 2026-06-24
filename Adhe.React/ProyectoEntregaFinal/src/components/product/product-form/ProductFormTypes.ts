@@ -1,6 +1,6 @@
 import type { SyntheticEvent, RefObject } from "react";
 
-export type Currency = "USD" | "ARS" | "BTC";
+import type { Currency } from "../../../utils/currency";
 
 export type ProductFormPayload = {
   nombre: string;
@@ -18,7 +18,6 @@ export type ProductFormPayload = {
 
 export type StateRefType = {
   timers: Set<ReturnType<typeof setTimeout>>;
-  readers: Set<FileReader>;
   controllers: Set<AbortController>;
 };
 
@@ -36,7 +35,7 @@ export type Fields = {
   tagIds: string[];
 };
 
-export type FormMode = 'create' | 'edit';
+export type FormMode = "create" | "edit";
 
 export type UseProductFormReturn = {
   fields: Fields;

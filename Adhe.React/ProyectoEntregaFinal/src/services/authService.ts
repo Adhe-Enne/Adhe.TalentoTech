@@ -9,16 +9,19 @@ import {
 import { doc, getDoc, setDoc, type DocumentReference, type DocumentSnapshot } from "firebase/firestore";
 
 import type { User } from "../models/User";
+import type { UserInfo } from "../types/auth";
 
 import { USERS_COLLECTION } from "../App.Constants";
 import { auth, db } from "../firebase";
+import { translateAuthError } from "../utils/authErrors";
+import { getStoredSession, setStoredSession } from "../utils/sessionPersistence";
 
-const SESSION_KEY: string = "tt_current_user";
-
-export interface UserInfo {
-  email: string;
-  rol: "admin" | "user";
-  uid: string;
+function buildUserInfoFromDoc(firebaseUser: FirebaseUser, docSnap: DocumentSnapshot, fallbackEmail: string): UserInfo {
+  if (docSnap.exists()) {
+    const data: User = docSnap.data() as User;
+    return { uid: firebaseUser.uid, email: firebaseUser.email ?? data.email, rol: data.rol ?? "user" };
+  }
+  return { uid: firebaseUser.uid, email: fallbackEmail, rol: "user" };
 }
 
 type AuthStateListener = (user: UserInfo | null) => void;
@@ -27,21 +30,9 @@ const listeners: Set<AuthStateListener> = new Set();
 let cachedUser: UserInfo | null = null;
 let authUnsubscribe: (() => void) | null = null;
 
-function getStoredSession(): UserInfo | null {
-  try {
-    return JSON.parse(localStorage.getItem(SESSION_KEY) ?? "null");
-  } catch {
-    return null;
-  }
-}
-
-function setStoredSession(user: UserInfo | null): void {
+function setSession(user: UserInfo | null): void {
   cachedUser = user;
-  if (user) {
-    localStorage.setItem(SESSION_KEY, JSON.stringify(user));
-  } else {
-    localStorage.removeItem(SESSION_KEY);
-  }
+  setStoredSession(user);
 }
 
 function notifyListeners(user: UserInfo | null): void {
@@ -49,32 +40,6 @@ function notifyListeners(user: UserInfo | null): void {
 }
 
 cachedUser = getStoredSession();
-
-function translateAuthError(error: unknown): string {
-  if (error instanceof Error) {
-    const code: string = (error as { code?: string }).code ?? "";
-    switch (code) {
-      case "auth/email-already-in-use":
-        return "Este correo electrónico ya está registrado";
-      case "auth/user-not-found":
-        return "Usuario no encontrado";
-      case "auth/wrong-password":
-      case "auth/invalid-credential":
-        return "Correo electrónico o contraseña incorrectos";
-      case "auth/invalid-email":
-        return "Correo electrónico inválido";
-      case "auth/weak-password":
-        return "La contraseña debe tener al menos 6 caracteres";
-      case "auth/too-many-requests":
-        return "Demasiados intentos. Intentá de nuevo más tarde";
-      case "auth/network-request-failed":
-        return "Error de conexión. Verificá tu internet";
-      default:
-        return error.message;
-    }
-  }
-  return "Error desconocido";
-}
 
 function syncUserFromFirestore(firebaseUser: FirebaseUser): void {
   const cached: UserInfo | null = getStoredSession();
@@ -87,22 +52,14 @@ function syncUserFromFirestore(firebaseUser: FirebaseUser): void {
 
   getDoc(docRef)
     .then((docSnap: DocumentSnapshot) => {
-      let userInfo: UserInfo;
-
-      if (docSnap.exists()) {
-        const data: User = docSnap.data() as User;
-        userInfo = { uid: firebaseUser.uid, email: firebaseUser.email ?? data.email, rol: data.rol ?? "user" };
-      } else {
-        userInfo = { uid: firebaseUser.uid, email: firebaseUser.email ?? "", rol: "user" };
-      }
-
-      setStoredSession(userInfo);
+      const userInfo: UserInfo = buildUserInfoFromDoc(firebaseUser, docSnap, "");
+      setSession(userInfo);
       notifyListeners(userInfo);
     })
     .catch(() => {
       if (cached?.uid !== firebaseUser.uid) {
         const fallback: UserInfo = { uid: firebaseUser.uid, email: firebaseUser.email ?? "", rol: "user" };
-        setStoredSession(fallback);
+        setSession(fallback);
         notifyListeners(fallback);
       }
     });
@@ -128,16 +85,8 @@ export const authService: {
     const firebaseUser: FirebaseUser = result.user;
     const docRef: DocumentReference = doc(db, USERS_COLLECTION, firebaseUser.uid);
     const docSnap: DocumentSnapshot = await getDoc(docRef);
-    let userInfo: UserInfo;
-
-    if (docSnap.exists()) {
-      const data: User = docSnap.data() as User;
-      userInfo = { uid: firebaseUser.uid, email: firebaseUser.email ?? data.email, rol: data.rol ?? "user" };
-    } else {
-      userInfo = { uid: firebaseUser.uid, email: firebaseUser.email ?? emailLower, rol: "user" };
-    }
-
-    setStoredSession(userInfo);
+    const userInfo: UserInfo = buildUserInfoFromDoc(firebaseUser, docSnap, emailLower);
+    setSession(userInfo);
 
     return userInfo;
   },
@@ -162,7 +111,7 @@ export const authService: {
     });
 
     const userInfo: UserInfo = { uid, email: emailLower, rol: "user" };
-    setStoredSession(userInfo);
+    setSession(userInfo);
 
     return userInfo;
   },
@@ -175,7 +124,7 @@ export const authService: {
 
     authUnsubscribe ??= firebaseOnAuthStateChanged(auth, (firebaseUser: FirebaseUser | null) => {
       if (firebaseUser === null) {
-        setStoredSession(null);
+        setSession(null);
         notifyListeners(null);
       } else {
         syncUserFromFirestore(firebaseUser);

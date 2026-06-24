@@ -7,7 +7,7 @@ import HelmetMeta from "../ui/HelmetMeta";
 interface ContactPageProps {
   email: string;
   message: string;
-  onSubmit: React.FormEventHandler<HTMLFormElement>;
+  onSubmit: React.SubmitEventHandler<HTMLFormElement>;
   onEmailChange: (v: string) => void;
   onMessageChange: (v: string) => void;
 }

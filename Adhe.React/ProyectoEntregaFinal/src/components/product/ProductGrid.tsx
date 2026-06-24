@@ -3,7 +3,7 @@ import { Col, Container, Row } from "react-bootstrap";
 
 import type { Product } from "../../models";
 
-import ProductCardContainer from "./product-card/ProductCardContainer";
+import ProductCard from "./product-card/ProductCard";
 
 interface ProductGridProps {
   products: Product[];
@@ -16,7 +16,7 @@ const ProductGrid: React.FC<ProductGridProps> = (props) => {
       <Row className="g-3 product-grid-row">
         {products.map((p) => (
           <Col key={p.id} lg={3} md={4} sm={6} xs={12}>
-            <ProductCardContainer product={p} />
+            <ProductCard product={p} />
           </Col>
         ))}
       </Row>

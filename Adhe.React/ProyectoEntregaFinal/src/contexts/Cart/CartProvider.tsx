@@ -1,78 +1,19 @@
 import React, { useState, useCallback, useMemo } from "react";
 
-import type { CartItem, CouponValidationResult, Product } from "../../models";
+import type { CartItem, Product } from "../../models";
 import type { ProviderProps } from "../../types/ProviderProps";
-import type { AppliedCoupon, CartContextType } from "./CartType";
+import type { CartContextType } from "./CartTypes";
 
-import { couponService } from "../../services/couponService";
+import useCouponManager from "../../hooks/useCouponManager";
+import { loadCart, persistCart } from "../../utils/cartPersistence";
 import CartContext from "./CartContext";
-
-const CART_KEY: string = "tt_cart";
-const COUPON_KEY: string = "tt_coupon";
-
-function loadCart(): CartItem[] {
-  try {
-    const raw: string | null = localStorage.getItem(CART_KEY);
-    if (raw) {
-      return JSON.parse(raw) as CartItem[];
-    }
-  } catch {
-    /* ignore */
-  }
-  return [];
-}
-
-function persistCart(cart: CartItem[]): void {
-  try {
-    localStorage.setItem(CART_KEY, JSON.stringify(cart));
-  } catch {
-    /* ignore */
-  }
-}
-
-function loadSavedCouponCode(): string | null {
-  try {
-    return localStorage.getItem(COUPON_KEY);
-  } catch {
-    return null;
-  }
-}
-
-function persistCouponCode(code: string | null): void {
-  try {
-    if (code) {
-      localStorage.setItem(COUPON_KEY, code);
-    } else {
-      localStorage.removeItem(COUPON_KEY);
-    }
-  } catch {
-    /* ignore */
-  }
-}
 
 export const CartProvider: React.FC<ProviderProps> = (props) => {
   const { children } = props;
   const [cart, setCart] = useState<CartItem[]>(loadCart);
-  const [appliedCoupon, setAppliedCoupon] = useState<AppliedCoupon | null>(null);
-  const [isApplyingCoupon, setIsApplyingCoupon] = useState(false);
 
-  // Re-validate saved coupon on mount
-  React.useEffect(() => {
-    const savedCode: string | null = loadSavedCouponCode();
-    if (savedCode) {
-      couponService.validateCoupon(savedCode).then((result) => {
-        if (result.valid && result.discountValue != null) {
-          setAppliedCoupon({
-            code: savedCode,
-            discountValue: result.discountValue,
-            id: "",
-          });
-        } else {
-          persistCouponCode(null);
-        }
-      });
-    }
-  }, []);
+  const rawTotal: number = useMemo(() => cart.reduce((s, it) => s + it.product.price * it.quantity, 0), [cart]);
+  const { appliedCoupon, isApplyingCoupon, discountedTotal, applyCoupon, removeCoupon } = useCouponManager(rawTotal);
 
   const persistSetCart: (fn: (prev: CartItem[]) => CartItem[]) => void = useCallback((fn: (prev: CartItem[]) => CartItem[]): void => {
     setCart((prev) => {
@@ -97,9 +38,8 @@ export const CartProvider: React.FC<ProviderProps> = (props) => {
 
   const clearCart: () => void = useCallback(() => {
     persistSetCart(() => []);
-    setAppliedCoupon(null);
-    persistCouponCode(null);
-  }, [persistSetCart]);
+    removeCoupon();
+  }, [persistSetCart, removeCoupon]);
 
   const getCartQuantity: () => number = useCallback((): number => cart.reduce((s, it) => s + it.quantity, 0), [cart]);
 
@@ -122,41 +62,6 @@ export const CartProvider: React.FC<ProviderProps> = (props) => {
     },
     [persistSetCart],
   );
-
-  const applyCoupon: (code: string) => Promise<{ success: boolean; error?: string }> = useCallback(async (code: string): Promise<{ success: boolean; error?: string }> => {
-    setIsApplyingCoupon(true);
-    try {
-      const result: CouponValidationResult = await couponService.validateCoupon(code);
-      if (!result.valid || result.discountValue == null) {
-        return { success: false, error: result.error ?? "Cupon invalido" };
-      }
-      const couponData: AppliedCoupon = {
-        code: code.trim().toUpperCase(),
-        discountValue: result.discountValue,
-        id: "",
-      };
-      setAppliedCoupon(couponData);
-      persistCouponCode(couponData.code);
-      return { success: true };
-    } finally {
-      setIsApplyingCoupon(false);
-    }
-  }, []);
-
-  const removeCoupon: () => void = useCallback((): void => {
-    setAppliedCoupon(null);
-    persistCouponCode(null);
-  }, []);
-
-  const rawTotal: number = useMemo(() => cart.reduce((s, it) => s + it.product.price * it.quantity, 0), [cart]);
-
-  const discountedTotal: number = useMemo(() => {
-    if (!appliedCoupon) {
-      return rawTotal;
-    }
-    const discount: number = rawTotal * (appliedCoupon.discountValue / 100);
-    return Math.max(0, rawTotal - discount);
-  }, [rawTotal, appliedCoupon]);
 
   const value: CartContextType = useMemo(
     () => ({

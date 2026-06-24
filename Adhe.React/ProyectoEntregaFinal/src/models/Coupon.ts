@@ -24,4 +24,6 @@ export interface CouponValidationResult {
   valid: boolean;
   discountValue?: number;
   error?: string;
+  expiresAt?: string | null;
+  id?: string;
 }

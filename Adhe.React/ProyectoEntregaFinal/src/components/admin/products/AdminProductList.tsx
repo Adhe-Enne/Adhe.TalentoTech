@@ -1,27 +1,52 @@
-import React, { useMemo, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { Alert, Button, Spinner, Table } from "react-bootstrap";
 import { FaEdit, FaPlus, FaTrash } from "react-icons/fa";
-import { Link } from "react-router-dom";
+import { Link, useNavigate, type NavigateFunction } from "react-router-dom";
 
 import type { Product } from "../../../models";
 
+import useConfirmDelete from "../../../hooks/useConfirmDelete";
+import useNotification from "../../../hooks/useNotification";
+import useProducts from "../../../hooks/useProducts";
+import { productService } from "../../../services/productService";
+import ConfirmDialog from "../../ui/ConfirmDialog";
+import ToggleSwitch from "../../ui/ToggleSwitch";
 import adminStyles from "./AdminProductList.module.css";
 
-interface AdminProductListProps {
-  error: string | null;
-  loading: boolean;
-  products: Product[];
-  onDelete: (id: string, name: string) => void;
-  onEdit: (id: string) => void;
-  onRetry: () => void;
-  onToggleEnabled: (id: string, current: boolean) => void;
-}
-
-const AdminProductList: React.FC<AdminProductListProps> = (props) => {
-  const { products, loading, error, onDelete, onToggleEnabled, onEdit, onRetry } = props;
-  const [search, setSearch] = useState("");
+const AdminProductList: React.FC = () => {
+  const { products, loading, reload, updateProduct } = useProducts();
+  const { setNotification } = useNotification();
+  const navigate: NavigateFunction = useNavigate();
+  const { deleteTarget, deleting, handleDeleteRequest, handleDeleteCancel, handleDeleteConfirm: baseDeleteConfirm } = useConfirmDelete();
+  const [search, setSearch] = useState<string>("");
 
   const filtered: Product[] = useMemo(() => products.filter((p) => p.name?.toLowerCase().includes(search.toLowerCase())), [products, search]);
+
+  const handleToggleEnabled: (id: string, current: boolean) => Promise<void> = useCallback(
+    async (id: string, current: boolean) => {
+      try {
+        await updateProduct(id, { isEnabled: !current });
+        setNotification(`Producto ${current ? "desactivado" : "activado"}`, 2000, "info");
+      } catch {
+        setNotification("Error al cambiar estado", 3000, "danger");
+      }
+    },
+    [updateProduct, setNotification],
+  );
+
+  const handleDeleteConfirm: () => Promise<void> = useCallback(async () => {
+    const success: boolean = await baseDeleteConfirm(
+      (id: string) => productService.deleteProduct(id),
+      () => {
+        reload();
+      },
+    );
+    if (success && deleteTarget) {
+      setNotification(`${deleteTarget.label} eliminado`, 3000, "success");
+    } else if (!success) {
+      setNotification("Error al eliminar producto", 3000, "danger");
+    }
+  }, [baseDeleteConfirm, deleteTarget, reload, setNotification]);
 
   if (loading) {
     return (
@@ -31,17 +56,6 @@ const AdminProductList: React.FC<AdminProductListProps> = (props) => {
           Cargando productos...
         </output>
       </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <Alert className="d-flex align-items-center gap-2" variant="danger">
-        <span>{error}</span>
-        <Button className="ms-auto" onClick={onRetry} size="sm" variant="outline-danger">
-          Reintentar
-        </Button>
-      </Alert>
     );
   }
 
@@ -55,13 +69,13 @@ const AdminProductList: React.FC<AdminProductListProps> = (props) => {
             Nuevo producto
           </Link>
           <input
-          aria-label="Buscar productos por nombre"
-          className="form-control form-control-sm"
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder="Buscar por nombre..."
-          style={{ maxWidth: 260, borderRadius: 999 }}
-          value={search}
-        />
+            aria-label="Buscar productos por nombre"
+            className="form-control form-control-sm"
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Buscar por nombre..."
+            style={{ maxWidth: 260, borderRadius: 999 }}
+            value={search}
+          />
         </div>
       </div>
 
@@ -74,7 +88,7 @@ const AdminProductList: React.FC<AdminProductListProps> = (props) => {
           <Table className="align-middle" hover>
             <thead>
               <tr>
-                <th style={{ width: 56 }}></th>
+                <th style={{ width: 56 }} />
                 <th>Nombre</th>
                 <th>Precio</th>
                 <th>Stock</th>
@@ -94,21 +108,15 @@ const AdminProductList: React.FC<AdminProductListProps> = (props) => {
                   <td>{p.stock}</td>
                   <td>{p.category?.name ?? "Sin categoria"}</td>
                   <td>
-                    <button
-                      aria-checked={p.isEnabled}
-                      aria-label={`${p.isEnabled ? "Desactivar" : "Activar"} ${p.name}`}
-                      className={adminStyles.toggle}
-                      onClick={() => onToggleEnabled(p.id, p.isEnabled)}
-                      role="switch"
-                    />
+                    <ToggleSwitch checked={p.isEnabled} label={`${p.isEnabled ? "Desactivar" : "Activar"} ${p.name}`} onToggle={() => handleToggleEnabled(p.id, p.isEnabled)} />
                   </td>
                   <td>
                     <div className="d-flex gap-1">
-                      <Button aria-label={`Editar ${p.name}`} onClick={() => onEdit(p.id)} size="sm" variant="outline-primary">
+                      <Button aria-label={`Editar ${p.name}`} onClick={() => navigate(`/admin/productos/${p.id}/editar`)} size="sm" variant="outline-primary">
                         <FaEdit className="me-1" />
                         Editar
                       </Button>
-                      <Button aria-label={`Eliminar ${p.name}`} onClick={() => onDelete(p.id, p.name)} size="sm" variant="outline-danger">
+                      <Button aria-label={`Eliminar ${p.name}`} onClick={() => handleDeleteRequest(p.id, p.name)} size="sm" variant="outline-danger">
                         <FaTrash className="me-1" />
                         Eliminar
                       </Button>
@@ -120,6 +128,17 @@ const AdminProductList: React.FC<AdminProductListProps> = (props) => {
           </Table>
         </div>
       )}
+
+      <ConfirmDialog
+        confirmLabel="Eliminar"
+        confirmVariant="danger"
+        loading={deleting}
+        message={`¿Eliminar "${deleteTarget?.label}"? No se podrá deshacer.`}
+        onCancel={handleDeleteCancel}
+        onConfirm={handleDeleteConfirm}
+        open={deleteTarget !== null}
+        title="Eliminar producto"
+      />
     </div>
   );
 };

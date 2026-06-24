@@ -1,44 +1,67 @@
-import React, { type JSX } from "react";
-import { Alert, Button, Container, InputGroup, Spinner } from "react-bootstrap";
-import { FaChevronUp, FaSearch, FaTimes } from "react-icons/fa";
+import React, { useMemo, useState, type JSX } from "react";
+import { Alert, Button, Container } from "react-bootstrap";
+import { FaTimes } from "react-icons/fa";
+import { useLocation } from "react-router-dom";
 
 import type { Product } from "../../models";
 
+import useFavorites from "../../hooks/useFavorites";
+import usePaginatedProducts from "../../hooks/usePaginatedProducts";
 import ProductGrid from "../product/ProductGrid";
 import HelmetMeta from "../ui/HelmetMeta";
 import styles from "./Home.module.css";
-
-interface HomeProps {
-  products: Product[];
-  emptyMessage?: string;
-  hasMore?: boolean;
-  loading?: boolean;
-  loadingMore?: boolean;
-  localQ?: string;
-  pageDescription?: string;
-  pageTitle?: string;
-  onLoadMore?: () => void;
-  onLocalQChange?: (value: string) => void;
-  onReload?: () => void;
-}
+import LoadMoreSection from "./LoadMoreSection";
+import SearchBar from "./SearchBar";
 
 const ITEMS_PER_PAGE: number = 8;
 
-const Home: React.FC<HomeProps> = (props) => {
-  const { products, emptyMessage, hasMore = false, loading, loadingMore = false, localQ = "", onLoadMore, onLocalQChange, onReload, pageTitle, pageDescription } = props;
-  const showLocalSearch: boolean = !loading && onLocalQChange !== undefined;
+const Home: React.FC = () => {
+  const { products: paginatedProducts, loading, loadingMore, hasMore, loadNextPage, reload: reloadProducts } = usePaginatedProducts();
+  const { favorites } = useFavorites();
+
+  const location: ReturnType<typeof useLocation> = useLocation();
+  const params: URLSearchParams = new URLSearchParams(location.search);
+  const q: string = (params.get("q") ?? "").toLowerCase();
+  const filter: string | null = params.get("filter");
+
+  const [localQ, setLocalQ] = useState<string>("");
+
+  const filteredProducts: Product[] = useMemo(() => {
+    let list: Product[] = paginatedProducts ?? [];
+    if (q) {
+      list = list.filter((p) => {
+        const name: string = p.name?.toLowerCase() ?? "";
+        const desc: string = p.description?.toLowerCase() ?? "";
+        return name.includes(q) || desc.includes(q);
+      });
+    }
+    if (filter === "favorites") {
+      list = list.filter((p) => Boolean(favorites?.[p.id]));
+    }
+    if (localQ) {
+      const lq: string = localQ.toLowerCase();
+      list = list.filter((p) => {
+        const name: string = p.name?.toLowerCase() ?? "";
+        const desc: string = p.description?.toLowerCase() ?? "";
+        return name.includes(lq) || desc.includes(lq);
+      });
+    }
+    return list;
+  }, [paginatedProducts, q, filter, favorites, localQ]);
+
+  const pageTitle: string | undefined = filter === "favorites" ? "Favoritos" : "Productos";
+  const pageDescription: string | undefined = filter === "favorites" ? "Tus productos favoritos en Talento Tech." : "Explora nuestro catálogo de productos tecnológicos.";
+  const emptyMessage: string | undefined = filter === "favorites" ? "No tienes productos favoritos aún." : undefined;
   const hasLocalFilter: boolean = localQ.trim().length > 0;
-  const showReset: boolean = products.length > ITEMS_PER_PAGE;
-  const showLoadMore: boolean = hasMore && products.length > 0 && !loading;
 
   const renderProductList: () => JSX.Element = () => {
-    if (products.length === 0) {
+    if (filteredProducts.length === 0) {
       const message: string = hasLocalFilter ? `No se encontraron productos para "${localQ}".` : (emptyMessage ?? "No hay productos disponibles.");
       return (
         <Alert className="d-flex align-items-center gap-2" variant="info">
           <span>{message}</span>
           {hasLocalFilter && (
-            <Button aria-label="Limpiar filtro de búsqueda" className="ms-auto" onClick={() => onLocalQChange?.("")} size="sm" variant="outline-secondary">
+            <Button aria-label="Limpiar filtro de búsqueda" className="ms-auto" onClick={() => setLocalQ("")} size="sm" variant="outline-secondary">
               <FaTimes aria-hidden="true" className="me-1" />
               Limpiar filtro
             </Button>
@@ -48,7 +71,7 @@ const Home: React.FC<HomeProps> = (props) => {
     }
     return (
       <div className={styles.fadeIn}>
-        <ProductGrid products={products} />
+        <ProductGrid products={filteredProducts} />
       </div>
     );
   };
@@ -58,69 +81,17 @@ const Home: React.FC<HomeProps> = (props) => {
       <HelmetMeta description={pageDescription ?? undefined} title={pageTitle ? `Talento Tech | ${pageTitle}` : "Talento Tech"} />
       {loading ? (
         <div aria-busy="true" className="d-flex justify-content-center py-5">
-          <Spinner animation="border" aria-hidden="true" />
+          <div aria-hidden="true" className="spinner-border" />
           <output aria-live="polite" className="visually-hidden">
             Cargando...
           </output>
         </div>
       ) : (
         <>
-          {showLocalSearch && (
-            <div className="mb-3">
-              <InputGroup>
-                <InputGroup.Text>
-                  <FaSearch aria-hidden="true" />
-                </InputGroup.Text>
-                <input
-                  aria-label="Filtrar productos por nombre"
-                  className="form-control"
-                  onChange={(e) => onLocalQChange?.(e.target.value)}
-                  placeholder="Filtrar resultados..."
-                  type="text"
-                  value={localQ}
-                />
-                {hasLocalFilter && (
-                  <Button aria-label="Limpiar filtro local" onClick={() => onLocalQChange?.("")} variant="outline-secondary">
-                    <FaTimes aria-hidden="true" className="me-1" />
-                    Limpiar
-                  </Button>
-                )}
-              </InputGroup>
-              {hasLocalFilter && (
-                <small className="text-muted mt-1 d-block">
-                  {products.length} producto{products.length !== 1 ? "s" : ""} encontrado{products.length !== 1 ? "s" : ""} para &quot;{localQ}&quot;
-                </small>
-              )}
-            </div>
-          )}
+          <SearchBar localQ={localQ ?? ""} onLocalQChange={setLocalQ} productCount={filteredProducts.length} />
           {renderProductList()}
 
-          {showLoadMore && (
-            <div className="d-flex justify-content-center gap-2 mt-4">
-              {showReset && (
-                <Button aria-label="Ver menos productos" onClick={() => onReload?.()} variant="outline-secondary">
-                  <FaChevronUp aria-hidden="true" className="me-1" />
-                  Ver menos
-                </Button>
-              )}
-              <Button aria-label="Cargar más productos" disabled={loadingMore} onClick={() => onLoadMore?.()} variant="primary">
-                {loadingMore ? (
-                  <>
-                    <Spinner animation="border" aria-hidden="true" className="me-2" size="sm" />
-                    Cargando...
-                  </>
-                ) : (
-                  "Cargar más"
-                )}
-              </Button>
-            </div>
-          )}
-
-          {!hasMore && products.length > ITEMS_PER_PAGE && (
-            <div className="text-center mt-3">
-              <output className="text-muted">No hay más productos para mostrar.</output>
-            </div>
-          )}
+          <LoadMoreSection hasMore={hasMore} itemsPerPage={ITEMS_PER_PAGE} loadingMore={loadingMore} onLoadMore={loadNextPage} onReload={reloadProducts} productCount={filteredProducts.length} />
         </>
       )}
     </Container>

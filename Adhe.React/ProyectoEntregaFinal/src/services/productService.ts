@@ -33,6 +33,10 @@ interface ProductUpdatePayload extends Omit<Partial<Product>, "id" | "createdAt"
   updatedAt?: string;
 }
 
+function buildProductPayload(data: ProductCreatePayload | ProductUpdatePayload): Record<string, unknown> {
+  return { name: data.name, description: data.description, stock: data.stock, categoryId: data.categoryId };
+}
+
 function mapDocToProduct(d: QueryDocumentSnapshot<DocumentData>): Product {
   const data: DocumentData = d.data();
   return {
@@ -73,7 +77,7 @@ export const productService: {
       : query(collection(db, PRODUCTS_COLLECTION), ...constraints);
     const snap: QuerySnapshot<DocumentData> = await getDocs(q);
     const items: Product[] = snap.docs.map(mapDocToProduct);
-    const lastDoc: QueryDocumentSnapshot<DocumentData> | undefined = snap.docs[snap.docs.length - 1];
+    const lastDoc: QueryDocumentSnapshot<DocumentData> | undefined = snap.docs.at(-1);
     return {
       items,
       lastKey: lastDoc ? (tsToIso(lastDoc.data().createdAt) ?? lastDoc.id) : null,
@@ -88,12 +92,10 @@ export const productService: {
    */
   createProduct: async (productData: ProductCreatePayload): Promise<Product> => {
     const payload: ProductCreatePayload = {
-      name: productData.name,
-      description: productData.description,
+      ...(buildProductPayload(productData) as ProductCreatePayload),
       price: Number(productData.price ?? 0),
       image: productData.image ?? (Array.isArray(productData.images) ? productData.images[0] : null) ?? "/images/avatar1.svg",
       images: productData.images ?? [],
-      categoryId: productData.categoryId,
       tagIds: productData.tagIds ?? [],
       isEnabled: productData.isEnabled ?? true,
       createdAt: new Date().toISOString(),
@@ -106,16 +108,16 @@ export const productService: {
       name: payload.name ?? "Sin nombre",
       description: payload.description ?? "",
       price: payload.price ?? 0,
-      stock: payload.stock ?? 0, // Asumimos 0 si no se proporciona
+      stock: payload.stock ?? 0,
       image: payload.image ?? "/images/avatar1.svg",
       images: payload.images,
-      currency: payload.currency ?? "USD", // Asumimos USD si no se proporciona
+      currency: payload.currency ?? "USD",
       categoryId: payload.categoryId ? String(payload.categoryId) : "",
       tagIds: payload.tagIds,
       isEnabled: payload.isEnabled ?? true,
       createdAt: new Date().toISOString(),
       updatedAt: null,
-      category: null, // Asumimos null
+      category: null,
     };
   },
 
@@ -132,19 +134,11 @@ export const productService: {
    */
   updateProduct: async (id: string, productData: ProductUpdatePayload): Promise<void> => {
     const productRef: DocumentReference<DocumentData, DocumentData> = doc(db, PRODUCTS_COLLECTION, id);
-    const payload: ProductUpdatePayload = {
-      name: productData.name,
-      description: productData.description,
-      stock: productData.stock,
-      price: productData.price ?? Number(productData.price),
-      image: productData.image,
-      images: productData.images,
-      categoryId: productData.categoryId,
-      tagIds: productData.tagIds,
-      isEnabled: productData.isEnabled,
+    const payload: Record<string, unknown> = {
+      ...buildProductPayload(productData),
+      price: productData.price == null ? undefined : Number(productData.price),
       updatedAt: new Date().toISOString(),
     };
-
     const filteredPayload: Record<string, unknown> = Object.fromEntries(Object.entries(payload).filter(([_, v]) => v !== undefined));
 
     await updateDoc(productRef, filteredPayload);
