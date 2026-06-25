@@ -2,8 +2,10 @@ import React, { useCallback, useState } from "react";
 import { Button, Spinner } from "react-bootstrap";
 import { FaPlus } from "react-icons/fa";
 
-import useCoupons from "../../../hooks/useCoupons";
-import useNotification from "../../../hooks/useNotification";
+import useCoupons from "../../../hooks/selectors/useCoupons";
+import useNotification from "../../../hooks/selectors/useNotification";
+import { getTodayString } from "../../../utils/dateUtils";
+import styles from "./CouponForm.module.css";
 
 interface FormErrors {
   code?: string;
@@ -11,10 +13,7 @@ interface FormErrors {
   expiresAt?: string;
 }
 
-const today: string = ((): string => {
-  const d: Date = new Date();
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
-})();
+const today: string = getTodayString();
 
 const CouponForm: React.FC = () => {
   const [code, setCode] = useState("");
@@ -60,7 +59,7 @@ const CouponForm: React.FC = () => {
   }, [code, discountValue, expiresAt]);
 
   const handleSubmit: React.SubmitEventHandler = useCallback(
-    async (e)=> {
+    async (e) => {
       e.preventDefault();
       if (!validate()) {
         return;
@@ -87,7 +86,7 @@ const CouponForm: React.FC = () => {
   );
 
   return (
-    <form className="card mb-4" onSubmit={handleSubmit} style={{ borderRadius: 12 }}>
+    <form className={`card mb-4 ${styles.formCard}`} onSubmit={handleSubmit}>
       <div className="card-body">
         <h5 className="card-title mb-3">Crear cupon</h5>
         <div className="row g-3">

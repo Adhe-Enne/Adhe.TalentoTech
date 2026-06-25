@@ -1,4 +1,4 @@
 export { GuestRoute, ProtectedRoute } from "./guards";
-export { Login, LoginContainer } from "./login";
-export { Profile, ProfileContainer } from "./profile";
-export { Register, RegisterContainer } from "./register";
+export { Login } from "./login";
+export { Profile } from "./profile";
+export { Register } from "./register";

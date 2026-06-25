@@ -1,27 +1,40 @@
-import React, { useState, useCallback, useMemo } from "react";
+import React, { useCallback, useMemo, useRef, useState } from "react";
 
 import type { CartItem, Product } from "../../models";
 import type { ProviderProps } from "../../types/ProviderProps";
 import type { CartContextType } from "./CartTypes";
 
+import useAuth from "../../hooks/selectors/useAuth";
 import useCouponManager from "../../hooks/useCouponManager";
 import { loadCart, persistCart } from "../../utils/cartPersistence";
 import CartContext from "./CartContext";
 
 export const CartProvider: React.FC<ProviderProps> = (props) => {
   const { children } = props;
-  const [cart, setCart] = useState<CartItem[]>(loadCart);
+  const { user } = useAuth();
+  const userId: string | undefined = user?.uid;
+
+  const [cart, setCart] = useState<CartItem[]>(() => loadCart(userId));
+  const prevUserId: React.MutableRefObject<string | undefined> = useRef<string | undefined>(userId);
+
+  if (prevUserId.current !== userId) {
+    prevUserId.current = userId;
+    setCart(loadCart(userId));
+  }
 
   const rawTotal: number = useMemo(() => cart.reduce((s, it) => s + it.product.price * it.quantity, 0), [cart]);
-  const { appliedCoupon, isApplyingCoupon, discountedTotal, applyCoupon, removeCoupon } = useCouponManager(rawTotal);
+  const { appliedCoupon, isApplyingCoupon, discountedTotal, applyCoupon, removeCoupon } = useCouponManager(rawTotal, userId);
 
-  const persistSetCart: (fn: (prev: CartItem[]) => CartItem[]) => void = useCallback((fn: (prev: CartItem[]) => CartItem[]): void => {
-    setCart((prev) => {
-      const next: CartItem[] = fn(prev);
-      persistCart(next);
-      return next;
-    });
-  }, []);
+  const persistSetCart: (fn: (prev: CartItem[]) => CartItem[]) => void = useCallback(
+    (fn: (prev: CartItem[]) => CartItem[]): void => {
+      setCart((prev) => {
+        const next: CartItem[] = fn(prev);
+        persistCart(next, userId);
+        return next;
+      });
+    },
+    [userId],
+  );
 
   const addToCart: (product: Product, cantidad?: number) => void = useCallback(
     (product: Product, cantidad: number = 1): void => {
@@ -30,7 +43,7 @@ export const CartProvider: React.FC<ProviderProps> = (props) => {
         if (existing) {
           return prev.map((it) => (it.product.id === product.id ? { ...it, quantity: it.quantity + cantidad } : it));
         }
-        return [...prev, { quantity: cantidad, product }];
+        return [...prev, { product, quantity: cantidad }];
       });
     },
     [persistSetCart],
@@ -46,8 +59,6 @@ export const CartProvider: React.FC<ProviderProps> = (props) => {
   const getCartTotal: () => number = useCallback((): number => cart.reduce((s, it) => s + it.product.price * it.quantity, 0), [cart]);
 
   const getCantidadActual: (productId: string) => number = useCallback((productId: string): number => cart.find((it) => it.product.id === productId)?.quantity ?? 0, [cart]);
-
-  const isInCart: (productId: string) => boolean = useCallback((productId: string): boolean => cart.some((it) => it.product.id === productId), [cart]);
 
   const removeFromCart: (productId: string) => void = useCallback(
     (productId: string) => {
@@ -73,7 +84,6 @@ export const CartProvider: React.FC<ProviderProps> = (props) => {
       getCartQuantity,
       getCartTotal,
       getCantidadActual,
-      isInCart,
       appliedCoupon,
       discountedTotal,
       applyCoupon,
@@ -89,7 +99,6 @@ export const CartProvider: React.FC<ProviderProps> = (props) => {
       getCartQuantity,
       getCartTotal,
       getCantidadActual,
-      isInCart,
       appliedCoupon,
       discountedTotal,
       applyCoupon,

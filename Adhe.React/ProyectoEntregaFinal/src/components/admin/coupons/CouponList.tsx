@@ -1,7 +1,7 @@
 import React from "react";
 import { Alert, Button, Spinner, Table } from "react-bootstrap";
 
-import useCoupons from "../../../hooks/useCoupons";
+import useCoupons from "../../../hooks/selectors/useCoupons";
 import CouponItem from "./CouponItem";
 
 interface CouponListProps {

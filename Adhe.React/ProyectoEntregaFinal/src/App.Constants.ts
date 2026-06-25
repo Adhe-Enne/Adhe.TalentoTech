@@ -6,3 +6,4 @@ export const TAGS_COLLECTION: string = "products_tags";
 export const COUPONS_COLLECTION: string = "products_coupons";
 
 export const USERS_COLLECTION: string = "ecommerce_users";
+export const ORDERS_COLLECTION: string = "orders_purchases";

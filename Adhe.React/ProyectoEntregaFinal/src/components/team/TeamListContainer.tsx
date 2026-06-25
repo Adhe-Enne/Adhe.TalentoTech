@@ -2,7 +2,7 @@ import React from "react";
 
 import type { Person } from "../../models";
 
-import useTeam from "../../hooks/useTeam";
+import useTeam from "../../hooks/selectors/useTeam";
 import TeamList from "./TeamList";
 
 const TeamListContainer: React.FC = () => {

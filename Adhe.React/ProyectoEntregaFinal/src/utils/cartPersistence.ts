@@ -1,10 +1,20 @@
 import type { CartItem } from "../models";
 
-const CART_KEY: string = "tt_cart";
-const COUPON_KEY: string = "tt_coupon";
-export function loadCart(): CartItem[] {
+const CART_KEY_PREFIX: string = "tt_cart";
+const COUPON_KEY_PREFIX: string = "tt_coupon";
+
+function getCartKey(userId?: string): string {
+  return userId ? `${CART_KEY_PREFIX}_${userId}` : CART_KEY_PREFIX;
+}
+
+function getCouponKey(userId?: string): string {
+  return userId ? `${COUPON_KEY_PREFIX}_${userId}` : COUPON_KEY_PREFIX;
+}
+
+export function loadCart(userId?: string): CartItem[] {
   try {
-    const raw: string | null = localStorage.getItem(CART_KEY);
+    const key: string = getCartKey(userId);
+    const raw: string | null = localStorage.getItem(key);
     if (raw) {
       return JSON.parse(raw) as CartItem[];
     }
@@ -14,28 +24,31 @@ export function loadCart(): CartItem[] {
   return [];
 }
 
-export function persistCart(cart: CartItem[]): void {
+export function persistCart(cart: CartItem[], userId?: string): void {
   try {
-    localStorage.setItem(CART_KEY, JSON.stringify(cart));
+    const key: string = getCartKey(userId);
+    localStorage.setItem(key, JSON.stringify(cart));
   } catch {
     /* ignore */
   }
 }
 
-export function loadSavedCouponCode(): string | null {
+export function loadSavedCouponCode(userId?: string): string | null {
   try {
-    return localStorage.getItem(COUPON_KEY);
+    const key: string = getCouponKey(userId);
+    return localStorage.getItem(key);
   } catch {
     return null;
   }
 }
 
-export function persistCouponCode(code: string | null): void {
+export function persistCouponCode(code: string | null, userId?: string): void {
   try {
+    const key: string = getCouponKey(userId);
     if (code) {
-      localStorage.setItem(COUPON_KEY, code);
+      localStorage.setItem(key, code);
     } else {
-      localStorage.removeItem(COUPON_KEY);
+      localStorage.removeItem(key);
     }
   } catch {
     /* ignore */

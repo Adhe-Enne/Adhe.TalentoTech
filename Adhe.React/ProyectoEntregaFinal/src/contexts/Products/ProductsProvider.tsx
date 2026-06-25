@@ -5,7 +5,7 @@ import type { ProviderProps } from "../../types/ProviderProps";
 import type { ProductsContextType } from "./ProductsTypes";
 
 import useAsyncCollection from "../../hooks/useAsyncCollection";
-import useNotification from "../../hooks/useNotification";
+import useNotification from "../../hooks/selectors/useNotification";
 import { productService } from "../../services/productService";
 import ProductsContext from "./ProductsContext";
 

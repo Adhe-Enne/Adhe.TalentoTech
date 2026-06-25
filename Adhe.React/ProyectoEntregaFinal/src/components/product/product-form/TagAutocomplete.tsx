@@ -33,11 +33,11 @@ const TagAutocomplete: React.FC<TagAutocompleteProps> = (props) => {
   }, [allTags, selectedTags, queryLower, categoriaId]);
 
   return (
-    <div style={{ position: "relative" }}>
+    <div className={styles.relative}>
       <label className="form-label" htmlFor="tags-input">
         Tags
       </label>
-      <div style={{ position: "relative" }}>
+      <div className={styles.relative}>
         <input
           className="form-control"
           id="tags-input"

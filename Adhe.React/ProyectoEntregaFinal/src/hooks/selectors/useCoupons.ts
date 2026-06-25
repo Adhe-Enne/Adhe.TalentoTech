@@ -1,8 +1,8 @@
 import { useContextSelector } from "use-context-selector";
 
-import type { CouponsContextType } from "../contexts/Coupons/CouponsTypes";
+import type { CouponsContextType } from "../../contexts/Coupons/CouponsTypes";
 
-import CouponsContext from "../contexts/Coupons/CouponsContext";
+import CouponsContext from "../../contexts/Coupons/CouponsContext";
 
 const useCoupons: () => CouponsContextType = (): CouponsContextType => {
   const coupons: CouponsContextType["coupons"] | undefined = useContextSelector(CouponsContext, (c) => c?.coupons);

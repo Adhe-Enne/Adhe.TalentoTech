@@ -1,8 +1,8 @@
 import { useContextSelector } from "use-context-selector";
 
-import type { FavoritesContextType } from "../contexts/Favorites/FavoritesTypes";
+import type { FavoritesContextType } from "../../contexts/Favorites/FavoritesTypes";
 
-import FavoritesContext from "../contexts/Favorites/FavoritesContext";
+import FavoritesContext from "../../contexts/Favorites/FavoritesContext";
 
 const useFavorites: () => FavoritesContextType = () => {
   const favorites: FavoritesContextType["favorites"] | undefined = useContextSelector(FavoritesContext, (c) => c?.favorites);

@@ -19,7 +19,6 @@ export type CartContextType = {
   getCartQuantity: () => number;
   getCartTotal: () => number;
   getCantidadActual: (productId: string) => number;
-  isInCart: (productId: string) => boolean;
   applyCoupon: (code: string) => Promise<{ success: boolean; error?: string }>;
   removeCoupon: () => void;
 };

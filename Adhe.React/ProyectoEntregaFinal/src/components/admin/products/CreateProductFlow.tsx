@@ -4,11 +4,11 @@ import { useNavigate, type NavigateFunction } from "react-router-dom";
 import type { Product } from "../../../models";
 import type { ProductFormPayload } from "../../product/product-form/ProductFormTypes";
 
-import useNotification from "../../../hooks/useNotification";
+import useNotification from "../../../hooks/selectors/useNotification";
+import useProducts from "../../../hooks/selectors/useProducts";
+import useTags from "../../../hooks/selectors/useTags";
 import useProductFormSubmit from "../../../hooks/useProductFormSubmit";
-import useProducts from "../../../hooks/useProducts";
 import useProductUpload from "../../../hooks/useProductUpload";
-import useTags from "../../../hooks/useTags";
 import ProductForm from "../../product/product-form/ProductForm";
 import HelmetMeta from "../../ui/HelmetMeta";
 

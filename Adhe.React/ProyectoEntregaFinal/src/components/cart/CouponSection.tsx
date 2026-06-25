@@ -2,8 +2,8 @@ import React, { useCallback, useMemo, useState, type ChangeEvent } from "react";
 import { Badge, Button } from "react-bootstrap";
 import { FaTrash } from "react-icons/fa";
 
-import useCart from "../../hooks/useCart";
-import useNotification from "../../hooks/useNotification";
+import useCart from "../../hooks/selectors/useCart";
+import useNotification from "../../hooks/selectors/useNotification";
 
 const CouponSection: React.FC = () => {
   const { appliedCoupon, isApplyingCoupon, applyCoupon, removeCoupon } = useCart();
@@ -12,7 +12,9 @@ const CouponSection: React.FC = () => {
   const [couponError, setCouponError] = useState<string | null>(null);
 
   const daysUntilExpiry: number | null = useMemo((): number | null => {
-    if (!appliedCoupon?.expiresAt) { return null; }
+    if (!appliedCoupon?.expiresAt) {
+      return null;
+    }
     const now: Date = new Date();
     const expiry: Date = new Date(appliedCoupon.expiresAt);
     const diff: number = expiry.getTime() - now.getTime();

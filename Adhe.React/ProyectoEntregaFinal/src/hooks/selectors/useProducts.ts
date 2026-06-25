@@ -1,8 +1,8 @@
 import { useContextSelector } from "use-context-selector";
 
-import type { ProductsContextType } from "../contexts/Products/ProductsTypes";
+import type { ProductsContextType } from "../../contexts/Products/ProductsTypes";
 
-import ProductsContext from "../contexts/Products/ProductsContext";
+import ProductsContext from "../../contexts/Products/ProductsContext";
 
 const useProducts: () => ProductsContextType = (): ProductsContextType => {
   const products: ProductsContextType["products"] | undefined = useContextSelector(ProductsContext, (c) => c?.products);
@@ -15,7 +15,17 @@ const useProducts: () => ProductsContextType = (): ProductsContextType => {
   const reload: ProductsContextType["reload"] | undefined = useContextSelector(ProductsContext, (c) => c?.reload);
   const updateProduct: ProductsContextType["updateProduct"] | undefined = useContextSelector(ProductsContext, (c) => c?.updateProduct);
 
-  if (products === undefined || enabledProducts === undefined || loading === undefined || createProduct === undefined || deleteProduct === undefined || findById === undefined || reload === undefined || updateProduct === undefined || productById === undefined) {
+  if (
+    products === undefined ||
+    enabledProducts === undefined ||
+    loading === undefined ||
+    createProduct === undefined ||
+    deleteProduct === undefined ||
+    findById === undefined ||
+    reload === undefined ||
+    updateProduct === undefined ||
+    productById === undefined
+  ) {
     throw new Error("useProducts must be used within ProductsProvider");
   }
 

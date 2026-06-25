@@ -1,0 +1,8 @@
+.authPage {
+  min-height: 80vh;
+}
+
+.authCard {
+  width: 100%;
+  max-width: 420px;
+}

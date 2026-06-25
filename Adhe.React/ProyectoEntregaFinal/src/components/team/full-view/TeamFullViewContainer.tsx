@@ -1,6 +1,6 @@
 import React from "react";
 
-import useTeam from "../../../hooks/useTeam";
+import useTeam from "../../../hooks/selectors/useTeam";
 import HelmetMeta from "../../ui/HelmetMeta";
 import TeamFullView from "./TeamFullView";
 

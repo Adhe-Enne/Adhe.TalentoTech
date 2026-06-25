@@ -270,6 +270,10 @@
     background 120ms ease;
 }
 
+.relative {
+  position: relative;
+}
+
 .tagSuggestions {
   position: absolute;
   left: 0;

@@ -1,7 +1,7 @@
 import React from "react";
 import { Navigate, useLocation, type Location } from "react-router-dom";
 
-import useAuth from "../../../hooks/useAuth";
+import useAuth from "../../../hooks/selectors/useAuth";
 import LoadingSpinner from "../../ui/LoadingSpinner";
 
 interface ProtectedRouteProps {

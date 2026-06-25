@@ -5,9 +5,9 @@ import { Link, useNavigate, type NavigateFunction } from "react-router-dom";
 
 import type { Product } from "../../../models";
 
+import useNotification from "../../../hooks/selectors/useNotification";
+import useProducts from "../../../hooks/selectors/useProducts";
 import useConfirmDelete from "../../../hooks/useConfirmDelete";
-import useNotification from "../../../hooks/useNotification";
-import useProducts from "../../../hooks/useProducts";
 import { productService } from "../../../services/productService";
 import ConfirmDialog from "../../ui/ConfirmDialog";
 import ToggleSwitch from "../../ui/ToggleSwitch";
@@ -70,10 +70,9 @@ const AdminProductList: React.FC = () => {
           </Link>
           <input
             aria-label="Buscar productos por nombre"
-            className="form-control form-control-sm"
+            className={`form-control form-control-sm ${adminStyles.searchInput}`}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Buscar por nombre..."
-            style={{ maxWidth: 260, borderRadius: 999 }}
             value={search}
           />
         </div>
@@ -88,7 +87,7 @@ const AdminProductList: React.FC = () => {
           <Table className="align-middle" hover>
             <thead>
               <tr>
-                <th style={{ width: 56 }} />
+                <th className={adminStyles.thumbCol} />
                 <th>Nombre</th>
                 <th>Precio</th>
                 <th>Stock</th>
@@ -101,7 +100,7 @@ const AdminProductList: React.FC = () => {
               {filtered.map((p) => (
                 <tr className={adminStyles.productRow} key={p.id}>
                   <td>
-                    <img alt={p.name} className="rounded" src={p.image} style={{ width: 48, height: 48, objectFit: "cover", borderRadius: 8 }} />
+                    <img alt={p.name} className={`rounded ${adminStyles.thumb}`} src={p.image} />
                   </td>
                   <td className="fw-semibold">{p.name}</td>
                   <td className="text-primary fw-bold">${p.price.toFixed(2)}</td>

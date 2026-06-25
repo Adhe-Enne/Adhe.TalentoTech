@@ -5,7 +5,7 @@ import { useLocation } from "react-router-dom";
 
 import type { Product } from "../../models";
 
-import useFavorites from "../../hooks/useFavorites";
+import useFavorites from "../../hooks/selectors/useFavorites";
 import usePaginatedProducts from "../../hooks/usePaginatedProducts";
 import ProductGrid from "../product/ProductGrid";
 import HelmetMeta from "../ui/HelmetMeta";
@@ -91,7 +91,14 @@ const Home: React.FC = () => {
           <SearchBar localQ={localQ ?? ""} onLocalQChange={setLocalQ} productCount={filteredProducts.length} />
           {renderProductList()}
 
-          <LoadMoreSection hasMore={hasMore} itemsPerPage={ITEMS_PER_PAGE} loadingMore={loadingMore} onLoadMore={loadNextPage} onReload={reloadProducts} productCount={filteredProducts.length} />
+          <LoadMoreSection
+            hasMore={hasMore}
+            itemsPerPage={ITEMS_PER_PAGE}
+            loadingMore={loadingMore}
+            onLoadMore={loadNextPage}
+            onReload={reloadProducts}
+            productCount={filteredProducts.length}
+          />
         </>
       )}
     </Container>

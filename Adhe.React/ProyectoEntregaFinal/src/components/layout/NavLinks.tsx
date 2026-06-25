@@ -1,10 +1,10 @@
 import React, { type JSX } from "react";
-import { FaHeart, FaUser, FaCog, FaShoppingCart } from "react-icons/fa";
+import { FaBox, FaCog, FaHeart, FaShoppingCart, FaUser } from "react-icons/fa";
 import { Link } from "react-router-dom";
 
-import useAuth from "../../hooks/useAuth";
-import useCart from "../../hooks/useCart";
-import useFavorites from "../../hooks/useFavorites";
+import useAuth from "../../hooks/selectors/useAuth";
+import useCart from "../../hooks/selectors/useCart";
+import useFavorites from "../../hooks/selectors/useFavorites";
 
 const NavLinks: React.FC = () => {
   const { user, isAdmin } = useAuth();
@@ -31,6 +31,11 @@ const NavLinks: React.FC = () => {
         <Link aria-label="Carrito" className="btn btn-ghost btn-sm position-relative" to="/carrito">
           <FaShoppingCart aria-hidden="true" className="nav-icon nav-cart-icon" />
           {cartCount > 0 && <span className="cart-badge position-absolute top-0 start-100 translate-middle">{cartCount}</span>}
+        </Link>
+      </li>
+      <li className="nav-item">
+        <Link aria-label="Mis pedidos" className="btn btn-ghost btn-sm me-2" to="/mis-ordenes">
+          <FaBox aria-hidden="true" className="nav-icon" />
         </Link>
       </li>
       <li className="nav-item">

@@ -1,21 +1,49 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Col, Row, Spinner } from "react-bootstrap";
-import { FaBox, FaCheckCircle, FaTag } from "react-icons/fa";
+import { FaBox, FaCheckCircle, FaClipboardList, FaClock, FaDollarSign, FaTag, FaTimesCircle } from "react-icons/fa";
 import { Link } from "react-router-dom";
 
+import type { Order } from "../../models";
+
+import useCoupons from "../../hooks/selectors/useCoupons";
+import useNotification from "../../hooks/selectors/useNotification";
+import useProducts from "../../hooks/selectors/useProducts";
+import useOrders from "../../hooks/useOrders";
+import { OrderStatus } from "../../models/Order";
 import HelmetMeta from "../ui/HelmetMeta";
 import styles from "./AdminDashboard.module.css";
 
-interface AdminDashboardProps {
-  activeCoupons: number;
-  activeProducts: number;
-  loading: boolean;
-  totalCoupons: number;
-  totalProducts: number;
-}
+const AdminDashboard: React.FC = () => {
+  const { products, loading: productsLoading } = useProducts();
+  const { coupons, loading: couponsLoading } = useCoupons();
+  const { setNotification } = useNotification();
+  const { error, fetchAllOrders } = useOrders();
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [ordersLoading, setOrdersLoading] = useState<boolean>(true);
 
-const AdminDashboard: React.FC<AdminDashboardProps> = (props) => {
-  const { totalProducts, activeProducts, totalCoupons, activeCoupons, loading } = props;
+  useEffect((): void => {
+    if (error) {
+      setNotification(error, 5000, "danger");
+    }
+  }, [error, setNotification]);
+
+  useEffect((): void => {
+    fetchAllOrders().then((data: Order[]) => {
+      setOrders(data);
+      setOrdersLoading(false);
+    });
+  }, [fetchAllOrders]);
+
+  const loading: boolean = productsLoading || couponsLoading || ordersLoading;
+  const totalProducts: number = products?.length ?? 0;
+  const activeProducts: number = products?.filter((p) => p.isEnabled).length ?? 0;
+  const totalCoupons: number = coupons.length;
+  const activeCoupons: number = coupons.filter((c) => c.isEnabled).length;
+  const totalOrders: number = orders.length;
+  const pendingOrders: number = orders.filter((o) => o.status === OrderStatus.Pendiente).length;
+  const completedOrders: number = orders.filter((o) => o.status === OrderStatus.Completado).length;
+  const cancelledOrders: number = orders.filter((o) => o.status === OrderStatus.Cancelado).length;
+  const totalRevenue: number = orders.filter((o) => o.status === OrderStatus.Completado).reduce((s: number, o: Order) => s + o.total, 0);
 
   if (loading) {
     return (
@@ -28,11 +56,16 @@ const AdminDashboard: React.FC<AdminDashboardProps> = (props) => {
     );
   }
 
-  const metrics: { label: string; value: number; icon: React.ReactNode; link?: string }[] = [
-    { label: "Total Productos", value: totalProducts, icon: <FaBox />, link: "/admin/productos" },
-    { label: "Productos Activos", value: activeProducts, icon: <FaCheckCircle /> },
-    { label: "Total Cupones", value: totalCoupons, icon: <FaTag />, link: "/admin/cupones" },
-    { label: "Cupones Activos", value: activeCoupons, icon: <FaCheckCircle /> },
+  const metrics: { label: string; value: string; icon: React.ReactNode; link?: string }[] = [
+    { label: "Total Productos", value: String(totalProducts), icon: <FaBox />, link: "/admin/productos" },
+    { label: "Productos Activos", value: String(activeProducts), icon: <FaCheckCircle /> },
+    { label: "Total Cupones", value: String(totalCoupons), icon: <FaTag />, link: "/admin/cupones" },
+    { label: "Cupones Activos", value: String(activeCoupons), icon: <FaCheckCircle /> },
+    { label: "Total Pedidos", value: String(totalOrders), icon: <FaClipboardList />, link: "/admin/ordenes" },
+    { label: "Pedidos Pendientes", value: String(pendingOrders), icon: <FaClock /> },
+    { label: "Pedidos Completados", value: String(completedOrders), icon: <FaCheckCircle /> },
+    { label: "Pedidos Cancelados", value: String(cancelledOrders), icon: <FaTimesCircle /> },
+    { label: "Ingresos Totales", value: `$${totalRevenue.toFixed(2)}`, icon: <FaDollarSign /> },
   ];
 
   return (

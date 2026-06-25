@@ -1,8 +1,8 @@
 import { useContextSelector } from "use-context-selector";
 
-import type { TagsContextType } from "../contexts/Tags/TagsTypes";
+import type { TagsContextType } from "../../contexts/Tags/TagsTypes";
 
-import TagsContext from "../contexts/Tags/TagsContext";
+import TagsContext from "../../contexts/Tags/TagsContext";
 
 const useTags: () => TagsContextType = (): TagsContextType => {
   const tags: TagsContextType["tags"] | undefined = useContextSelector(TagsContext, (c) => c?.tags);

@@ -1,8 +1,8 @@
 import { useContextSelector } from "use-context-selector";
 
-import type { CategoriesContextType } from "../contexts/Categories/CategoriesTypes";
+import type { CategoriesContextType } from "../../contexts/Categories/CategoriesTypes";
 
-import CategoriesContext from "../contexts/Categories/CategoriesContext";
+import CategoriesContext from "../../contexts/Categories/CategoriesContext";
 
 const useCategories: () => CategoriesContextType = (): CategoriesContextType => {
   const categories: CategoriesContextType["categories"] | undefined = useContextSelector(CategoriesContext, (c) => c?.categories);

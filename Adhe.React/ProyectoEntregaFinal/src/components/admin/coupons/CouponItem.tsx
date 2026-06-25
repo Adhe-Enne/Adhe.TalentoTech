@@ -4,14 +4,13 @@ import { FaTrash } from "react-icons/fa";
 
 import type { Coupon } from "../../../models";
 
-import useCoupons from "../../../hooks/useCoupons";
-import useNotification from "../../../hooks/useNotification";
+import useCoupons from "../../../hooks/selectors/useCoupons";
+import useNotification from "../../../hooks/selectors/useNotification";
+import { getTodayString } from "../../../utils/dateUtils";
 import ToggleSwitch from "../../ui/ToggleSwitch";
+import styles from "./CouponItem.module.css";
 
-const today: string = ((): string => {
-  const d: Date = new Date();
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
-})();
+const today: string = getTodayString();
 
 interface CouponItemProps {
   coupon: Coupon;
@@ -59,7 +58,9 @@ const CouponItem: React.FC<CouponItemProps> = (props) => {
   const handleDateSave: () => void = useCallback((): void => {
     setIsEditingDate(false);
     const newDate: string | null = editDate || null;
-    if (newDate === (coupon.expiresAt ?? null)) { return; }
+    if (newDate === (coupon.expiresAt ?? null)) {
+      return;
+    }
     updateCoupon(coupon.id, { expiresAt: newDate });
     setNotification(newDate ? "Fecha de vencimiento actualizada" : "Vencimiento eliminado", 2000, "success");
   }, [editDate, coupon.id, coupon.expiresAt, updateCoupon, setNotification]);
@@ -71,8 +72,12 @@ const CouponItem: React.FC<CouponItemProps> = (props) => {
 
   const handleDateKeyDown: (e: React.KeyboardEvent) => void = useCallback(
     (e: React.KeyboardEvent): void => {
-      if (e.key === "Enter") { handleDateSave(); }
-      if (e.key === "Escape") { handleDateCancel(); }
+      if (e.key === "Enter") {
+        handleDateSave();
+      }
+      if (e.key === "Escape") {
+        handleDateCancel();
+      }
     },
     [handleDateSave, handleDateCancel],
   );
@@ -84,7 +89,7 @@ const CouponItem: React.FC<CouponItemProps> = (props) => {
       </td>
       <td>{coupon.discountValue}%</td>
       <td>
-        <Badge bg={badge.variant} className={badge.variant === "warning" ? "text-dark" : ""} style={{ borderRadius: 999 }}>
+        <Badge bg={badge.variant} className={`${badge.variant === "warning" ? "text-dark " : ""}${styles.badgePill}`}>
           {badge.label}
         </Badge>
       </td>
@@ -107,10 +112,14 @@ const CouponItem: React.FC<CouponItemProps> = (props) => {
         ) : (
           <span
             aria-label="Editar fecha de vencimiento"
+            className={styles.editableDate}
             onClick={handleDateClick}
-            onKeyDown={(e: React.KeyboardEvent) => { if (e.key === "Enter") { handleDateClick(); } }}
+            onKeyDown={(e: React.KeyboardEvent) => {
+              if (e.key === "Enter") {
+                handleDateClick();
+              }
+            }}
             role="button"
-            style={{ cursor: "pointer", borderBottom: "1px dashed #aaa" }}
             tabIndex={0}
           >
             {coupon.expiresAt ? new Date(coupon.expiresAt).toLocaleDateString() : "Sin vencimiento"}
@@ -118,11 +127,7 @@ const CouponItem: React.FC<CouponItemProps> = (props) => {
         )}
       </td>
       <td>
-        <ToggleSwitch
-          checked={coupon.isEnabled}
-          label={`${coupon.isEnabled ? "Desactivar" : "Activar"} cupon ${coupon.code}`}
-          onToggle={handleToggle}
-        />
+        <ToggleSwitch checked={coupon.isEnabled} label={`${coupon.isEnabled ? "Desactivar" : "Activar"} cupon ${coupon.code}`} onToggle={handleToggle} />
       </td>
       <td>
         <Button aria-label={`Eliminar cupon ${coupon.code}`} onClick={() => onDeleteRequest(coupon.id, coupon.code)} size="sm" variant="outline-danger">

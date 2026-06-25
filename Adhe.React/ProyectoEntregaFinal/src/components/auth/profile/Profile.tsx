@@ -1,32 +1,43 @@
-import React from "react";
+import React, { useCallback, useState } from "react";
 import { Badge, Button } from "react-bootstrap";
+import { FaShoppingBag } from "react-icons/fa";
+import { useNavigate, type NavigateFunction } from "react-router-dom";
 
-import type { UserInfo } from "../../../types/auth";
-
+import useAuth from "../../../hooks/selectors/useAuth";
+import useNotification from "../../../hooks/selectors/useNotification";
 import ConfirmDialog from "../../ui/ConfirmDialog";
 import HelmetMeta from "../../ui/HelmetMeta";
+import styles from "./Profile.module.css";
 
-interface ProfileProps {
-  loggingOut: boolean;
-  showConfirm: boolean;
-  user: UserInfo | null;
-  onConfirmClose: () => void;
-  onConfirmOpen: () => void;
-  onLogout: () => Promise<void>;
-  onNavigateHome: () => void;
-}
+const Profile: React.FC = () => {
+  const { user, logout } = useAuth();
+  const { setNotification } = useNotification();
+  const navigate: NavigateFunction = useNavigate();
+  const [showConfirm, setShowConfirm] = useState<boolean>(false);
+  const [loggingOut, setLoggingOut] = useState<boolean>(false);
 
-const Profile: React.FC<ProfileProps> = (props) => {
-  const { user, onLogout, showConfirm, onConfirmOpen, onConfirmClose, loggingOut, onNavigateHome } = props;
+  const handleLogout: () => Promise<void> = useCallback(async () => {
+    setShowConfirm(false);
+    setLoggingOut(true);
+    try {
+      await logout();
+      setNotification("Sesión cerrada", 3000, "info");
+      navigate("/login");
+    } catch {
+      setNotification("Error al cerrar sesión", 3000, "danger");
+    } finally {
+      setLoggingOut(false);
+    }
+  }, [logout, navigate, setNotification]);
 
   const roleLabel: string = user?.rol === "admin" ? "Administrador" : "Usuario";
 
   return (
-    <div className="d-flex justify-content-center align-items-center" style={{ minHeight: "60vh" }}>
+    <div className={`d-flex justify-content-center align-items-center ${styles.profilePage}`}>
       <HelmetMeta description="Revisa tu perfil en Talento Tech." title="Talento Tech | Perfil" />
-      <div className="card shadow-sm" style={{ width: "100%", maxWidth: 460 }}>
+      <div className={`card shadow-sm ${styles.profileCard}`}>
         <div className="card-body p-4 text-center">
-          <div className="rounded-circle bg-primary d-flex align-items-center justify-content-center mx-auto mb-3" style={{ width: 80, height: 80 }}>
+          <div className={`rounded-circle bg-primary d-flex align-items-center justify-content-center mx-auto mb-3 ${styles.avatar}`}>
             <span className="text-white fs-2 fw-bold">{user?.email?.charAt(0).toUpperCase() ?? "?"}</span>
           </div>
           <h4 className="mb-1">{user?.email ?? "Sin sesión"}</h4>
@@ -37,11 +48,15 @@ const Profile: React.FC<ProfileProps> = (props) => {
           <hr />
 
           <div className="d-flex flex-column gap-2">
-            <Button aria-label="Cerrar sesión" disabled={loggingOut} onClick={onConfirmOpen} variant="outline-danger">
-              {loggingOut ? "Cerrando sesión..." : "Cerrar sesión"}
+            <Button aria-label="Mis pedidos" onClick={() => navigate("/mis-ordenes")} variant="outline-primary">
+              <FaShoppingBag aria-hidden="true" className="me-1" />
+              Mis pedidos
             </Button>
-            <Button aria-label="Volver al inicio" onClick={onNavigateHome} variant="outline-secondary">
+            <Button aria-label="Volver al inicio" onClick={() => navigate("/")} variant="outline-secondary">
               Volver al inicio
+            </Button>
+            <Button aria-label="Cerrar sesión" disabled={loggingOut} onClick={() => setShowConfirm(true)} variant="outline-danger">
+              {loggingOut ? "Cerrando sesión..." : "Cerrar sesión"}
             </Button>
           </div>
         </div>
@@ -53,8 +68,8 @@ const Profile: React.FC<ProfileProps> = (props) => {
         loading={loggingOut}
         loadingLabel="Cerrando sesión..."
         message="¿Estás seguro de que querés cerrar la sesión?"
-        onCancel={onConfirmClose}
-        onConfirm={onLogout}
+        onCancel={() => setShowConfirm(false)}
+        onConfirm={handleLogout}
         open={showConfirm}
         title="Cerrar sesión"
       />

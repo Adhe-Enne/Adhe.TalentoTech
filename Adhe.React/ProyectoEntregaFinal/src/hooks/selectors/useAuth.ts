@@ -1,8 +1,8 @@
 import { useContextSelector } from "use-context-selector";
 
-import type { AuthContextType } from "../contexts/Auth/AuthTypes";
+import type { AuthContextType } from "../../contexts/Auth/AuthTypes";
 
-import AuthContext from "../contexts/Auth/AuthContext";
+import AuthContext from "../../contexts/Auth/AuthContext";
 
 const useAuth: () => AuthContextType = (): AuthContextType => {
   const user: AuthContextType["user"] | undefined = useContextSelector(AuthContext, (c) => c?.user);

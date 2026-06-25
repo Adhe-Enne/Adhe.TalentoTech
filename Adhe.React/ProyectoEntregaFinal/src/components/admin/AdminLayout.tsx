@@ -1,5 +1,5 @@
 import React from "react";
-import { FaArrowLeft, FaBox, FaPlus, FaTachometerAlt, FaTicketAlt } from "react-icons/fa";
+import { FaArrowLeft, FaBox, FaClipboardList, FaPlus, FaTachometerAlt, FaTicketAlt } from "react-icons/fa";
 import { NavLink, Outlet } from "react-router-dom";
 
 import styles from "./AdminLayout.module.css";
@@ -31,6 +31,10 @@ const AdminLayout: React.FC = () => {
           <NavLink aria-label="Cupones" className={(props) => `${styles.sidebarLink}${props.isActive ? " " + styles.active : ""}`} to="/admin/cupones">
             <FaTicketAlt aria-hidden="true" className="me-1" />
             Cupones
+          </NavLink>
+          <NavLink aria-label="Pedidos" className={(props) => `${styles.sidebarLink}${props.isActive ? " " + styles.active : ""}`} to="/admin/ordenes">
+            <FaClipboardList aria-hidden="true" className="me-1" />
+            Pedidos
           </NavLink>
         </nav>
         <main className={styles.content}>

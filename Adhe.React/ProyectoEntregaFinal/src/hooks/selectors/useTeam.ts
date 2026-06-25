@@ -1,8 +1,8 @@
 import { useContextSelector } from "use-context-selector";
 
-import type { TeamContextType } from "../contexts/Team/TeamTypes";
+import type { TeamContextType } from "../../contexts/Team/TeamTypes";
 
-import TeamContext from "../contexts/Team/TeamContext";
+import TeamContext from "../../contexts/Team/TeamContext";
 
 const useTeam: () => TeamContextType = (): TeamContextType => {
   const team: TeamContextType["team"] | undefined = useContextSelector(TeamContext, (c) => c?.team);

@@ -1,0 +1,13 @@
+.profilePage {
+  min-height: 60vh;
+}
+
+.profileCard {
+  width: 100%;
+  max-width: 460px;
+}
+
+.avatar {
+  width: 80px;
+  height: 80px;
+}

@@ -4,8 +4,8 @@ import { useNavigate, type NavigateFunction } from "react-router-dom";
 
 import type { FormMode, ProductFormPayload, Fields } from "./ProductFormTypes";
 
-import useCategories from "../../../hooks/useCategories";
-import useTags from "../../../hooks/useTags";
+import useCategories from "../../../hooks/selectors/useCategories";
+import useTags from "../../../hooks/selectors/useTags";
 import { parseCurrency } from "../../../utils/currency";
 import AdditionalImagesInput from "./AdditionalImagesInput";
 import CategoryCreateModal from "./CategoryCreateModal";

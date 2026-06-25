@@ -4,10 +4,9 @@ import { useNavigate, type NavigateFunction } from "react-router-dom";
 
 import type { Product } from "../../../models";
 
-import useCart from "../../../hooks/useCart";
-import useFavorites from "../../../hooks/useFavorites";
-import useIsFavorite from "../../../hooks/useIsFavorite";
-import useNotification from "../../../hooks/useNotification";
+import useCart from "../../../hooks/selectors/useCart";
+import useFavorites from "../../../hooks/selectors/useFavorites";
+import useNotification from "../../../hooks/selectors/useNotification";
 import QuantityStepper from "../../ui/QuantityStepper";
 import styles from "./ProductCard.module.css";
 
@@ -20,8 +19,8 @@ const ProductCard: React.FC<ProductCardProps> = (props) => {
   const { addToCart, getCantidadActual, removeFromCart, updateQuantity } = useCart();
   const { setNotification } = useNotification();
   const navigate: NavigateFunction = useNavigate();
-  const { toggleFavorite } = useFavorites();
-  const fav: boolean = useIsFavorite(product.id);
+  const { isFavorite, toggleFavorite } = useFavorites();
+  const fav: boolean = isFavorite(product.id);
 
   const cantidadActual: number = getCantidadActual(product.id);
   const outOfStock: boolean = product.stock <= 0;
@@ -100,9 +99,7 @@ const ProductCard: React.FC<ProductCardProps> = (props) => {
             </button>
           )}
 
-          {!outOfStock && inCart && (
-            <QuantityStepper max={product.stock} onDecrement={handleDecrement} onIncrement={handleIncrement} size="sm" value={cantidadActual} />
-          )}
+          {!outOfStock && inCart && <QuantityStepper max={product.stock} onDecrement={handleDecrement} onIncrement={handleIncrement} size="sm" value={cantidadActual} />}
         </div>
       </div>
     </div>

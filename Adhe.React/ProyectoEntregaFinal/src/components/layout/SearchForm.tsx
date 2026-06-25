@@ -65,13 +65,7 @@ const SearchForm: React.FC<SearchFormProps> = (props) => {
         className="search-btn"
         onClick={(ev) => {
           ev.preventDefault();
-          const captured: string | undefined = ev.currentTarget.dataset.qvalue || undefined;
-          submit(captured);
-        }}
-        onMouseDown={(ev) => {
-          const form: HTMLFormElement | null = (ev.currentTarget as HTMLElement).closest("form") as HTMLFormElement | null;
-          const inputVal: string = form ? (form.querySelector('input[name="q"]') as HTMLInputElement)?.value || "" : "";
-          ev.currentTarget.dataset.qvalue = inputVal;
+          submit();
         }}
         type="submit"
       >

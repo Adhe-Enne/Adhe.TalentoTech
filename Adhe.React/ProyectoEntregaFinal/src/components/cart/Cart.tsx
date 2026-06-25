@@ -1,43 +1,24 @@
-import React, { useCallback, useRef } from "react";
+import React, { useCallback } from "react";
 import { Button, Container, ListGroup } from "react-bootstrap";
 import { FaCreditCard } from "react-icons/fa";
 import { Link, useNavigate, type NavigateFunction } from "react-router-dom";
 
-import useCart from "../../hooks/useCart";
-import useNotification from "../../hooks/useNotification";
+import useCart from "../../hooks/selectors/useCart";
 import HelmetMeta from "../ui/HelmetMeta";
 import CartItemRow from "./CartItemRow";
 import CouponSection from "./CouponSection";
 
 const Cart: React.FC = () => {
   const navigate: NavigateFunction = useNavigate();
-  const { setNotification } = useNotification();
-  const { cart, clearCart, discountedTotal, appliedCoupon, getCartTotal } = useCart();
-  const timerRef: React.RefObject<ReturnType<typeof setTimeout> | null> = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  React.useEffect((): (() => void) => {
-    return (): void => {
-      if (timerRef.current) {
-        clearTimeout(timerRef.current);
-        timerRef.current = null;
-      }
-    };
-  }, []);
+  const { cart, discountedTotal, appliedCoupon, getCartTotal } = useCart();
 
   const handleBack: () => void = useCallback(() => {
     navigate("/");
   }, [navigate]);
 
   const handlePurchase: () => void = useCallback(() => {
-    if (timerRef.current) {
-      clearTimeout(timerRef.current);
-    }
-    setNotification("Compra realizada con exito", 3000, "success");
-    timerRef.current = setTimeout(() => {
-      clearCart();
-      navigate("/");
-    }, 3000);
-  }, [clearCart, navigate, setNotification]);
+    navigate("/checkout");
+  }, [navigate]);
 
   const rawTotal: number = getCartTotal();
 

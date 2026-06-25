@@ -1,32 +1,70 @@
-import React from "react";
+import React, { useCallback, useState } from "react";
 import { Alert, Button } from "react-bootstrap";
-import { Link } from "react-router-dom";
+import { Link, useNavigate, type NavigateFunction } from "react-router-dom";
 
+import type { UserInfo } from "../../../types/auth";
+
+import useAuth from "../../../hooks/selectors/useAuth";
+import useNotification from "../../../hooks/selectors/useNotification";
 import HelmetMeta from "../../ui/HelmetMeta";
+import styles from "./Register.module.css";
 
-interface RegisterProps {
-  confirmPassword: string;
-  email: string;
-  error: string | null;
-  loading: boolean;
-  password: string;
-  onConfirmPasswordChange: (v: string) => void;
-  onEmailChange: (v: string) => void;
-  onPasswordChange: (v: string) => void;
-  onSubmit: (e: React.SubmitEvent) => void;
-}
+const Register: React.FC = () => {
+  const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const [confirmPassword, setConfirmPassword] = useState<string>("");
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
 
-const Register: React.FC<RegisterProps> = (props) => {
-  const { email, error, loading, password, confirmPassword, onEmailChange, onPasswordChange, onConfirmPasswordChange, onSubmit } = props;
+  const { signup } = useAuth();
+  const { setNotification } = useNotification();
+  const navigate: NavigateFunction = useNavigate();
+
+  const handleSubmit: (e: React.SubmitEvent) => Promise<void> = useCallback(
+    async (e: React.SubmitEvent) => {
+      e.preventDefault();
+      setError(null);
+
+      if (!email.trim()) {
+        setError("El correo electrónico es obligatorio");
+        return;
+      }
+
+      if (password.length < 6) {
+        setError("La contraseña debe tener al menos 6 caracteres");
+        return;
+      }
+
+      if (password !== confirmPassword) {
+        setError("Las contraseñas no coinciden");
+        return;
+      }
+
+      setLoading(true);
+
+      try {
+        const user: UserInfo = await signup(email, password);
+        setNotification(`Cuenta creada! Bienvenido, ${user.email}`, 4000, "success");
+        navigate("/");
+      } catch (err: unknown) {
+        const msg: string = err instanceof Error ? err.message : "Error al crear la cuenta";
+        setError(msg);
+        setNotification(msg, 4000, "danger");
+      } finally {
+        setLoading(false);
+      }
+    },
+    [email, password, confirmPassword, signup, navigate, setNotification],
+  );
 
   return (
     <>
       <HelmetMeta description="Regístrate en Talento Tech." title="Talento Tech | Registro" />
-      <div className="d-flex justify-content-center align-items-center" style={{ minHeight: "80vh" }}>
-        <div className="card shadow-sm" style={{ width: "100%", maxWidth: 420 }}>
+      <div className={`d-flex justify-content-center align-items-center ${styles.authPage}`}>
+        <div className={`card shadow-sm ${styles.authCard}`}>
           <div className="card-body p-4">
             <h2 className="card-title text-center mb-4">Crear cuenta</h2>
-            <form noValidate onSubmit={onSubmit}>
+            <form noValidate onSubmit={handleSubmit}>
               <div className="mb-3">
                 <label className="form-label" htmlFor="reg-email">
                   Correo electrónico
@@ -35,7 +73,7 @@ const Register: React.FC<RegisterProps> = (props) => {
                   autoComplete="email"
                   className="form-control"
                   id="reg-email"
-                  onChange={(e) => onEmailChange(e.target.value)}
+                  onChange={(e) => setEmail(e.target.value)}
                   placeholder="tu@email.com"
                   required
                   type="email"
@@ -51,7 +89,7 @@ const Register: React.FC<RegisterProps> = (props) => {
                   className="form-control"
                   id="reg-password"
                   minLength={6}
-                  onChange={(e) => onPasswordChange(e.target.value)}
+                  onChange={(e) => setPassword(e.target.value)}
                   placeholder="Mínimo 6 caracteres"
                   required
                   type="password"
@@ -67,7 +105,7 @@ const Register: React.FC<RegisterProps> = (props) => {
                   className="form-control"
                   id="reg-confirm"
                   minLength={6}
-                  onChange={(e) => onConfirmPasswordChange(e.target.value)}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
                   placeholder="Repetí la contraseña"
                   required
                   type="password"

@@ -1,8 +1,8 @@
 import { useContextSelector } from "use-context-selector";
 
-import type { CartContextType } from "../contexts/Cart/CartTypes";
+import type { CartContextType } from "../../contexts/Cart/CartTypes";
 
-import CartContext from "../contexts/Cart/CartContext";
+import CartContext from "../../contexts/Cart/CartContext";
 
 const useCart: () => CartContextType = (): CartContextType => {
   const cart: CartContextType["cart"] | undefined = useContextSelector(CartContext, (c) => c?.cart);
@@ -16,7 +16,6 @@ const useCart: () => CartContextType = (): CartContextType => {
   const getCartQuantity: CartContextType["getCartQuantity"] | undefined = useContextSelector(CartContext, (c) => c?.getCartQuantity);
   const getCartTotal: CartContextType["getCartTotal"] | undefined = useContextSelector(CartContext, (c) => c?.getCartTotal);
   const getCantidadActual: CartContextType["getCantidadActual"] | undefined = useContextSelector(CartContext, (c) => c?.getCantidadActual);
-  const isInCart: CartContextType["isInCart"] | undefined = useContextSelector(CartContext, (c) => c?.isInCart);
   const applyCoupon: CartContextType["applyCoupon"] | undefined = useContextSelector(CartContext, (c) => c?.applyCoupon);
   const removeCoupon: CartContextType["removeCoupon"] | undefined = useContextSelector(CartContext, (c) => c?.removeCoupon);
 
@@ -29,7 +28,6 @@ const useCart: () => CartContextType = (): CartContextType => {
     getCartQuantity === undefined ||
     getCartTotal === undefined ||
     getCantidadActual === undefined ||
-    isInCart === undefined ||
     appliedCoupon === undefined ||
     discountedTotal === undefined ||
     applyCoupon === undefined ||
@@ -48,7 +46,6 @@ const useCart: () => CartContextType = (): CartContextType => {
     getCartQuantity,
     getCartTotal,
     getCantidadActual,
-    isInCart,
     appliedCoupon,
     discountedTotal,
     applyCoupon,

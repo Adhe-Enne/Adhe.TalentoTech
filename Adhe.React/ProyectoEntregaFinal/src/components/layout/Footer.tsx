@@ -2,7 +2,7 @@ import React from "react";
 import { FaGithub, FaLinkedin } from "react-icons/fa";
 import { Link } from "react-router-dom";
 
-import useNotification from "../../hooks/useNotification";
+import useNotification from "../../hooks/selectors/useNotification";
 
 const Footer: React.FC = () => {
   const { setNotification } = useNotification();

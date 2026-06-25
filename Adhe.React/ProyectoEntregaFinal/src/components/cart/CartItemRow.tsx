@@ -4,8 +4,9 @@ import { FaMinus, FaPlus, FaTrash } from "react-icons/fa";
 
 import type { CartItem } from "../../models";
 
-import useCart from "../../hooks/useCart";
-import useNotification from "../../hooks/useNotification";
+import useCart from "../../hooks/selectors/useCart";
+import useNotification from "../../hooks/selectors/useNotification";
+import styles from "./CartItemRow.module.css";
 
 interface CartItemRowProps {
   item: CartItem;
@@ -42,7 +43,7 @@ const CartItemRow: React.FC<CartItemRowProps> = (props) => {
 
   return (
     <ListGroup.Item className="d-flex align-items-center gap-3">
-      <img alt={item.product.name} className="rounded" src={item.product.image} style={{ width: 96, height: 96, objectFit: "cover" }} />
+      <img alt={item.product.name} className={`rounded ${styles.thumb}`} src={item.product.image} />
       <div className="flex-grow-1">
         <strong>{item.product.name}</strong>
         <div className="text-muted">${item.product.price.toFixed(2)}</div>
@@ -56,7 +57,7 @@ const CartItemRow: React.FC<CartItemRowProps> = (props) => {
           <FaPlus />
         </Button>
       </div>
-      <div style={{ width: 140, textAlign: "right" }}>${(item.product.price * item.quantity).toFixed(2)}</div>
+      <div className={styles.totalPrice}>${(item.product.price * item.quantity).toFixed(2)}</div>
       <div>
         <Button aria-label={`Eliminar ${item.product.name}`} onClick={handleRemove} size="sm" variant="danger">
           <FaTrash />

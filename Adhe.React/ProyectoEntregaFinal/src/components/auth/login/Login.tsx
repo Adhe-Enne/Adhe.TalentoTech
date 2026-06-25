@@ -1,41 +1,65 @@
 import React, { useCallback, useState } from "react";
 import { Alert, Button, Spinner } from "react-bootstrap";
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate, type Location, type NavigateFunction } from "react-router-dom";
 
+import useAuth from "../../../hooks/selectors/useAuth";
+import useNotification from "../../../hooks/selectors/useNotification";
 import HelmetMeta from "../../ui/HelmetMeta";
+import styles from "./Login.module.css";
 
-interface LoginProps {
-  email: string;
-  error: string | null;
-  loading: boolean;
-  password: string;
-  redirectMessage: string | null;
-  onEmailChange: (v: string) => void;
-  onPasswordChange: (v: string) => void;
-  onSubmit: (e: React.SubmitEvent) => void;
-}
-
-const Login: React.FC<LoginProps> = (props) => {
-  const { email, error, loading, password, redirectMessage, onEmailChange, onPasswordChange, onSubmit } = props;
+const Login: React.FC = () => {
+  const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
   const [dismissed, setDismissed] = useState<boolean>(false);
+
+  const { login } = useAuth();
+  const { setNotification } = useNotification();
+  const navigate: NavigateFunction = useNavigate();
+  const location: Location = useLocation();
+
+  const from: string = (location.state as { from?: { pathname: string } })?.from?.pathname ?? "/";
+  const redirectMessage: string | null = from === "/" ? null : "Debés iniciar sesión para acceder a esta página";
+
+  const handleSubmit: (e: React.SubmitEvent) => Promise<void> = useCallback(
+    async (e: React.SubmitEvent) => {
+      e.preventDefault();
+      setError(null);
+      setLoading(true);
+
+      try {
+        await login(email, password);
+        setNotification("Sesión iniciada correctamente", 3000, "success");
+        navigate(from, { replace: true });
+      } catch (err: unknown) {
+        const msg: string = err instanceof Error ? err.message : "Error al iniciar sesión";
+        setError(msg);
+        setNotification(msg, 4000, "danger");
+      } finally {
+        setLoading(false);
+      }
+    },
+    [email, password, login, navigate, setNotification, from],
+  );
 
   const handleDismiss: () => void = useCallback(() => setDismissed(true), []);
 
   return (
     <>
       <HelmetMeta description="Inicia sesión en Talento Tech." title="Talento Tech | Iniciar Sesión" />
-      <div className="d-flex justify-content-center align-items-center" style={{ minHeight: "80vh" }}>
-        <div className="card shadow-sm" style={{ width: "100%", maxWidth: 420 }}>
+      <div className={`d-flex justify-content-center align-items-center ${styles.authPage}`}>
+        <div className={`card shadow-sm ${styles.authCard}`}>
           <div className="card-body p-4">
             {redirectMessage && !dismissed && (
               <Alert className="d-flex align-items-center justify-content-between py-2 small" variant="info">
                 <span>{redirectMessage}</span>
-                <button aria-label="Cerrar" className="btn-close ms-2" onClick={handleDismiss} style={{ fontSize: "0.75rem" }} type="button" />
+                <button aria-label="Cerrar" className={`btn-close ms-2 ${styles.closeBtn}`} onClick={handleDismiss} type="button" />
               </Alert>
             )}
 
             <h2 className="card-title text-center mb-4">Iniciar Sesión</h2>
-            <form noValidate onSubmit={onSubmit}>
+            <form noValidate onSubmit={handleSubmit}>
               <div className="mb-3">
                 <label className="form-label" htmlFor="login-email">
                   Correo electrónico
@@ -47,7 +71,7 @@ const Login: React.FC<LoginProps> = (props) => {
                   id="login-email"
                   onChange={(e) => {
                     setDismissed(true);
-                    onEmailChange(e.target.value);
+                    setEmail(e.target.value);
                   }}
                   placeholder="tu@email.com"
                   required
@@ -64,7 +88,7 @@ const Login: React.FC<LoginProps> = (props) => {
                   className="form-control"
                   id="login-password"
                   minLength={6}
-                  onChange={(e) => onPasswordChange(e.target.value)}
+                  onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••"
                   required
                   type="password"

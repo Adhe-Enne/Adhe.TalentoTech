@@ -14,12 +14,12 @@ interface UseCouponManagerReturn {
   removeCoupon: () => void;
 }
 
-const useCouponManager: (rawTotal: number) => UseCouponManagerReturn = (rawTotal: number): UseCouponManagerReturn => {
+const useCouponManager: (rawTotal: number, userId?: string) => UseCouponManagerReturn = (rawTotal: number, userId?: string): UseCouponManagerReturn => {
   const [appliedCoupon, setAppliedCoupon] = useState<AppliedCoupon | null>(null);
   const [isApplyingCoupon, setIsApplyingCoupon] = useState(false);
 
   useEffect((): void => {
-    const savedCode: string | null = loadSavedCouponCode();
+    const savedCode: string | null = loadSavedCouponCode(userId);
     if (savedCode) {
       couponService.validateCoupon(savedCode).then((result: CouponValidationResult) => {
         if (result.valid && result.discountValue != null) {
@@ -30,11 +30,11 @@ const useCouponManager: (rawTotal: number) => UseCouponManagerReturn = (rawTotal
             expiresAt: result.expiresAt ?? null,
           });
         } else {
-          persistCouponCode(null);
+          persistCouponCode(null, userId);
         }
       });
     }
-  }, []);
+  }, [userId]);
 
   const applyCoupon: (code: string) => Promise<{ success: boolean; error?: string }> = useCallback(async (code: string): Promise<{ success: boolean; error?: string }> => {
     setIsApplyingCoupon(true);
@@ -50,17 +50,17 @@ const useCouponManager: (rawTotal: number) => UseCouponManagerReturn = (rawTotal
         expiresAt: result.expiresAt ?? null,
       };
       setAppliedCoupon(couponData);
-      persistCouponCode(couponData.code);
+      persistCouponCode(couponData.code, userId);
       return { success: true };
     } finally {
       setIsApplyingCoupon(false);
     }
-  }, []);
+  }, [userId]);
 
   const removeCoupon: () => void = useCallback((): void => {
     setAppliedCoupon(null);
-    persistCouponCode(null);
-  }, []);
+    persistCouponCode(null, userId);
+  }, [userId]);
 
   const discountedTotal: number = useMemo((): number => {
     if (!appliedCoupon) {
