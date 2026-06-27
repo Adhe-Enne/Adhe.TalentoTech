@@ -1,7 +1,11 @@
-import { createContext, type Context } from "use-context-selector";
+import { createTypedContext } from "../../utils/context";
 
-import type { NotificationContextType } from "./NotificationTypes";
+export type NotificationVariant = "success" | "info" | "warning" | "danger" | "primary" | "secondary";
 
-const NotificationContext: Context<NotificationContextType | undefined> = createContext<NotificationContextType | undefined>(undefined);
+export type NotificationContextType = {
+  setNotification: (message: string | null, duration?: number, variant?: NotificationVariant) => void;
+};
 
-export default NotificationContext;
+export type SetNotificationFn = (message: string | null, duration?: number, variant?: NotificationVariant) => void;
+
+export default createTypedContext<NotificationContextType>();

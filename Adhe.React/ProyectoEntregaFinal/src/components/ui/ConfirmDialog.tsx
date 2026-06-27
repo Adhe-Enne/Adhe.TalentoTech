@@ -1,5 +1,7 @@
 import React, { useEffect, useRef, type RefObject } from "react";
 
+import { useDialog } from "../../hooks/useDialog";
+
 interface ConfirmDialogProps {
   message: string;
   open: boolean;
@@ -15,19 +17,12 @@ interface ConfirmDialogProps {
 
 const ConfirmDialog: React.FC<ConfirmDialogProps> = (props) => {
   const { open, title, message, confirmLabel = "Eliminar", cancelLabel = "Cancelar", confirmVariant = "danger", onConfirm, onCancel, loading = false, loadingLabel = "Eliminando..." } = props;
-  const dialogRef: RefObject<HTMLDialogElement | null> = useRef<HTMLDialogElement>(null);
+  const dialogRef: RefObject<HTMLDialogElement | null> = useDialog(open);
   const confirmRef: RefObject<HTMLButtonElement | null> = useRef<HTMLButtonElement>(null);
 
   useEffect((): void => {
-    const dialog: HTMLDialogElement | null = dialogRef.current;
-    if (!dialog) {
-      return;
-    }
-    if (open && !dialog.open) {
-      dialog.showModal();
-      confirmRef.current?.focus();
-    } else if (!open && dialog.open) {
-      dialog.close();
+    if (open && confirmRef.current) {
+      confirmRef.current.focus();
     }
   }, [open]);
 
@@ -43,7 +38,7 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = (props) => {
     };
     dialog.addEventListener("keydown", handler);
     return (): void => dialog.removeEventListener("keydown", handler);
-  }, [loading, onConfirm]);
+  }, [loading, onConfirm, dialogRef]);
 
   useEffect((): (() => void) => {
     const dialog: HTMLDialogElement | null = dialogRef.current;
@@ -52,7 +47,7 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = (props) => {
         dialog.close();
       }
     };
-  }, []);
+  }, [dialogRef]);
 
   const handleCancel: () => void = (): void => {
     if (!loading) {

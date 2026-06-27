@@ -1,7 +1,14 @@
-import { createContext, type Context } from "use-context-selector";
+import type { UserInfo } from "../../types/auth";
 
-import type { AuthContextType } from "./AuthTypes";
+import { createTypedContext } from "../../utils/context";
 
-const AuthContext: Context<AuthContextType | undefined> = createContext<AuthContextType | undefined>(undefined);
+export type AuthContextType = {
+  user: UserInfo | null;
+  loading: boolean;
+  login: (email: string, password: string) => Promise<UserInfo>;
+  signup: (email: string, password: string) => Promise<UserInfo>;
+  logout: () => Promise<void>;
+  isAdmin: boolean;
+};
 
-export default AuthContext;
+export default createTypedContext<AuthContextType>();

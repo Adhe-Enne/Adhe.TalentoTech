@@ -1,12 +1,14 @@
 import React from "react";
-import { Badge, Button, Container, Form, ListGroup, Spinner } from "react-bootstrap";
+import { Badge, Button, Container, Form, ListGroup } from "react-bootstrap";
 import { FaCheck, FaChevronDown, FaChevronUp, FaTimes, FaTrash } from "react-icons/fa";
 
 import { type Order, type OrderStatusValue, ORDER_STATUS_LABELS, OrderStatus } from "../../../models/Order";
+import { formatPrice } from "../../../utils/format";
 import { ORDER_STATUS_VARIANT } from "../../../utils/orderUtils";
 import OrderItemRow from "../../orders/OrderItemRow";
 import ConfirmDialog from "../../ui/ConfirmDialog";
 import HelmetMeta from "../../ui/HelmetMeta";
+import ListStateDisplay from "../../ui/ListStateDisplay";
 import styles from "./AdminOrderList.module.css";
 
 interface AdminOrderListProps {
@@ -60,29 +62,18 @@ const AdminOrderList: React.FC<AdminOrderListProps> = (props) => {
         ))}
       </Form.Select>
 
-      {isLoading ? (
-        <div className="text-center py-5">
-          <Spinner animation="border" role="status">
-            <span className="visually-hidden">Cargando pedidos...</span>
-          </Spinner>
-        </div>
-      ) : filtered.length === 0 ? (
-        <p className="text-muted">No hay pedidos.</p>
-      ) : (
-        <ListGroup>
+      <ListStateDisplay error={null} loading={isLoading} loadingMessage="Cargando pedidos...">
+        {filtered.length === 0 ? (
+          <p className="text-muted">No hay pedidos.</p>
+        ) : (
+          <ListGroup>
           {filtered.map((order: Order) => (
             <ListGroup.Item key={order.id}>
-              <div
+              <button
                 aria-label={`Orden ${order.id.slice(-8).toUpperCase()} - ${ORDER_STATUS_LABELS[order.status]}`}
                 className={`d-flex align-items-center justify-content-between ${styles.clickable}`}
                 onClick={() => onToggleExpand(order.id)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    onToggleExpand(order.id);
-                  }
-                }}
-                role="button"
-                tabIndex={0}
+                type="button"
               >
                 <div>
                   <strong>#{order.id.slice(-8).toUpperCase()}</strong>
@@ -92,10 +83,10 @@ const AdminOrderList: React.FC<AdminOrderListProps> = (props) => {
                 </div>
                 <div className="d-flex align-items-center gap-2">
                   <Badge bg={ORDER_STATUS_VARIANT[order.status] ?? "secondary"}>{ORDER_STATUS_LABELS[order.status]}</Badge>
-                  <span>${order.total.toFixed(2)}</span>
+                  <span>{formatPrice(order.total)}</span>
                   {expandedId === order.id ? <FaChevronUp /> : <FaChevronDown />}
                 </div>
-              </div>
+              </button>
 
               {expandedId === order.id && (
                 <div className="mt-3 pt-3 border-top">
@@ -109,7 +100,7 @@ const AdminOrderList: React.FC<AdminOrderListProps> = (props) => {
                   )}
                   {order.discount > 0 && (
                     <div className="small text-success mt-1">
-                      Descuento{order.discountCode ? ` (${order.discountCode})` : ""}: -${order.discount.toFixed(2)}
+                      Descuento{order.discountCode ? ` (${order.discountCode})` : ""}: -{formatPrice(order.discount)}
                     </div>
                   )}
                   {order.status === OrderStatus.Pendiente && (
@@ -134,6 +125,7 @@ const AdminOrderList: React.FC<AdminOrderListProps> = (props) => {
           ))}
         </ListGroup>
       )}
+      </ListStateDisplay>
 
       <ConfirmDialog
         confirmLabel="Eliminar"

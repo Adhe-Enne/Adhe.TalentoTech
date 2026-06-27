@@ -1,13 +1,34 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 
 import type { ProviderProps } from "../../types/ProviderProps";
-import type { FavoritesContextType } from "./FavoritesTypes";
+import type { FavoritesContextType } from "./FavoritesContext";
 
 import useNotification from "../../hooks/selectors/useNotification";
-import { parseFavorites } from "../../utils/parseFavorites";
 import FavoritesContext from "./FavoritesContext";
 
 const FAVORITES_KEY: string = "tt_favorites";
+
+function parseFavorites(raw: string | null): Set<string> {
+  if (!raw) {
+    return new Set();
+  }
+
+  const parsed: unknown = JSON.parse(raw);
+  if (Array.isArray(parsed)) {
+    return new Set(parsed.map(String).filter(Boolean));
+  }
+
+  if (parsed && typeof parsed === "object") {
+    return new Set(
+      Object.keys(parsed)
+        .filter((k) => (parsed as Record<string, unknown>)[k])
+        .map(String)
+        .filter(Boolean),
+    );
+  }
+
+  return new Set();
+}
 
 export const FavoritesProvider: React.FC<ProviderProps> = (props) => {
   const { children } = props;

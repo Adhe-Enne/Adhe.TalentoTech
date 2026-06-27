@@ -4,6 +4,7 @@ import type { Tag } from "../models/Tag";
 
 import { TAGS_COLLECTION } from "../App.Constants";
 import { db } from "../firebase";
+import { timestamps } from "../utils/firestore";
 import { tsToIso } from "../utils/parseDataUtils";
 
 export const tagService: {
@@ -47,8 +48,7 @@ export const tagService: {
     const payload: Partial<Tag> = {
       name: nameTrim,
       categoryId,
-      createdAt: new Date().toISOString(),
-      updatedAt: null,
+      ...timestamps.onCreate(),
     };
 
     const ref: DocumentReference = await addDoc(collection(db, TAGS_COLLECTION), payload);
@@ -56,7 +56,7 @@ export const tagService: {
       id: ref.id,
       name: payload.name ?? "Sin nombre",
       categoryId: payload.categoryId ?? "",
-      createdAt: payload.createdAt ?? new Date().toISOString(),
+      ...timestamps.onCreate(),
     };
   },
 };

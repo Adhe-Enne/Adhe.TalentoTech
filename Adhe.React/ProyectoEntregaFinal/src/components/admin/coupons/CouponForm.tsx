@@ -58,29 +58,31 @@ const CouponForm: React.FC = () => {
     return Object.keys(errs).length === 0;
   }, [code, discountValue, expiresAt]);
 
-  const handleSubmit: React.SubmitEventHandler = useCallback(
-    async (e) => {
+  const handleSubmit: React.SubmitEventHandler<HTMLFormElement> = useCallback(
+    (e) => {
       e.preventDefault();
       if (!validate()) {
         return;
       }
       setSubmitting(true);
-      try {
-        await createCoupon({
-          code: code.trim().toUpperCase(),
-          discountValue: Number(discountValue),
-          expiresAt: expiresAt || null,
+      createCoupon({
+        code: code.trim().toUpperCase(),
+        discountValue: Number(discountValue),
+        expiresAt: expiresAt || null,
+      })
+        .then(() => {
+          setCode("");
+          setDiscountValue("");
+          setExpiresAt("");
+          setErrors({});
+          setNotification("Cupon creado!", 3000, "success");
+        })
+        .catch(() => {
+          setNotification("Error al crear cupon", 3000, "danger");
+        })
+        .finally(() => {
+          setSubmitting(false);
         });
-        setCode("");
-        setDiscountValue("");
-        setExpiresAt("");
-        setErrors({});
-        setNotification("Cupon creado!", 3000, "success");
-      } catch {
-        setNotification("Error al crear cupon", 3000, "danger");
-      } finally {
-        setSubmitting(false);
-      }
     },
     [code, discountValue, expiresAt, createCoupon, setNotification, validate],
   );

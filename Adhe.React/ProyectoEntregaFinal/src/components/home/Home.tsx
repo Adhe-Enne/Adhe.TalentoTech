@@ -1,23 +1,54 @@
-import React, { useMemo, useState, type JSX } from "react";
-import { Alert, Button, Container } from "react-bootstrap";
-import { FaTimes } from "react-icons/fa";
-import { useLocation } from "react-router-dom";
+import React, { useCallback, useMemo, useRef, useState } from "react";
+import { useLocation, useNavigate, type NavigateFunction } from "react-router-dom";
 
 import type { Product } from "../../models";
+import type { PaginatedResult } from "../../types";
 
+import useCart from "../../hooks/selectors/useCart";
 import useFavorites from "../../hooks/selectors/useFavorites";
-import usePaginatedProducts from "../../hooks/usePaginatedProducts";
-import ProductGrid from "../product/ProductGrid";
-import HelmetMeta from "../ui/HelmetMeta";
-import styles from "./Home.module.css";
-import LoadMoreSection from "./LoadMoreSection";
-import SearchBar from "./SearchBar";
+import useNotification from "../../hooks/selectors/useNotification";
+import useAsyncCollection from "../../hooks/useAsyncCollection";
+import { productService } from "../../services/productService";
+import HomeView from "./HomeView";
 
 const ITEMS_PER_PAGE: number = 8;
 
 const Home: React.FC = () => {
-  const { products: paginatedProducts, loading, loadingMore, hasMore, loadNextPage, reload: reloadProducts } = usePaginatedProducts();
-  const { favorites } = useFavorites();
+  const [loadingMore, setLoadingMore] = useState<boolean>(false);
+  const [hasMore, setHasMore] = useState<boolean>(true);
+  const lastKeyRef: React.RefObject<string | null> = useRef<string | null>(null);
+
+  const fetcher: () => Promise<Product[]> = useCallback(async (): Promise<Product[]> => {
+    const result: PaginatedResult<Product> = await productService.fetchProductsPage(ITEMS_PER_PAGE);
+    const enabled: Product[] = result.items.filter((p: Product) => p.isEnabled !== false);
+    lastKeyRef.current = result.lastKey;
+    setHasMore(result.hasMore);
+    return enabled;
+  }, []);
+
+  const { products: paginatedProducts, loading, reload: reloadProducts, setData, setError } = useAsyncCollection<Product>(fetcher);
+
+  const loadNextPage: () => Promise<void> = useCallback(async (): Promise<void> => {
+    if (!hasMore || loadingMore) {
+      return;
+    }
+    setLoadingMore(true);
+    try {
+      const result: PaginatedResult<Product> = await productService.fetchProductsPage(ITEMS_PER_PAGE, lastKeyRef.current ?? undefined);
+      const enabled: Product[] = result.items.filter((p: Product) => p.isEnabled !== false);
+      setData((prev: Product[]) => [...prev, ...enabled]);
+      lastKeyRef.current = result.lastKey;
+      setHasMore(result.hasMore);
+    } catch (err: unknown) {
+      setError((err as Error)?.message ?? "Error loading more products");
+    } finally {
+      setLoadingMore(false);
+    }
+  }, [hasMore, loadingMore, setData, setError]);
+  const { favorites, toggleFavorite } = useFavorites();
+  const { addToCart, getCantidadActual, removeFromCart, updateQuantity } = useCart();
+  const { setNotification } = useNotification();
+  const navigate: NavigateFunction = useNavigate();
 
   const location: ReturnType<typeof useLocation> = useLocation();
   const params: URLSearchParams = new URLSearchParams(location.search);
@@ -54,54 +85,78 @@ const Home: React.FC = () => {
   const emptyMessage: string | undefined = filter === "favorites" ? "No tienes productos favoritos aún." : undefined;
   const hasLocalFilter: boolean = localQ.trim().length > 0;
 
-  const renderProductList: () => JSX.Element = () => {
-    if (filteredProducts.length === 0) {
-      const message: string = hasLocalFilter ? `No se encontraron productos para "${localQ}".` : (emptyMessage ?? "No hay productos disponibles.");
-      return (
-        <Alert className="d-flex align-items-center gap-2" variant="info">
-          <span>{message}</span>
-          {hasLocalFilter && (
-            <Button aria-label="Limpiar filtro de búsqueda" className="ms-auto" onClick={() => setLocalQ("")} size="sm" variant="outline-secondary">
-              <FaTimes aria-hidden="true" className="me-1" />
-              Limpiar filtro
-            </Button>
-          )}
-        </Alert>
-      );
-    }
-    return (
-      <div className={styles.fadeIn}>
-        <ProductGrid products={filteredProducts} />
-      </div>
+  const handleAddToCart: (product: Product) => void = useCallback(
+    (product: Product): void => {
+      addToCart(product, 1);
+      setNotification(`${product.name} fue agregado al carrito`, 3000, "success");
+    },
+    [addToCart, setNotification],
+  );
+
+  const handleIncrement: (product: Product) => void = useCallback(
+    (product: Product): void => {
+      const current: number = getCantidadActual(product.id);
+      if (current >= product.stock) {
+        setNotification(`Stock maximo alcanzado para ${product.name}`, 3000, "warning");
+        return;
+      }
+      updateQuantity(product.id, current + 1);
+      setNotification(`${product.name}: +1 unidad`, 2000, "info");
+    },
+    [getCantidadActual, updateQuantity, setNotification],
+  );
+
+  const handleDecrement: (product: Product) => void = useCallback(
+    (product: Product): void => {
+      const current: number = getCantidadActual(product.id);
+      if (current <= 1) {
+        removeFromCart(product.id);
+        setNotification(`${product.name} eliminado del carrito`, 2000, "info");
+        return;
+      }
+      updateQuantity(product.id, current - 1);
+      setNotification(`${product.name}: -1 unidad`, 2000, "info");
+    },
+    [getCantidadActual, removeFromCart, updateQuantity, setNotification],
+  );
+
+  const cardData: { currentQuantity: number; isFavorite: boolean; product: Product; onAddToCart: () => void; onDecrement: () => void; onIncrement: () => void; onNavigate: () => void; onToggleFavorite: () => void }[] =
+    useMemo(
+      () =>
+        filteredProducts.map((p) => ({
+          currentQuantity: getCantidadActual(p.id),
+          isFavorite: Boolean(favorites?.[p.id]),
+          product: p,
+          onAddToCart: () => handleAddToCart(p),
+          onDecrement: () => handleDecrement(p),
+          onIncrement: () => handleIncrement(p),
+          onNavigate: () => navigate(`/producto/${p.id}`),
+          onToggleFavorite: () => toggleFavorite(p.id),
+        })),
+      [filteredProducts, favorites, getCantidadActual, handleAddToCart, handleDecrement, handleIncrement, navigate, toggleFavorite],
     );
-  };
+
+  const showReset: boolean = filteredProducts.length > ITEMS_PER_PAGE;
+  const showLoadMore: boolean = hasMore && filteredProducts.length > 0 && !loadingMore;
 
   return (
-    <Container className="py-4">
-      <HelmetMeta description={pageDescription ?? undefined} title={pageTitle ? `Talento Tech | ${pageTitle}` : "Talento Tech"} />
-      {loading ? (
-        <div aria-busy="true" className="d-flex justify-content-center py-5">
-          <div aria-hidden="true" className="spinner-border" />
-          <output aria-live="polite" className="visually-hidden">
-            Cargando...
-          </output>
-        </div>
-      ) : (
-        <>
-          <SearchBar localQ={localQ ?? ""} onLocalQChange={setLocalQ} productCount={filteredProducts.length} />
-          {renderProductList()}
-
-          <LoadMoreSection
-            hasMore={hasMore}
-            itemsPerPage={ITEMS_PER_PAGE}
-            loadingMore={loadingMore}
-            onLoadMore={loadNextPage}
-            onReload={reloadProducts}
-            productCount={filteredProducts.length}
-          />
-        </>
-      )}
-    </Container>
+    <HomeView
+      cardData={cardData}
+      emptyMessage={emptyMessage}
+      hasLocalFilter={hasLocalFilter}
+      hasMore={hasMore}
+      loading={loading}
+      loadingMore={loadingMore}
+      localQ={localQ}
+      onClearFilter={() => setLocalQ("")}
+      onLoadMore={loadNextPage}
+      onLocalQChange={setLocalQ}
+      onReload={reloadProducts}
+      pageDescription={pageDescription}
+      pageTitle={pageTitle}
+      showLoadMore={showLoadMore}
+      showReset={showReset}
+    />
   );
 };
 

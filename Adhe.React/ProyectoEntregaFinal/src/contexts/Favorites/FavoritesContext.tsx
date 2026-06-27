@@ -1,7 +1,10 @@
-import { createContext, type Context } from "use-context-selector";
+import { createTypedContext } from "../../utils/context";
 
-import type { FavoritesContextType } from "./FavoritesTypes";
+export type FavoritesContextType = {
+  favorites: Record<string, boolean>;
+  isFavorite: (id: string) => boolean;
+  toggleFavorite: (id: string) => void;
+  favCount: number;
+};
 
-const FavoritesContext: Context<FavoritesContextType | undefined> = createContext<FavoritesContextType | undefined>(undefined);
-
-export default FavoritesContext;
+export default createTypedContext<FavoritesContextType>();

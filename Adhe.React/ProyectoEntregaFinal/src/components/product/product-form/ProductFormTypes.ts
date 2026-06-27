@@ -46,8 +46,6 @@ export type UseProductFormReturn = {
   getPayload: () => ProductFormPayload;
   handleSubmit: (onSubmit: (p: ProductFormPayload) => void) => (e: SyntheticEvent) => void;
   errors: Record<string, string>;
-  validate: () => boolean;
-  clearErrors: () => void;
 };
 
 export type UseCancelableReturn = {

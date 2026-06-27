@@ -1,8 +1,9 @@
+import "react-toastify/dist/ReactToastify.css";
 import React, { useCallback, useMemo } from "react";
-import { toast } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 
 import type { ProviderProps } from "../../types/ProviderProps";
-import type { NotificationContextType, NotificationVariant, SetNotificationFn } from "./NotificationTypes";
+import type { NotificationContextType, NotificationVariant, SetNotificationFn } from "./NotificationContext";
 
 import NotificationContext from "./NotificationContext";
 
@@ -37,5 +38,10 @@ export const NotificationProvider: React.FC<ProviderProps> = (props) => {
 
   const value: NotificationContextType = useMemo(() => ({ setNotification }), [setNotification]);
 
-  return <NotificationContext.Provider value={value}>{children}</NotificationContext.Provider>;
+  return (
+    <NotificationContext.Provider value={value}>
+      {children}
+      <ToastContainer autoClose={3000} closeButton closeOnClick position="top-right" role="alert" />
+    </NotificationContext.Provider>
+  );
 };

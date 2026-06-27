@@ -10,8 +10,8 @@ import useNotification from "../../../hooks/selectors/useNotification";
 import { useProduct } from "../../../hooks/selectors/useProduct";
 import useProducts from "../../../hooks/selectors/useProducts";
 import useTags from "../../../hooks/selectors/useTags";
-import styles from "./ProductDetail.module.css";
 import ProductDetail from "./ProductDetail";
+import styles from "./ProductDetail.module.css";
 
 const ProductDetailContainer: React.FC = () => {
   const { id } = useParams();

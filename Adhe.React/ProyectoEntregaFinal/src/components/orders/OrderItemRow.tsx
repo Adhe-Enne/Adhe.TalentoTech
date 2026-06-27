@@ -2,6 +2,8 @@ import React from "react";
 
 import type { OrderItem } from "../../models";
 
+import { formatPrice } from "../../utils/format";
+
 interface OrderItemRowProps {
   item: OrderItem;
   imageSize?: number;
@@ -16,10 +18,10 @@ const OrderItemRow: React.FC<OrderItemRowProps> = (props) => {
       <div className="flex-grow-1 small">
         <strong>{item.productName}</strong>
         <div className="text-muted">
-          {item.quantity} x ${item.price.toFixed(2)}
+          {item.quantity} x {formatPrice(item.price)}
         </div>
       </div>
-      <div className="small">${item.subtotal.toFixed(2)}</div>
+      <div className="small">{formatPrice(item.subtotal)}</div>
     </div>
   );
 };

@@ -2,7 +2,18 @@ import React, { useEffect, useState } from "react";
 import { FaSearch } from "react-icons/fa";
 import { useNavigate, type NavigateFunction } from "react-router-dom";
 
-import { buildProductsUrl } from "../../utils/buildProductsUrl";
+function buildProductsUrl(baseSearch: string, q: string): string {
+  const sp: URLSearchParams = new URLSearchParams(baseSearch);
+  if (q) {
+    sp.set("q", q);
+  } else {
+    sp.delete("q");
+  }
+
+  const value: string = sp.toString() ? `?${sp.toString()}` : "";
+
+  return `/productos${value}`;
+}
 
 interface SearchFormProps {
   baseSearch: string;

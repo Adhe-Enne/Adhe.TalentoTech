@@ -4,10 +4,7 @@ import useCoupons from "../../../hooks/selectors/useCoupons";
 import useNotification from "../../../hooks/selectors/useNotification";
 import useConfirmDelete from "../../../hooks/useConfirmDelete";
 import { couponService } from "../../../services/couponService";
-import ConfirmDialog from "../../ui/ConfirmDialog";
-import HelmetMeta from "../../ui/HelmetMeta";
-import CouponForm from "./CouponForm";
-import CouponList from "./CouponList";
+import CouponManagerPageView from "./CouponManagerPageView";
 
 const CouponManagerPage: React.FC = () => {
   const { fetchCoupons } = useCoupons();
@@ -30,24 +27,7 @@ const CouponManagerPage: React.FC = () => {
     }
   }, [baseDeleteConfirm, deleteTarget, fetchCoupons, setNotification]);
 
-  return (
-    <div>
-      <HelmetMeta description="Gestiona tus cupones en Talento Tech." title="Admin | Cupones" />
-      <h3 className="mb-4">Gestion de Cupones</h3>
-      <CouponForm />
-      <CouponList onDeleteRequest={baseDeleteRequest} />
-      <ConfirmDialog
-        confirmLabel="Eliminar"
-        confirmVariant="danger"
-        loading={deleting}
-        message={`¿Eliminar el cupon ${deleteTarget?.code}? No se podra deshacer.`}
-        onCancel={handleDeleteCancel}
-        onConfirm={handleDeleteConfirm}
-        open={deleteTarget !== null}
-        title="Eliminar cupon"
-      />
-    </div>
-  );
+  return <CouponManagerPageView deleteTarget={deleteTarget} deleting={deleting} onDeleteCancel={handleDeleteCancel} onDeleteConfirm={handleDeleteConfirm} onDeleteRequest={baseDeleteRequest} />;
 };
 
 export default CouponManagerPage;

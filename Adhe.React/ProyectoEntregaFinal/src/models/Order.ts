@@ -28,15 +28,4 @@ export interface Order extends BaseEntity {
   couponId?: string | null;
   discountCode?: string | null;
 }
-export interface CreateOrderPayload {
-  discount: number;
-  items: OrderItem[];
-  shippingInfo: ShippingInfo;
-  status: OrderStatusValue;
-  subtotal: number;
-  total: number;
-  userEmail: string;
-  userId: string;
-  couponId?: string | null;
-  discountCode?: string | null;
-}
+export type CreateOrderPayload = Omit<Order, "id" | "createdAt" | "updatedAt">;

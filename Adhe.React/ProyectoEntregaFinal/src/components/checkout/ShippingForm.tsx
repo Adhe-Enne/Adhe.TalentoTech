@@ -27,36 +27,34 @@ const ShippingForm: React.ForwardRefRenderFunction<ShippingFormHandle, object> =
   const [values, setValues] = useState<ShippingInfo>(initialShipping);
   const [touched, setTouched] = useState<Record<keyof ShippingInfo, boolean>>(emptyErrors);
 
+  const getData: () => { valid: boolean; data?: ShippingInfo; error?: string } =
+    useCallback((): { valid: boolean; data?: ShippingInfo; error?: string } => {
+      const missing: (keyof ShippingInfo)[] = fields.filter((f) => !values[f.key].trim()).map((f) => f.key);
+
+      setTouched((prev: Record<keyof ShippingInfo, boolean>) => {
+        const next: Record<keyof ShippingInfo, boolean> = { ...prev };
+        missing.forEach((k: keyof ShippingInfo) => { next[k] = true; });
+        return next;
+      });
+
+      if (missing.length > 0) {
+        return { valid: false, error: "Completá todos los campos de envío" };
+      }
+      return { valid: true, data: { ...values } };
+    }, [values]);
+
   useImperativeHandle<ShippingFormHandle, ShippingFormHandle>(
     ref,
     (): ShippingFormHandle => ({
-      getData: (): { valid: boolean; data?: ShippingInfo; error?: string } => {
-        const missing: (keyof ShippingInfo)[] = fields
-          .filter((f) => !values[f.key].trim())
-          .map((f) => f.key);
-
-        setTouched((prev: Record<keyof ShippingInfo, boolean>) => {
-          const next: Record<keyof ShippingInfo, boolean> = { ...prev };
-          missing.forEach((k: keyof ShippingInfo) => { next[k] = true; });
-          return next;
-        });
-
-        if (missing.length > 0) {
-          return { valid: false, error: "Completá todos los campos de envío" };
-        }
-        return { valid: true, data: { ...values } };
-      },
+      getData,
     }),
-    [values],
+    [getData],
   );
 
-  const handleChange: (key: keyof ShippingInfo, value: string) => void = useCallback(
-    (key: keyof ShippingInfo, value: string): void => {
-      setValues((prev: ShippingInfo) => ({ ...prev, [key]: value }));
-      setTouched((prev: Record<keyof ShippingInfo, boolean>) => ({ ...prev, [key]: false }));
-    },
-    [],
-  );
+  const handleChange: (key: keyof ShippingInfo, value: string) => void = useCallback((key: keyof ShippingInfo, value: string): void => {
+    setValues((prev: ShippingInfo) => ({ ...prev, [key]: value }));
+    setTouched((prev: Record<keyof ShippingInfo, boolean>) => ({ ...prev, [key]: false }));
+  }, []);
 
   return (
     <div className="card">
@@ -75,9 +73,7 @@ const ShippingForm: React.ForwardRefRenderFunction<ShippingFormHandle, object> =
               type={f.type}
               value={values[f.key]}
             />
-            <Form.Control.Feedback type="invalid">
-              {f.label} es obligatorio
-            </Form.Control.Feedback>
+            <Form.Control.Feedback type="invalid">{f.label} es obligatorio</Form.Control.Feedback>
           </Form.Group>
         ))}
       </div>

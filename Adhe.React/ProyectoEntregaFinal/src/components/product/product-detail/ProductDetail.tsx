@@ -5,6 +5,7 @@ import { FaArrowLeft, FaShoppingCart } from "react-icons/fa";
 import type { Product } from "../../../models";
 import type { Tag } from "../../../models/Tag";
 
+import { formatPrice } from "../../../utils/format";
 import HelmetMeta from "../../ui/HelmetMeta";
 import QuantityStepper from "../../ui/QuantityStepper";
 import ProductImageCarousel from "./ProductImageCarousel";
@@ -53,7 +54,7 @@ const ProductDetail: React.FC<ProductDetailProps> = (props) => {
             <div className="mb-3">
               <span className="badge-price">
                 {" "}
-                {product.currency} ${product.price.toFixed(2)}
+                {product.currency} {formatPrice(product.price)}
               </span>
             </div>
 

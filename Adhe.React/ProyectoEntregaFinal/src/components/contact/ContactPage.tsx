@@ -1,68 +1,28 @@
-import React, { useState } from "react";
-import { Col, Container, Row } from "react-bootstrap";
+import React, { useCallback, useState } from "react";
 
 import useNotification from "../../hooks/selectors/useNotification";
-import TeamListContainer from "../team/TeamListContainer";
-import HelmetMeta from "../ui/HelmetMeta";
+import ContactPageView from "./ContactPageView";
 
 const ContactPage: React.FC = () => {
   const { setNotification } = useNotification();
   const [email, setEmail] = useState<string>("");
   const [message, setMessage] = useState<string>("");
 
-  const handleSubmit: React.SubmitEventHandler<HTMLFormElement> = (e) => {
-    e.preventDefault();
-    if (!email || !message) {
-      setNotification("Por favor completa el formulario", 3000, "warning");
-      return;
-    }
-    setNotification("Mensaje enviado. Te contactaremos pronto.", 3000, "info");
-    setEmail("");
-    setMessage("");
-  };
-
-  return (
-    <Container className="py-4">
-      <HelmetMeta description="Comunícate con nuestro equipo de Talento Tech." title="Talento Tech | Contacto" />
-      <Row className="gx-4 gy-4 justify-content-center align-items-start">
-        <Col md={6} xs={12}>
-          <div className="card p-3">
-            <h2 className="mb-2">Contacto</h2>
-            <p>
-              Estamos para ayudarte, envía un email a <a href="mailto:soporte@example.com">soporte@example.com</a> y te responderemos a la brevedad.
-            </p>
-            <p>Tel: +54 9 11 1234 5678</p>
-            <form onSubmit={handleSubmit}>
-              <div className="mb-2">
-                <label className="form-label" htmlFor="email">
-                  Email
-                </label>
-                <input className="form-control" id="email" onChange={(e) => setEmail(e.target.value)} type="email" value={email} />
-              </div>
-              <div className="mb-2">
-                <label className="form-label" htmlFor="message">
-                  Mensaje
-                </label>
-                <textarea className="form-control" id="message" onChange={(e) => setMessage(e.target.value)} rows={4} value={message} />
-              </div>
-              <div className="d-flex gap-2">
-                <button aria-label="Enviar mensaje" className="btn btn-cta" type="submit">
-                  Enviar
-                </button>
-                <a aria-label="Enviar email a soporte" className="btn btn-ghost" href="mailto:soporte@example.com">
-                  Contacto por email
-                </a>
-              </div>
-            </form>
-          </div>
-        </Col>
-
-        <Col md={6} xs={12}>
-          <TeamListContainer />
-        </Col>
-      </Row>
-    </Container>
+  const handleSubmit: React.SubmitEventHandler<HTMLFormElement> = useCallback(
+    (e) => {
+      e.preventDefault();
+      if (!email || !message) {
+        setNotification("Por favor completa el formulario", 3000, "warning");
+        return;
+      }
+      setNotification("Mensaje enviado. Te contactaremos pronto.", 3000, "info");
+      setEmail("");
+      setMessage("");
+    },
+    [email, message, setNotification],
   );
+
+  return <ContactPageView email={email} message={message} onEmailChange={setEmail} onMessageChange={setMessage} onSubmit={handleSubmit} />;
 };
 
 export default ContactPage;

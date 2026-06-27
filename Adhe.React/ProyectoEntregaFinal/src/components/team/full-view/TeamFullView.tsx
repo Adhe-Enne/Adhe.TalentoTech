@@ -1,61 +1,42 @@
-import React, { useState } from "react";
+import React, { useCallback, useEffect, useState, type RefObject } from "react";
 
 import type { Person } from "../../../models";
 
-import ContactBioModal from "./bio-modal/ContactBioModal";
-import styles from "./TeamFullView.module.css";
-import TeamMemberCardExpanded from "./TeamMemberCardExpanded";
+import useTeam from "../../../hooks/selectors/useTeam";
+import { useDialog } from "../../../hooks/useDialog";
+import TeamFullViewView from "./TeamFullViewView";
 
-interface Props {
-  loading: boolean;
-  team: Person[];
-  error?: string | null;
-}
-
-const TeamFullView: React.FC<Props> = (props) => {
-  const { loading, error, team } = props;
+const TeamFullView: React.FC = () => {
+  const { error, loading, team } = useTeam();
   const [selected, setSelected] = useState<Person | null>(null);
   const [showModal, setShowModal] = useState<boolean>(false);
+  const dialogRef: RefObject<HTMLDialogElement | null> = useDialog(showModal);
 
-  function handleShowMore(p: Person): void {
-    setSelected(p);
-    setShowModal(true);
-  }
-
-  function handleClose(): void {
+  const handleClose: () => void = useCallback((): void => {
     setShowModal(false);
     setSelected(null);
-  }
+  }, []);
 
-  if (loading) {
-    return (
-      <div aria-live="polite" className={styles.loading} role="status">
-        Cargando equipo...
-      </div>
-    );
-  }
-  if (error) {
-    return (
-      <div aria-live="assertive" className={styles.error} role="alert">
-        Error: {error}
-      </div>
-    );
-  }
+  const handleShowMore: (p: Person) => void = useCallback((p: Person): void => {
+    setSelected(p);
+    setShowModal(true);
+  }, []);
 
-  return (
-    <div className={styles.container}>
-      <h2 className={styles.title}>Equipo completo</h2>
-      <div className={styles.list}>
-        {team.map((p) => (
-          <div className={styles.item} key={p.id}>
-            <TeamMemberCardExpanded onShowMore={handleShowMore} person={p} />
-          </div>
-        ))}
-      </div>
+  useEffect((): (() => void) => {
+    const dialog: HTMLDialogElement | null = dialogRef.current;
+    if (!dialog) {
+      return (): void => undefined;
+    }
+    const onKey: (e: KeyboardEvent) => void = (e: KeyboardEvent): void => {
+      if (e.key === "Enter") {
+        handleClose();
+      }
+    };
+    dialog.addEventListener("keydown", onKey);
+    return (): void => dialog.removeEventListener("keydown", onKey);
+  }, [dialogRef, handleClose]);
 
-      <ContactBioModal onClose={handleClose} person={selected} show={showModal} />
-    </div>
-  );
+  return <TeamFullViewView dialogRef={dialogRef} error={error} loading={loading} onClose={handleClose} onShowMore={handleShowMore} selected={selected} showModal={showModal} team={team} />;
 };
 
 export default TeamFullView;

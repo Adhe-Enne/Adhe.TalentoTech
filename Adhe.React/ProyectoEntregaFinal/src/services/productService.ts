@@ -22,6 +22,7 @@ import type { PaginatedResult } from "../types";
 
 import { PRODUCTS_COLLECTION } from "../App.Constants";
 import { db } from "../firebase";
+import { timestamps, stripUndefined } from "../utils/firestore";
 import { tsToIso } from "../utils/parseDataUtils";
 
 interface ProductCreatePayload extends Omit<Partial<Product>, "id" | "createdAt" | "updatedAt"> {
@@ -34,11 +35,22 @@ interface ProductUpdatePayload extends Omit<Partial<Product>, "id" | "createdAt"
 }
 
 function buildProductPayload(data: ProductCreatePayload | ProductUpdatePayload): Record<string, unknown> {
-  return { name: data.name, description: data.description, stock: data.stock, categoryId: data.categoryId };
+  return {
+    name: data.name,
+    description: data.description,
+    stock: data.stock,
+    categoryId: data.categoryId,
+    image: data.image,
+    images: data.images,
+    currency: data.currency,
+    tagIds: data.tagIds,
+    isEnabled: data.isEnabled,
+  };
 }
 
 function mapDocToProduct(d: QueryDocumentSnapshot<DocumentData>): Product {
   const data: DocumentData = d.data();
+
   return {
     id: d.id,
     name: data.name ?? "Sin nombre",
@@ -51,7 +63,7 @@ function mapDocToProduct(d: QueryDocumentSnapshot<DocumentData>): Product {
     categoryId: data.categoryId ?? data.category?.id,
     category: data.category as Category,
     tagIds: Array.isArray(data.tagIds) ? data.tagIds : undefined,
-    isEnabled: data.isEnabled ?? true,
+    isEnabled: data.isEnabled,
     createdAt: tsToIso(data.createdAt) ?? "",
     updatedAt: tsToIso(data.updatedAt) ?? undefined,
   };
@@ -72,9 +84,7 @@ export const productService: {
 
   fetchProductsPage: async (pageSize: number, lastKey?: string): Promise<PaginatedResult<Product>> => {
     const constraints: readonly [ReturnType<typeof orderBy>, ReturnType<typeof limit>] = [orderBy("createdAt", "desc"), limit(pageSize)];
-    const q: Query<DocumentData> = lastKey
-      ? query(collection(db, PRODUCTS_COLLECTION), ...constraints, startAfter(lastKey))
-      : query(collection(db, PRODUCTS_COLLECTION), ...constraints);
+    const q: Query<DocumentData> = lastKey ? query(collection(db, PRODUCTS_COLLECTION), ...constraints, startAfter(lastKey)) : query(collection(db, PRODUCTS_COLLECTION), ...constraints);
     const snap: QuerySnapshot<DocumentData> = await getDocs(q);
     const items: Product[] = snap.docs.map(mapDocToProduct);
     const lastDoc: QueryDocumentSnapshot<DocumentData> | undefined = snap.docs.at(-1);
@@ -98,8 +108,7 @@ export const productService: {
       images: productData.images ?? [],
       tagIds: productData.tagIds ?? [],
       isEnabled: productData.isEnabled ?? true,
-      createdAt: new Date().toISOString(),
-      updatedAt: null,
+      ...timestamps.onCreate(),
     };
 
     const ref: DocumentReference = await addDoc(collection(db, PRODUCTS_COLLECTION), payload);
@@ -137,9 +146,9 @@ export const productService: {
     const payload: Record<string, unknown> = {
       ...buildProductPayload(productData),
       price: productData.price == null ? undefined : Number(productData.price),
-      updatedAt: new Date().toISOString(),
+      ...timestamps.onUpdate(),
     };
-    const filteredPayload: Record<string, unknown> = Object.fromEntries(Object.entries(payload).filter(([_, v]) => v !== undefined));
+    const filteredPayload: Record<string, unknown> = stripUndefined(payload);
 
     await updateDoc(productRef, filteredPayload);
   },

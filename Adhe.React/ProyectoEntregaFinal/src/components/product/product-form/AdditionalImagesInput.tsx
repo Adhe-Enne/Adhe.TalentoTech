@@ -1,7 +1,6 @@
-import React, { useEffect, useMemo } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState, type RefObject } from "react";
 import { FaChevronLeft, FaChevronRight, FaTimes } from "react-icons/fa";
 
-import useHorizontalScroll from "../../../hooks/useHorizontalScroll";
 import styles from "./Product.module.css";
 
 interface Props {
@@ -25,7 +24,42 @@ const AdditionalImagesInput: React.FC<Props> = (props) => {
   const uid: string = React.useId();
   const id: string = inputId ?? uid;
   const previews: string[] = useMemo(() => files.map((f) => URL.createObjectURL(f)), [files]);
-  const { canScrollLeft, canScrollRight, scrollRef, refreshScrollState, scrollByOffset } = useHorizontalScroll();
+  const [scrollState, setScrollState] = useState<{ left: boolean; right: boolean }>({ left: false, right: false });
+  const scrollRef: RefObject<HTMLDivElement | null> = useRef<HTMLDivElement>(null);
+
+  const refreshScrollState: () => void = useCallback(() => {
+    const el: HTMLDivElement | null = scrollRef.current;
+    if (!el) {
+      setScrollState({ left: false, right: false });
+      return;
+    }
+    setScrollState({
+      left: el.scrollLeft > 0,
+      right: el.scrollLeft + el.clientWidth < el.scrollWidth - 1,
+    });
+  }, []);
+
+  useEffect((): (() => void) => {
+    refreshScrollState();
+    const el: HTMLDivElement | null = scrollRef.current;
+    if (!el) {
+      return (): void => undefined;
+    }
+    const onScroll: () => void = () => refreshScrollState();
+    el.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", refreshScrollState);
+    return (): void => {
+      el.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", refreshScrollState);
+    };
+  }, [refreshScrollState]);
+
+  const scrollByOffset: (offset: number) => void = useCallback((offset: number): void => {
+    scrollRef.current?.scrollBy({ left: offset, behavior: "smooth" });
+  }, []);
+
+  const canScrollLeft: boolean = scrollState.left;
+  const canScrollRight: boolean = scrollState.right;
 
   const hasItems: boolean = (existingUrls?.length ?? 0) > 0 || previews.length > 0;
 

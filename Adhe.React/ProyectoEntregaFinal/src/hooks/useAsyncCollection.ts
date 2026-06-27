@@ -1,7 +1,9 @@
 import { useCallback, useEffect, useState, type Dispatch, type SetStateAction } from "react";
 
+import { extractErrorMessage } from "../utils/errorUtils";
+
 function useAsyncCollection<T>(fetcher: () => Promise<T[]>): {
-  data: T[];
+  products: T[];
   error: string | null;
   loading: boolean;
   reload: () => Promise<void>;
@@ -22,7 +24,7 @@ function useAsyncCollection<T>(fetcher: () => Promise<T[]>): {
         }
       } catch (err: unknown) {
         if (mounted) {
-          setError((err as Error)?.message ?? "Error loading data");
+          setError(extractErrorMessage(err, "Error loading data"));
           setData([]);
         }
       } finally {
@@ -44,14 +46,14 @@ function useAsyncCollection<T>(fetcher: () => Promise<T[]>): {
       const result: T[] = await fetcher();
       setData(result);
     } catch (err: unknown) {
-      setError((err as Error)?.message ?? "Error loading data");
+      setError(extractErrorMessage(err, "Error loading data"));
       setData([]);
     } finally {
       setLoading(false);
     }
   }, [fetcher]);
 
-  return { data, error, loading, reload, setData, setError };
+  return { products: data, error, loading, reload, setData, setError };
 }
 
 export default useAsyncCollection;

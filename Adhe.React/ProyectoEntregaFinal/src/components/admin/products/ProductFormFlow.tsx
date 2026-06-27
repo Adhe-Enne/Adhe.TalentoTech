@@ -1,0 +1,218 @@
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useNavigate, useParams, type NavigateFunction } from "react-router-dom";
+
+import type { Product, Tag } from "../../../models";
+import type { Fields, ProductFormPayload } from "../../product/product-form/ProductFormTypes";
+
+import useCategories from "../../../hooks/selectors/useCategories";
+import useNotification from "../../../hooks/selectors/useNotification";
+import useProducts from "../../../hooks/selectors/useProducts";
+import useTags from "../../../hooks/selectors/useTags";
+import { imageService } from "../../../services/imageService";
+import { parseCurrency } from "../../../utils/currency";
+import { useCancelable } from "../../product/product-form/hooks/useCancelable";
+import ProductForm from "../../product/product-form/ProductForm";
+import HelmetMeta from "../../ui/HelmetMeta";
+
+const ProductFormFlow: React.FC = () => {
+  const { id } = useParams<{ id: string }>();
+  const navigate: NavigateFunction = useNavigate();
+  const { setNotification } = useNotification();
+  const { createProduct, findById, updateProduct } = useProducts();
+  const { categories, createCategory } = useCategories();
+  const { createTag, tags } = useTags();
+  const { fileToDataUrl, simulateDelay } = useCancelable();
+
+  const [loading, setLoading] = useState(false);
+  const mountedRef: { current: boolean } = useRef(true);
+
+  useEffect((): (() => void) => {
+    mountedRef.current = true;
+    return (): void => {
+      mountedRef.current = false;
+    };
+  }, []);
+
+  const safeSubmit: (fn: () => Promise<void>) => Promise<void> = useCallback(
+    async (fn: () => Promise<void>): Promise<void> => {
+      setLoading(true);
+      try {
+        await fn();
+      } catch (err: unknown) {
+        if (err instanceof DOMException && err.name === "AbortError") {
+          return;
+        }
+        throw err;
+      } finally {
+        if (mountedRef.current) {
+          setLoading(false);
+        }
+      }
+    },
+    [setLoading],
+  );
+
+  const resolveTagIds: (tags?: string[], categoryId?: string) => Promise<string[]> = useCallback(
+    async (tags?: string[], categoryId?: string): Promise<string[]> => {
+      const ids: string[] = [];
+      if (!tags?.length) {
+        return ids;
+      }
+      for (const name of tags) {
+        const createdTag: Tag | undefined = await createTag(name, categoryId ?? "");
+        if (createdTag) {
+          ids.push(createdTag.id);
+        }
+      }
+      return ids;
+    },
+    [createTag],
+  );
+
+  const uploadMainImage: (file: File) => Promise<string> = useCallback(
+    async (file: File): Promise<string> => {
+      const imgbbKey: string | undefined = import.meta.env.VITE_IMGBB_API_KEY;
+      if (imgbbKey) {
+        return await imageService.uploadImageToImgbb(file);
+      }
+      await simulateDelay(1500);
+      return await fileToDataUrl(file);
+    },
+    [fileToDataUrl, simulateDelay],
+  );
+
+  const uploadAdditionalImages: (files: File[]) => Promise<string[]> = useCallback(
+    async (files: File[]): Promise<string[]> => {
+      if (!files.length) {
+        return [];
+      }
+      const imgbbKey: string | undefined = import.meta.env.VITE_IMGBB_API_KEY;
+      const uploads: Promise<string>[] = files.map(async (f) => {
+        if (imgbbKey) {
+          return await imageService.uploadImageToImgbb(f);
+        }
+        await simulateDelay(800);
+        return await fileToDataUrl(f);
+      });
+      return await Promise.all(uploads);
+    },
+    [fileToDataUrl, simulateDelay],
+  );
+
+  const isEdit: boolean = !!id;
+  const product: Product | undefined = isEdit ? findById(id!) : undefined;
+
+  const initialData: Partial<Fields> | undefined = useMemo((): Partial<Fields> | undefined => {
+    if (!product) {
+      return undefined;
+    }
+    return {
+      nombre: product.name,
+      precio: String(product.price),
+      stock: String(product.stock),
+      descripcion: product.description ?? "",
+      categoriaId: product.categoryId ?? "",
+      currency: parseCurrency(product.currency),
+      tagIds: product.tagIds ?? [],
+      tags: product.tags?.map((t) => t.name) ?? [],
+      existingImageUrls: product.images ?? [],
+    };
+  }, [product]);
+
+  const onSubmit: (p: ProductFormPayload) => Promise<void> = useCallback(
+    async (p: ProductFormPayload): Promise<void> => {
+      try {
+        await safeSubmit(async () => {
+          const imageUrl: string = p.file ? await uploadMainImage(p.file) : (product?.image ?? "/images/avatar1.svg");
+          const newImages: string[] = await uploadAdditionalImages(p.images ?? []);
+          const images: string[] = isEdit ? [...(p.existingImageUrls ?? []), ...newImages] : newImages;
+          const tagIds: string[] = p.tagIds?.length === (p.tags?.length ?? 0) ? p.tagIds : await resolveTagIds(p.tags, p.categoriaId);
+
+          if (isEdit) {
+            await updateProduct(id!, {
+              name: p.nombre,
+              price: p.precio,
+              stock: p.stock,
+              description: p.descripcion,
+              image: imageUrl,
+              images,
+              currency: p.currency,
+              categoryId: p.categoriaId,
+              tagIds,
+            });
+            setNotification("Producto actualizado!", 3000, "success");
+            navigate("/admin/productos");
+          } else {
+            const created: Partial<Product> = {
+              name: p.nombre,
+              price: p.precio,
+              stock: p.stock,
+              description: p.descripcion,
+              image: imageUrl,
+              images,
+              currency: p.currency,
+              categoryId: p.categoriaId,
+              tagIds,
+            };
+            const newId: string | undefined = await createProduct(created);
+            setNotification(`${created.name ?? "Producto"} creado!`, 3000, "info");
+            if (newId) {
+              navigate(`/producto/${newId}`);
+            }
+          }
+        });
+      } catch {
+        setNotification(`Error al ${isEdit ? "actualizar" : "subir"} el producto`, 3000, "danger");
+      }
+    },
+    [isEdit, id, product, safeSubmit, createProduct, updateProduct, resolveTagIds, uploadMainImage, uploadAdditionalImages, navigate, setNotification],
+  );
+
+  const handleCancel: () => void = useCallback(() => {
+    navigate("/admin/productos");
+  }, [navigate]);
+
+  if (isEdit && !product) {
+    return (
+      <div className="d-flex justify-content-center py-5">
+        <output className="spinner-border">
+          <span className="visually-hidden">Cargando producto...</span>
+        </output>
+      </div>
+    );
+  }
+
+  return (
+    <>
+      <HelmetMeta description={isEdit ? `Edita los detalles de ${product?.name}` : "Crea un nuevo producto en Talento Tech."} title={isEdit ? `Editar ${product?.name}` : "Admin | Nuevo Producto"} />
+      <div className="container py-4">
+        <h2>{isEdit ? "Editar producto" : "Nuevo producto"}</h2>
+        {isEdit ? (
+          <ProductForm
+            categories={categories}
+            existingImageUrl={product!.image}
+            initialData={initialData}
+            loading={loading}
+            mode="edit"
+            onCancel={handleCancel}
+            onCreateCategory={createCategory}
+            onCreateTag={createTag}
+            onSubmit={onSubmit}
+            tags={tags}
+          />
+        ) : (
+          <ProductForm
+            categories={categories}
+            loading={loading}
+            onCreateCategory={createCategory}
+            onCreateTag={createTag}
+            onSubmit={onSubmit}
+            tags={tags}
+          />
+        )}
+      </div>
+    </>
+  );
+};
+
+export default ProductFormFlow;

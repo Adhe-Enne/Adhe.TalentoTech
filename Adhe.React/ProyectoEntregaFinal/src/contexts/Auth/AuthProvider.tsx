@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 
 import type { UserInfo } from "../../types/auth";
 import type { ProviderProps } from "../../types/ProviderProps";
-import type { AuthContextType } from "./AuthTypes";
+import type { AuthContextType } from "./AuthContext";
 
 import { authService } from "../../services/authService";
 import AuthContext from "./AuthContext";

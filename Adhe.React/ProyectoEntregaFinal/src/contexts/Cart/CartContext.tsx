@@ -1,7 +1,28 @@
-import { createContext, type Context } from "use-context-selector";
+import type { CartItem, Product } from "../../models";
 
-import type { CartContextType } from "./CartTypes";
+import { createTypedContext } from "../../utils/context";
 
-const CartContext: Context<CartContextType | undefined> = createContext<CartContextType | undefined>(undefined);
+export interface AppliedCoupon {
+  code: string;
+  discountValue: number;
+  id: string;
+  expiresAt?: string | null;
+}
 
-export default CartContext;
+export type CartContextType = {
+  cart: CartItem[];
+  appliedCoupon: AppliedCoupon | null;
+  discountedTotal: number;
+  rawTotal: number;
+  isApplyingCoupon: boolean;
+  addToCart: (product: Product, cantidad?: number) => void;
+  removeFromCart: (productId: string) => void;
+  updateQuantity: (productId: string, cantidad: number) => void;
+  clearCart: () => void;
+  getCartQuantity: () => number;
+  getCantidadActual: (productId: string) => number;
+  applyCoupon: (code: string) => Promise<{ success: boolean; error?: string }>;
+  removeCoupon: () => void;
+};
+
+export default createTypedContext<CartContextType>();

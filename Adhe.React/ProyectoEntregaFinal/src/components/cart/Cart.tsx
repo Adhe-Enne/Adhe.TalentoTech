@@ -1,16 +1,18 @@
-import React, { useCallback } from "react";
-import { Button, Container, ListGroup } from "react-bootstrap";
-import { FaCreditCard } from "react-icons/fa";
-import { Link, useNavigate, type NavigateFunction } from "react-router-dom";
+import React, { useCallback, useMemo, useState } from "react";
+import { useNavigate, type NavigateFunction } from "react-router-dom";
+
+import type { CartItem } from "../../models";
 
 import useCart from "../../hooks/selectors/useCart";
-import HelmetMeta from "../ui/HelmetMeta";
-import CartItemRow from "./CartItemRow";
-import CouponSection from "./CouponSection";
+import useNotification from "../../hooks/selectors/useNotification";
+import CartView from "./CartView";
 
 const Cart: React.FC = () => {
   const navigate: NavigateFunction = useNavigate();
-  const { cart, discountedTotal, appliedCoupon, getCartTotal } = useCart();
+  const { cart, discountedTotal, appliedCoupon, rawTotal, isApplyingCoupon, applyCoupon, removeCoupon, updateQuantity, removeFromCart } = useCart();
+  const { setNotification } = useNotification();
+  const [couponCode, setCouponCode] = useState<string>("");
+  const [couponError, setCouponError] = useState<string | null>(null);
 
   const handleBack: () => void = useCallback(() => {
     navigate("/");
@@ -20,64 +22,81 @@ const Cart: React.FC = () => {
     navigate("/checkout");
   }, [navigate]);
 
-  const rawTotal: number = getCartTotal();
+  const handleItemIncrement: (item: CartItem) => void = useCallback(
+    (item: CartItem): void => {
+      if (item.quantity >= item.product.stock) {
+        return;
+      }
+      updateQuantity(item.product.id, item.quantity + 1);
+    },
+    [updateQuantity],
+  );
+
+  const handleItemDecrement: (item: CartItem) => void = useCallback(
+    (item: CartItem): void => {
+      if (item.quantity <= 1) {
+        removeFromCart(item.product.id);
+        return;
+      }
+      updateQuantity(item.product.id, item.quantity - 1);
+    },
+    [updateQuantity, removeFromCart],
+  );
+
+  const handleItemRemove: (item: CartItem) => void = useCallback(
+    (item: CartItem): void => {
+      removeFromCart(item.product.id);
+    },
+    [removeFromCart],
+  );
+
+  const handleApplyCoupon: () => Promise<void> = useCallback(async (): Promise<void> => {
+    setCouponError(null);
+    const result: { success: boolean; error?: string } = await applyCoupon(couponCode);
+    if (result.success) {
+      setCouponCode("");
+      setNotification("Cupon aplicado con exito", 2000, "success");
+    } else {
+      setCouponError(result.error ?? "Error al aplicar cupon");
+      setNotification(result.error ?? "Error al aplicar cupon", 3000, "danger");
+    }
+  }, [applyCoupon, couponCode, setNotification]);
+
+  const handleRemoveCoupon: () => void = useCallback(() => {
+    removeCoupon();
+    setCouponError(null);
+  }, [removeCoupon]);
+
+  const daysUntilExpiry: number | null = useMemo((): number | null => {
+    if (!appliedCoupon?.expiresAt) {
+      return null;
+    }
+    const now: Date = new Date();
+    const expiry: Date = new Date(appliedCoupon.expiresAt);
+    const diff: number = expiry.getTime() - now.getTime();
+    const days: number = Math.ceil(diff / (1000 * 60 * 60 * 24));
+    return days;
+  }, [appliedCoupon]);
 
   return (
-    <Container className="py-4">
-      <HelmetMeta description="Revisa tu carrito de compras en Talento Tech." title="Talento Tech | Carrito" />
-      <h2>Carrito</h2>
-      {cart.length === 0 ? (
-        <div className="text-center py-5">
-          <h4>Tu carrito está vacío</h4>
-          <p className="text-muted">Agregá productos para continuar la compra.</p>
-          <Link className="btn btn-primary" to="/productos">
-            Ver Productos
-          </Link>
-        </div>
-      ) : (
-        <div className="cart-list">
-          <ListGroup>
-            {cart.map((it) => (
-              <CartItemRow item={it} key={it.product.id} />
-            ))}
-          </ListGroup>
-
-          <div className="d-flex justify-content-between align-items-center mt-3">
-            <div>
-              <strong>Total:</strong>
-            </div>
-            <div className="text-end">
-              <strong className="d-block">${rawTotal.toFixed(2)}</strong>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {cart.length > 0 && <CouponSection />}
-
-      <div className="d-flex justify-content-between align-items-center mt-3 p-3 bg-light rounded">
-        <strong>Total final:</strong>
-        <div className="text-end">
-          {appliedCoupon && <small className="text-muted text-decoration-line-through d-block">${rawTotal.toFixed(2)}</small>}
-          <strong className="fs-4">${discountedTotal.toFixed(2)}</strong>
-        </div>
-      </div>
-
-      {cart.length > 0 && (
-        <div className="mt-2">
-          <button className="btn btn-cta btn-icon w-100" onClick={handlePurchase}>
-            <FaCreditCard />
-            Proceder al pago
-          </button>
-        </div>
-      )}
-
-      <div className="mt-3">
-        <Button onClick={handleBack} variant="secondary">
-          Volver
-        </Button>
-      </div>
-    </Container>
+    <CartView
+      appliedCoupon={appliedCoupon}
+      cart={cart}
+      couponCode={couponCode}
+      couponError={couponError}
+      daysUntilExpiry={daysUntilExpiry}
+      discountedTotal={discountedTotal}
+      isApplyingCoupon={isApplyingCoupon}
+      onApplyCoupon={handleApplyCoupon}
+      onBack={handleBack}
+      onCouponCodeChange={setCouponCode}
+      onItemDecrement={handleItemDecrement}
+      onItemIncrement={handleItemIncrement}
+      onItemRemove={handleItemRemove}
+      onPurchase={handlePurchase}
+      onRemoveCoupon={handleRemoveCoupon}
+      rawTotal={rawTotal}
+    />
   );
 };
 

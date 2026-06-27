@@ -99,18 +99,9 @@ const CouponItem: React.FC<CouponItemProps> = (props) => {
       </td>
       <td>
         {isEditingDate ? (
-          <input
-            className="form-control form-control-sm"
-            min={today}
-            onBlur={handleDateSave}
-            onChange={(e) => setEditDate(e.target.value)}
-            onKeyDown={handleDateKeyDown}
-            ref={dateInputRef}
-            type="date"
-            value={editDate}
-          />
+          <input className="form-control form-control-sm" min={today} onBlur={handleDateSave} onChange={(e) => setEditDate(e.target.value)} onKeyDown={handleDateKeyDown} ref={dateInputRef} type="date" value={editDate} />
         ) : (
-          <span
+          <button
             aria-label="Editar fecha de vencimiento"
             className={styles.editableDate}
             onClick={handleDateClick}
@@ -119,11 +110,11 @@ const CouponItem: React.FC<CouponItemProps> = (props) => {
                 handleDateClick();
               }
             }}
-            role="button"
             tabIndex={0}
+            type="button"
           >
             {coupon.expiresAt ? new Date(coupon.expiresAt).toLocaleDateString() : "Sin vencimiento"}
-          </span>
+          </button>
         )}
       </td>
       <td>

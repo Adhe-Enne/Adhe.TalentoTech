@@ -1,7 +1,13 @@
-import { createContext, type Context } from "use-context-selector";
+import type { Category } from "../../models/Category";
 
-import type { CategoriesContextType } from "./CategoriesTypes";
+import { createTypedContext } from "../../utils/context";
 
-const CategoriesContext: Context<CategoriesContextType | undefined> = createContext<CategoriesContextType | undefined>(undefined);
+export type CategoriesContextType = {
+  categories: Category[];
+  loading: boolean;
+  findById: (id: string) => Category | undefined;
+  reload: () => void;
+  createCategory: (name: string, slug?: string) => Promise<Category | undefined>;
+};
 
-export default CategoriesContext;
+export default createTypedContext<CategoriesContextType>();

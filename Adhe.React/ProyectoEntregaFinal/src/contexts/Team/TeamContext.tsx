@@ -1,7 +1,12 @@
-import { createContext, type Context } from "use-context-selector";
+import type { Person } from "../../models";
 
-import type { TeamContextType } from "./TeamTypes";
+import { createTypedContext } from "../../utils/context";
 
-const TeamContext: Context<TeamContextType | undefined> = createContext<TeamContextType | undefined>(undefined);
+export type TeamContextType = {
+  team: Person[];
+  loading: boolean;
+  error: string | null;
+  reload: () => void;
+};
 
-export default TeamContext;
+export default createTypedContext<TeamContextType>();

@@ -2,10 +2,9 @@ import React, { useCallback } from "react";
 import { FaCloudUploadAlt, FaPlus } from "react-icons/fa";
 import { useNavigate, type NavigateFunction } from "react-router-dom";
 
+import type { Category, Tag } from "../../../models";
 import type { FormMode, ProductFormPayload, Fields } from "./ProductFormTypes";
 
-import useCategories from "../../../hooks/selectors/useCategories";
-import useTags from "../../../hooks/selectors/useTags";
 import { parseCurrency } from "../../../utils/currency";
 import AdditionalImagesInput from "./AdditionalImagesInput";
 import CategoryCreateModal from "./CategoryCreateModal";
@@ -17,27 +16,29 @@ import ProductImagePreview from "./ProductImagePreview";
 import TagAutocomplete from "./TagAutocomplete";
 
 interface ProductFormProps {
+  categories: Category[];
+  tags: Tag[];
   existingImageUrl?: string;
   initialData?: Partial<Fields>;
   loading?: boolean;
   mode?: FormMode;
   onCancel?: () => void;
+  onCreateCategory: (name: string, slug?: string) => Promise<{ id: string } | undefined>;
+  onCreateTag: (name: string, categoryId: string) => Promise<Tag | undefined>;
   onSubmit: (payload: ProductFormPayload) => void;
 }
 
 const ProductForm: React.FC<ProductFormProps> = (props) => {
-  const { loading, onSubmit, mode = "create", initialData, existingImageUrl, onCancel } = props;
+  const { categories, loading, onSubmit, mode = "create", initialData, existingImageUrl, onCancel, onCreateCategory, onCreateTag, tags } = props;
   const { fields, setField, setFile, reset, previewUrl, handleSubmit, errors } = useProductForm(initialData);
   const navigate: NavigateFunction = useNavigate();
-  const { categories, createCategory } = useCategories();
-  const { tags, createTag } = useTags();
   const {
     isCreating: isCreatingCategory,
     show: showCategoryModal,
     handleClose: handleCloseCategory,
     handleOpen: handleOpenCategory,
     handleCreate: handleCreateCategory,
-  } = useCategoryCreate(createCategory, setField);
+  } = useCategoryCreate(onCreateCategory, setField);
   const addInputId: string = React.useId();
   const displayUrl: string | undefined = previewUrl ?? existingImageUrl;
 
@@ -80,7 +81,7 @@ const ProductForm: React.FC<ProductFormProps> = (props) => {
       tags: fields.tags,
     },
     setField,
-    createTag,
+    onCreateTag,
   );
 
   return (

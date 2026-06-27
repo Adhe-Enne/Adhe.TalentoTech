@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useState } from "react";
 
 import useNotification from "../../../hooks/selectors/useNotification";
+import { useErrorNotification } from "../../../hooks/useErrorNotification";
 import useOrders from "../../../hooks/useOrders";
 import { type Order, type OrderStatusValue, OrderStatus } from "../../../models/Order";
 import AdminOrderList from "./AdminOrderList";
@@ -16,11 +17,7 @@ const AdminOrderListContainer: React.FC = () => {
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
   const [deleting, setDeleting] = useState(false);
 
-  useEffect((): void => {
-    if (error) {
-      setNotification(error, 5000, "danger");
-    }
-  }, [error, setNotification]);
+  useErrorNotification(error);
 
   useEffect((): void => {
     fetchAllOrders().then(setOrders);
@@ -30,7 +27,7 @@ const AdminOrderListContainer: React.FC = () => {
     setExpandedId((prev: string | null) => (prev === id ? null : id));
   }, []);
 
-  const handleApprove: (id: string) => void = useCallback(
+  const handleApprove: (id: string) => Promise<void> = useCallback(
     async (id: string): Promise<void> => {
       await updateOrderStatus(id, OrderStatus.Completado);
       setOrders((prev: Order[]) => prev.map((o: Order) => (o.id === id ? { ...o, status: OrderStatus.Completado, updatedAt: new Date().toISOString() } : o)));
@@ -38,7 +35,7 @@ const AdminOrderListContainer: React.FC = () => {
     [updateOrderStatus],
   );
 
-  const handleReject: (id: string) => void = useCallback(
+  const handleReject: (id: string) => Promise<void> = useCallback(
     async (id: string): Promise<void> => {
       await updateOrderStatus(id, OrderStatus.Cancelado);
       setOrders((prev: Order[]) => prev.map((o: Order) => (o.id === id ? { ...o, status: OrderStatus.Cancelado, updatedAt: new Date().toISOString() } : o)));

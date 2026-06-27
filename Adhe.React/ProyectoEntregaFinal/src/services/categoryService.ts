@@ -4,6 +4,7 @@ import type { Category } from "../models/Category";
 
 import { CATEGORIES_COLLECTION } from "../App.Constants";
 import { db } from "../firebase";
+import { timestamps } from "../utils/firestore";
 import { tsToIso } from "../utils/parseDataUtils";
 
 export const categoryService: {
@@ -47,8 +48,7 @@ export const categoryService: {
     const payload: Partial<Category> = {
       name: nameTrim,
       categorySlug: slug?.trim() || nameTrim.replace(/\s+/g, "-").toLowerCase(),
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
+      ...timestamps.onCreate(),
     };
 
     const ref: DocumentReference = await addDoc(collection(db, CATEGORIES_COLLECTION), payload);
@@ -56,8 +56,7 @@ export const categoryService: {
       id: ref.id,
       name: payload.name ?? "",
       categorySlug: payload.categorySlug,
-      createdAt: new Date().toISOString(),
-      updatedAt: null,
+      ...timestamps.onCreate(),
     };
   },
 };

@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { useContextSelector } from "use-context-selector";
 
-import type { ProductsContextType } from "../../contexts/Products/ProductsTypes";
+import type { ProductsContextType } from "../../contexts/Products/ProductsContext";
 import type { Product } from "../../models";
 
 import ProductsContext from "../../contexts/Products/ProductsContext";

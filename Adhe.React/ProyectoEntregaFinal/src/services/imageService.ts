@@ -1,4 +1,19 @@
-import type { ImgbbResponse } from "../types/imgbb";
+interface ImgbbResponseType {
+  data: {
+    delete_url: string;
+    display_url: string;
+    height: number;
+    id: string;
+    size: number;
+    time: number;
+    title: string;
+    url: string;
+    url_viewer: string;
+    width: number;
+  };
+  status: number;
+  success: boolean;
+}
 
 export const imageService: {
   uploadImageToImgbb: (file: File) => Promise<string>;
@@ -21,7 +36,7 @@ export const imageService: {
       throw new Error(`Image upload failed: ${res.status} ${text}`);
     }
 
-    const json: ImgbbResponse = await res.json();
+    const json: ImgbbResponseType = await res.json();
     const imageUrl: string | undefined = json?.data?.url || json?.data?.display_url;
 
     if (!imageUrl) {

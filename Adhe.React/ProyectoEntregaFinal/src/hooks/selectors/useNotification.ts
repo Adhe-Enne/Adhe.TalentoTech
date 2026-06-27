@@ -1,17 +1,8 @@
-import { useContextSelector } from "use-context-selector";
-
-import type { NotificationContextType } from "../../contexts/Notification/NotificationTypes";
+import type { NotificationContextType } from "../../contexts/Notification/NotificationContext";
 
 import NotificationContext from "../../contexts/Notification/NotificationContext";
+import { createSelectorHook } from "./factory";
 
-const useNotification: () => NotificationContextType = (): NotificationContextType => {
-  const setNotification: NotificationContextType["setNotification"] | undefined = useContextSelector(NotificationContext, (c) => c?.setNotification);
-
-  if (setNotification === undefined) {
-    throw new Error("useNotification must be used within NotificationProvider");
-  }
-
-  return { setNotification };
-};
+const useNotification: () => NotificationContextType = createSelectorHook(NotificationContext, "Notification");
 
 export default useNotification;

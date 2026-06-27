@@ -67,8 +67,6 @@ export const useProductForm: (initial?: Partial<Fields>) => UseProductFormReturn
     return Object.keys(newErrors).length === 0;
   }, [fields.nombre, fields.precio]);
 
-  const clearErrors: () => void = useCallback(() => setErrors({}), []);
-
   const getPayload: () => ProductFormPayload = useCallback((): ProductFormPayload => {
     return {
       nombre: fields.nombre.trim(),
@@ -103,5 +101,5 @@ export const useProductForm: (initial?: Partial<Fields>) => UseProductFormReturn
     };
   }, [previewUrl]);
 
-  return { fields, setField, setFile, reset, previewUrl, getPayload, handleSubmit, errors, validate, clearErrors };
+  return { fields, setField, setFile, reset, previewUrl, getPayload, handleSubmit, errors };
 };

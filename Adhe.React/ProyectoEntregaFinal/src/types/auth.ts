@@ -1,5 +1,7 @@
+import type { UserRole } from "./shared";
+
 export interface UserInfo {
   email: string;
-  rol: "admin" | "user";
+  rol: UserRole;
   uid: string;
 }

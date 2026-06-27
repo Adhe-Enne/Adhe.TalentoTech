@@ -1,16 +1,14 @@
 import {
-  collection,
-  getDoc,
-  getDocs,
   addDoc,
-  doc,
+  collection,
   deleteDoc,
-  updateDoc,
+  doc,
+  getDocs,
   query,
+  updateDoc,
   where,
   type DocumentData,
   type DocumentReference,
-  type DocumentSnapshot,
   type QuerySnapshot,
   Query,
 } from "firebase/firestore";
@@ -19,6 +17,7 @@ import type { Coupon, CouponCreatePayload, CouponUpdatePayload, CouponValidation
 
 import { COUPONS_COLLECTION } from "../App.Constants";
 import { db } from "../firebase";
+import { timestamps, stripUndefined } from "../utils/firestore";
 import { tsToIso } from "../utils/parseDataUtils";
 
 export const couponService: {
@@ -27,7 +26,6 @@ export const couponService: {
   deleteCoupon: (id: string) => Promise<void>;
   updateCoupon: (id: string, payload: CouponUpdatePayload) => Promise<void>;
   validateCoupon: (code: string) => Promise<CouponValidationResult>;
-  incrementUsedCount: (id: string) => Promise<void>;
 } = {
   fetchCoupons: async (): Promise<Coupon[]> => {
     const snap: QuerySnapshot<DocumentData> = await getDocs(collection(db, COUPONS_COLLECTION));
@@ -59,8 +57,7 @@ export const couponService: {
       usedCount: 0,
       minPurchaseAmount: payload.minPurchaseAmount ?? null,
       description: payload.description ?? null,
-      createdAt: new Date().toISOString(),
-      updatedAt: null,
+      ...timestamps.onCreate(),
     };
     const ref: DocumentReference = await addDoc(collection(db, COUPONS_COLLECTION), data);
     return { id: ref.id, ...data } as unknown as Coupon;
@@ -71,8 +68,8 @@ export const couponService: {
   },
 
   updateCoupon: async (id: string, payload: CouponUpdatePayload): Promise<void> => {
-    const updateData: Record<string, unknown> = { ...payload, updatedAt: new Date().toISOString() };
-    const filtered: Record<string, unknown> = Object.fromEntries(Object.entries(updateData).filter(([_, v]) => v !== undefined));
+    const updateData: Record<string, unknown> = { ...payload, ...timestamps.onUpdate() };
+    const filtered: Record<string, unknown> = stripUndefined(updateData);
     await updateDoc(doc(db, COUPONS_COLLECTION, id), filtered);
   },
 
@@ -103,15 +100,6 @@ export const couponService: {
     if (coupon.usageLimit != null && coupon.usedCount >= coupon.usageLimit) {
       return { valid: false, error: "Este cupón ha alcanzado su límite de usos" };
     }
-
     return { valid: true, discountValue: coupon.discountValue, id: coupon.id, expiresAt: coupon.expiresAt ?? null };
-  },
-
-  incrementUsedCount: async (id: string): Promise<void> => {
-    const coup: DocumentSnapshot<DocumentData> = await getDoc(doc(db, COUPONS_COLLECTION, id));
-    if (coup.exists()) {
-      const currentCount: number = Number(coup.data().usedCount ?? 0);
-      await updateDoc(doc(db, COUPONS_COLLECTION, id), { usedCount: currentCount + 1, updatedAt: new Date().toISOString() });
-    }
   },
 };

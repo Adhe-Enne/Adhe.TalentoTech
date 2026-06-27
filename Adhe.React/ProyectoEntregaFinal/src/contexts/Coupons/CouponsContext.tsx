@@ -1,7 +1,15 @@
-import { createContext, type Context } from "use-context-selector";
+import type { Coupon, CouponCreatePayload, CouponUpdatePayload } from "../../models";
 
-import type { CouponsContextType } from "./CouponsTypes";
+import { createTypedContext } from "../../utils/context";
 
-const CouponsContext: Context<CouponsContextType | undefined> = createContext<CouponsContextType | undefined>(undefined);
+export interface CouponsContextType {
+  coupons: Coupon[];
+  error: string | null;
+  loading: boolean;
+  createCoupon: (data: CouponCreatePayload) => Promise<Coupon | undefined>;
+  deleteCoupon: (id: string) => Promise<void>;
+  fetchCoupons: () => Promise<void>;
+  updateCoupon: (id: string, data: CouponUpdatePayload) => Promise<void>;
+}
 
-export default CouponsContext;
+export default createTypedContext<CouponsContextType>();

@@ -13,8 +13,35 @@ import type { UserInfo } from "../types/auth";
 
 import { USERS_COLLECTION } from "../App.Constants";
 import { auth, db } from "../firebase";
-import { translateAuthError } from "../utils/authErrors";
-import { getStoredSession, setStoredSession } from "../utils/sessionPersistence";
+import { loadFromStorage, saveToStorage } from "../utils/storage";
+
+function translateAuthError(error: unknown): string {
+  if (error instanceof Error) {
+    const code: string = (error as { code?: string }).code ?? "";
+    switch (code) {
+      case "auth/email-already-in-use":
+        return "Este correo electrónico ya está registrado";
+      case "auth/user-not-found":
+        return "Usuario no encontrado";
+      case "auth/wrong-password":
+      case "auth/invalid-credential":
+        return "Correo electrónico o contraseña incorrectos";
+      case "auth/invalid-email":
+        return "Correo electrónico inválido";
+      case "auth/weak-password":
+        return "La contraseña debe tener al menos 6 caracteres";
+      case "auth/too-many-requests":
+        return "Demasiados intentos. Intentá de nuevo más tarde";
+      case "auth/network-request-failed":
+        return "Error de conexión. Verificá tu internet";
+      default:
+        return error.message;
+    }
+  }
+  return "Error desconocido";
+}
+
+const SESSION_KEY: string = "tt_current_user";
 
 function buildUserInfoFromDoc(firebaseUser: FirebaseUser, docSnap: DocumentSnapshot, fallbackEmail: string): UserInfo {
   if (docSnap.exists()) {
@@ -32,17 +59,17 @@ let authUnsubscribe: (() => void) | null = null;
 
 function setSession(user: UserInfo | null): void {
   cachedUser = user;
-  setStoredSession(user);
+  saveToStorage(SESSION_KEY, user);
 }
 
 function notifyListeners(user: UserInfo | null): void {
   listeners.forEach((cb) => cb(user));
 }
 
-cachedUser = getStoredSession();
+cachedUser = loadFromStorage<UserInfo | null>(SESSION_KEY, null);
 
 function syncUserFromFirestore(firebaseUser: FirebaseUser): void {
-  const cached: UserInfo | null = getStoredSession();
+  const cached: UserInfo | null = loadFromStorage<UserInfo | null>(SESSION_KEY, null);
 
   if (cached?.uid === firebaseUser.uid) {
     notifyListeners(cached);
@@ -70,7 +97,6 @@ export const authService: {
   signup: (email: string, password: string) => Promise<UserInfo>;
   logout: () => Promise<void>;
   onAuthStateChanged: (cb: AuthStateListener) => () => void;
-  getCurrentSession: () => UserInfo | null;
 } = {
   login: async (email: string, password: string): Promise<UserInfo> => {
     const emailLower: string = email.toLowerCase();
@@ -143,9 +169,5 @@ export const authService: {
         authUnsubscribe = null;
       }
     };
-  },
-
-  getCurrentSession: (): UserInfo | null => {
-    return cachedUser;
   },
 } as const;

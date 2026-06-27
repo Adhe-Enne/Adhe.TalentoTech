@@ -1,14 +1,13 @@
-import React, { useMemo, type JSX } from "react";
+import React, { type JSX } from "react";
 import { ListGroup } from "react-bootstrap";
 
 import type { CartItem } from "../../models";
 
 import useCart from "../../hooks/selectors/useCart";
+import { formatPrice } from "../../utils/format";
 
 const OrderSummary: React.FC = () => {
-  const { cart, appliedCoupon, discountedTotal } = useCart();
-
-  const rawTotal: number = useMemo((): number => cart.reduce((s: number, it: CartItem) => s + it.product.price * it.quantity, 0), [cart]);
+  const { cart, appliedCoupon, discountedTotal, rawTotal } = useCart();
 
   return (
     <div className="card">
@@ -22,10 +21,10 @@ const OrderSummary: React.FC = () => {
                 <div className="flex-grow-1">
                   <strong className="small">{item.product.name}</strong>
                   <div className="text-muted small">
-                    {item.quantity} x ${item.product.price.toFixed(2)}
+                    {item.quantity} x {formatPrice(item.product.price)}
                   </div>
                 </div>
-                <div className="small">${(item.product.price * item.quantity).toFixed(2)}</div>
+                <div className="small">{formatPrice(item.product.price * item.quantity)}</div>
               </ListGroup.Item>
             ),
           )}
@@ -33,18 +32,18 @@ const OrderSummary: React.FC = () => {
 
         <div className="d-flex justify-content-between small">
           <span>Subtotal</span>
-          <span>${rawTotal.toFixed(2)}</span>
+          <span>{formatPrice(rawTotal)}</span>
         </div>
         {appliedCoupon && (
           <div className="d-flex justify-content-between small text-success">
             <span>Descuento ({appliedCoupon.code})</span>
-            <span>-${(rawTotal - discountedTotal).toFixed(2)}</span>
+            <span>-{formatPrice(rawTotal - discountedTotal)}</span>
           </div>
         )}
         <hr />
         <div className="d-flex justify-content-between fw-bold">
           <span>Total</span>
-          <span>${discountedTotal.toFixed(2)}</span>
+          <span>{formatPrice(discountedTotal)}</span>
         </div>
       </div>
     </div>

@@ -1,30 +1,25 @@
-import React, { useCallback, useMemo, useRef } from "react";
-import { Container } from "react-bootstrap";
-import { FaArrowLeft, FaCreditCard } from "react-icons/fa";
+import React, { useCallback, useRef } from "react";
 import { useNavigate, type NavigateFunction } from "react-router-dom";
 
 import type { ShippingInfo } from "../../models";
-import { OrderStatus } from "../../models/Order";
 
 import useAuth from "../../hooks/selectors/useAuth";
 import useCart from "../../hooks/selectors/useCart";
 import useNotification from "../../hooks/selectors/useNotification";
 import useOrders from "../../hooks/useOrders";
-import HelmetMeta from "../ui/HelmetMeta";
-import OrderSummary from "./OrderSummary";
-import ShippingForm, { type ShippingFormHandle } from "./ShippingForm";
+import { OrderStatus } from "../../models/Order";
+import CheckoutView from "./CheckoutView";
+import { type ShippingFormHandle } from "./ShippingForm";
 
 const CheckoutContainer: React.FC = () => {
   const navigate: NavigateFunction = useNavigate();
   const { user } = useAuth();
-  const { cart, clearCart, getCartTotal, appliedCoupon, discountedTotal } = useCart();
+  const { cart, clearCart, rawTotal, appliedCoupon, discountedTotal } = useCart();
   const { setNotification } = useNotification();
   const { checkout, isLoading, error } = useOrders();
   const shippingRef: React.RefObject<ShippingFormHandle | null> = useRef<ShippingFormHandle>(null);
 
-  const rawTotal: number = useMemo((): number => getCartTotal(), [getCartTotal]);
-
-  const handleConfirm: () => void = useCallback(async (): Promise<void> => {
+  const handleConfirm: () => Promise<void> = useCallback(async (): Promise<void> => {
     if (!user) {
       return;
     }
@@ -81,31 +76,7 @@ const CheckoutContainer: React.FC = () => {
     return null;
   }
 
-  return (
-    <Container className="py-4">
-      <HelmetMeta description="Confirmá tu compra en Talento Tech." title="Talento Tech | Checkout" />
-      <h2>Checkout</h2>
-
-      <div className="row">
-        <div className="col-md-6 mb-4">
-          <ShippingForm ref={shippingRef} />
-        </div>
-        <div className="col-md-6">
-          <OrderSummary />
-          <button className="btn btn-cta btn-icon w-100 mt-3" disabled={isLoading} onClick={handleConfirm}>
-            <FaCreditCard />
-            {isLoading ? "Procesando..." : "Confirmar compra"}
-          </button>
-          {error && <div className="text-danger mt-2">{error}</div>}
-        </div>
-      </div>
-
-      <button className="btn btn-outline-secondary mt-3" onClick={handleBack}>
-        <FaArrowLeft className="me-1" />
-        Volver al carrito
-      </button>
-    </Container>
-  );
+  return <CheckoutView error={error} isLoading={isLoading} onBack={handleBack} onConfirm={handleConfirm} shippingRef={shippingRef} />;
 };
 
 export default CheckoutContainer;

@@ -1,5 +1,6 @@
-import React, { useEffect, useRef, useState, type RefObject } from "react";
+import React, { useState, type RefObject } from "react";
 
+import { useDialog } from "../../../hooks/useDialog";
 import modalStyles from "./CategoryCreateModal.module.css";
 
 interface CategoryCreateModalProps {
@@ -13,19 +14,7 @@ const CategoryCreateModal: React.FC<CategoryCreateModalProps> = (props) => {
   const { isCreating, onClose, onCreate, show } = props;
   const [name, setName] = useState<string>("");
   const [slug, setSlug] = useState<string>("");
-  const dialogRef: RefObject<HTMLDialogElement | null> = useRef<HTMLDialogElement>(null);
-
-  useEffect((): void => {
-    const dialog: HTMLDialogElement | null = dialogRef.current;
-    if (!dialog) {
-      return;
-    }
-    if (show && !dialog.open) {
-      dialog.showModal();
-    } else if (!show && dialog.open) {
-      dialog.close();
-    }
-  }, [show]);
+  const dialogRef: RefObject<HTMLDialogElement | null> = useDialog(show);
 
   const handleCreate: () => Promise<void> = async (): Promise<void> => {
     if (!name.trim()) {

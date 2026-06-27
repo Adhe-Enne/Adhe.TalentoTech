@@ -22,6 +22,7 @@ import type { Order, CreateOrderPayload } from "../models";
 import { COUPONS_COLLECTION, ORDERS_COLLECTION, PRODUCTS_COLLECTION } from "../App.Constants";
 import { db } from "../firebase";
 import { type OrderStatusValue, OrderStatus } from "../models/Order";
+import { timestamps } from "../utils/firestore";
 import { tsToIso } from "../utils/parseDataUtils";
 
 function mapDocToOrder(d: DocumentSnapshot<DocumentData>): Order {
@@ -83,7 +84,6 @@ export const orderService: {
       }
 
       const orderRef: DocumentReference = doc(collection(db, ORDERS_COLLECTION));
-      const now: string = new Date().toISOString();
 
       tx.set(orderRef, {
         userId: payload.userId,
@@ -96,8 +96,7 @@ export const orderService: {
         total: payload.total,
         status: OrderStatus.Pendiente,
         shippingInfo: payload.shippingInfo,
-        createdAt: now,
-        updatedAt: null,
+        ...timestamps.onCreate(),
       });
 
       return orderRef.id;
@@ -125,7 +124,7 @@ export const orderService: {
   },
 
   updateOrderStatus: async (id: string, status: OrderStatusValue): Promise<void> => {
-    await updateDoc(doc(db, ORDERS_COLLECTION, id), { status, updatedAt: new Date().toISOString() });
+    await updateDoc(doc(db, ORDERS_COLLECTION, id), { status, ...timestamps.onUpdate() });
   },
 
   deleteOrder: async (id: string): Promise<void> => {

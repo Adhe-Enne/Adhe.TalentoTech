@@ -4,6 +4,7 @@ import type { CreateOrderPayload, Order } from "../models";
 import type { OrderStatusValue } from "../models/Order";
 
 import { orderService } from "../services/orderService";
+import { extractErrorMessage } from "../utils/errorUtils";
 
 interface UseOrdersReturn {
   error: string | null;
@@ -26,7 +27,7 @@ const useOrders: () => UseOrdersReturn = (): UseOrdersReturn => {
     try {
       return await orderService.createOrder(payload);
     } catch (err: unknown) {
-      const msg: string = err instanceof Error ? err.message : "Error al procesar la compra";
+      const msg: string = extractErrorMessage(err, "Error al procesar la compra");
       setError(msg);
       throw err;
     } finally {
@@ -40,7 +41,7 @@ const useOrders: () => UseOrdersReturn = (): UseOrdersReturn => {
     try {
       return await orderService.fetchUserOrders(userId);
     } catch (err: unknown) {
-      const msg: string = err instanceof Error ? err.message : "Error al obtener pedidos";
+      const msg: string = extractErrorMessage(err, "Error al obtener pedidos");
       setError(msg);
       return [];
     } finally {
@@ -54,7 +55,7 @@ const useOrders: () => UseOrdersReturn = (): UseOrdersReturn => {
     try {
       return await orderService.fetchAllOrders();
     } catch (err: unknown) {
-      const msg: string = err instanceof Error ? err.message : "Error al obtener pedidos";
+      const msg: string = extractErrorMessage(err, "Error al obtener pedidos");
       setError(msg);
       return [];
     } finally {
@@ -67,7 +68,7 @@ const useOrders: () => UseOrdersReturn = (): UseOrdersReturn => {
     try {
       return await orderService.fetchOrderById(id);
     } catch (err: unknown) {
-      const msg: string = err instanceof Error ? err.message : "Error al obtener pedido";
+      const msg: string = extractErrorMessage(err, "Error al obtener pedido");
       setError(msg);
       return null;
     }
@@ -78,7 +79,7 @@ const useOrders: () => UseOrdersReturn = (): UseOrdersReturn => {
     try {
       await orderService.deleteOrder(id);
     } catch (err: unknown) {
-      const msg: string = err instanceof Error ? err.message : "Error al eliminar pedido";
+      const msg: string = extractErrorMessage(err, "Error al eliminar pedido");
       setError(msg);
     }
   }, []);
@@ -88,7 +89,7 @@ const useOrders: () => UseOrdersReturn = (): UseOrdersReturn => {
     try {
       await orderService.updateOrderStatus(id, status);
     } catch (err: unknown) {
-      const msg: string = err instanceof Error ? err.message : "Error al actualizar pedido";
+      const msg: string = extractErrorMessage(err, "Error al actualizar pedido");
       setError(msg);
     }
   }, []);
