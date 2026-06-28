@@ -1,5 +1,5 @@
 import React from "react";
-import { Alert, Button } from "react-bootstrap";
+import { Alert, Button, Spinner } from "react-bootstrap";
 import { Link } from "react-router-dom";
 
 import AuthLayout from "../AuthLayout";
@@ -66,6 +66,7 @@ const RegisterView: React.FC<RegisterViewProps> = (props) => {
           </Alert>
         )}
         <Button aria-label="Crear cuenta" className="w-100" disabled={loading} type="submit" variant="primary">
+          {loading && <Spinner animation="border" className="me-2" size="sm" />}
           {loading ? "Creando cuenta..." : "Crear cuenta"}
         </Button>
       </form>

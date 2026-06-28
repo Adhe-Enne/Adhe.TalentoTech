@@ -1,5 +1,6 @@
 import React, { useCallback, useRef } from "react";
 import { useNavigate, type NavigateFunction } from "react-router-dom";
+import { toast } from "react-toastify";
 
 import type { ShippingInfo } from "../../models";
 
@@ -34,6 +35,7 @@ const CheckoutContainer: React.FC = () => {
       return;
     }
 
+    const toastId: string | number = toast.loading("Procesando compra...");
     try {
       const orderId: string = await checkout({
         userId: user.uid,
@@ -56,10 +58,10 @@ const CheckoutContainer: React.FC = () => {
       });
 
       clearCart();
-      setNotification("Compra realizada con éxito", 3000, "success");
+      toast.update(toastId, { autoClose: 3000, isLoading: false, render: "Compra realizada con éxito", type: "success" });
       navigate(`/orden/${orderId}`);
     } catch {
-      setNotification(error ?? "Error al procesar la compra", 4000, "danger");
+      toast.update(toastId, { autoClose: 4000, isLoading: false, render: error ?? "Error al procesar la compra", type: "error" });
     }
   }, [user, cart, checkout, clearCart, navigate, setNotification, rawTotal, appliedCoupon, discountedTotal, error]);
 

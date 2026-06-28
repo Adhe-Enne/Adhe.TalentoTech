@@ -1,11 +1,11 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Badge, Button } from "react-bootstrap";
 import { FaTrash } from "react-icons/fa";
+import { toast } from "react-toastify";
 
 import type { Coupon } from "../../../models";
 
 import useCoupons from "../../../hooks/selectors/useCoupons";
-import useNotification from "../../../hooks/selectors/useNotification";
 import { getTodayString } from "../../../utils/dateUtils";
 import ToggleSwitch from "../../ui/ToggleSwitch";
 import styles from "./CouponItem.module.css";
@@ -34,9 +34,9 @@ const CouponItem: React.FC<CouponItemProps> = (props) => {
   const { coupon, onDeleteRequest } = props;
   const badge: { label: string; variant: string } = getStatusBadge(coupon);
   const { updateCoupon } = useCoupons();
-  const { setNotification } = useNotification();
   const [isEditingDate, setIsEditingDate] = useState(false);
   const [editDate, setEditDate] = useState("");
+  const [toggling, setToggling] = useState(false);
   const dateInputRef: React.RefObject<HTMLInputElement | null> = useRef<HTMLInputElement | null>(null);
 
   useEffect((): void => {
@@ -45,10 +45,18 @@ const CouponItem: React.FC<CouponItemProps> = (props) => {
     }
   }, [isEditingDate]);
 
-  const handleToggle: () => void = useCallback((): void => {
-    updateCoupon(coupon.id, { isEnabled: !coupon.isEnabled });
-    setNotification(coupon.isEnabled ? "Cupon desactivado" : "Cupon activado", 2000, "info");
-  }, [coupon.id, coupon.isEnabled, updateCoupon, setNotification]);
+  const handleToggle: () => Promise<void> = useCallback(async (): Promise<void> => {
+    const toastId: string | number = toast.loading("Procesando...");
+    setToggling(true);
+    try {
+      await updateCoupon(coupon.id, { isEnabled: !coupon.isEnabled });
+      toast.update(toastId, { autoClose: 2000, isLoading: false, render: coupon.isEnabled ? "Cupon desactivado" : "Cupon activado", type: "info" });
+    } catch {
+      toast.update(toastId, { autoClose: 3000, isLoading: false, render: "Error al cambiar estado del cupon", type: "error" });
+    } finally {
+      setToggling(false);
+    }
+  }, [coupon.id, coupon.isEnabled, updateCoupon]);
 
   const handleDateClick: () => void = useCallback((): void => {
     setEditDate(coupon.expiresAt ?? "");
@@ -61,9 +69,15 @@ const CouponItem: React.FC<CouponItemProps> = (props) => {
     if (newDate === (coupon.expiresAt ?? null)) {
       return;
     }
-    updateCoupon(coupon.id, { expiresAt: newDate });
-    setNotification(newDate ? "Fecha de vencimiento actualizada" : "Vencimiento eliminado", 2000, "success");
-  }, [editDate, coupon.id, coupon.expiresAt, updateCoupon, setNotification]);
+    const toastId: string | number = toast.loading("Actualizando fecha...");
+    updateCoupon(coupon.id, { expiresAt: newDate })
+      .then(() => {
+        toast.update(toastId, { autoClose: 2000, isLoading: false, render: newDate ? "Fecha de vencimiento actualizada" : "Vencimiento eliminado", type: "success" });
+      })
+      .catch(() => {
+        toast.update(toastId, { autoClose: 3000, isLoading: false, render: "Error al actualizar fecha", type: "error" });
+      });
+  }, [editDate, coupon.id, coupon.expiresAt, updateCoupon]);
 
   const handleDateCancel: () => void = useCallback((): void => {
     setIsEditingDate(false);
@@ -118,7 +132,7 @@ const CouponItem: React.FC<CouponItemProps> = (props) => {
         )}
       </td>
       <td>
-        <ToggleSwitch checked={coupon.isEnabled} label={`${coupon.isEnabled ? "Desactivar" : "Activar"} cupon ${coupon.code}`} onToggle={handleToggle} />
+        <ToggleSwitch checked={coupon.isEnabled} label={`${coupon.isEnabled ? "Desactivar" : "Activar"} cupon ${coupon.code}`} loading={toggling} onToggle={handleToggle} />
       </td>
       <td>
         <Button aria-label={`Eliminar cupon ${coupon.code}`} onClick={() => onDeleteRequest(coupon.id, coupon.code)} size="sm" variant="outline-danger">

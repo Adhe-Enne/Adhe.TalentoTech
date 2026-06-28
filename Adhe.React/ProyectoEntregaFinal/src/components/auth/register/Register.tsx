@@ -1,4 +1,5 @@
 import React, { useCallback, useState } from "react";
+import { toast } from "react-toastify";
 
 import type { UserInfo } from "../../../types/auth";
 
@@ -9,10 +10,10 @@ import RegisterView from "./RegisterView";
 
 const Register: React.FC = () => {
   const [confirmPassword, setConfirmPassword] = useState<string>("");
+  const { setNotification } = useNotification();
 
   const { email, loading, password, error, setEmail, setPassword, setError, navigate, executeAuth } = useAuthForm();
   const { signup } = useAuth();
-  const { setNotification } = useNotification();
 
   const handleSubmit: React.SubmitEventHandler<HTMLFormElement> = useCallback(
     (e) => {
@@ -34,15 +35,16 @@ const Register: React.FC = () => {
         return;
       }
 
+      const toastId: string | number = toast.loading("Creando cuenta...");
       executeAuth(async () => {
         const user: UserInfo = await signup(email, password);
-        setNotification(`Cuenta creada! Bienvenido, ${user.email}`, 4000, "success");
+        toast.update(toastId, { autoClose: 4000, isLoading: false, render: `¡Cuenta creada! Bienvenido, ${user.email}`, type: "success" });
         navigate("/");
       }).catch(() => {
         setNotification("Error al crear la cuenta", 3000, "danger");
       });
     },
-    [email, password, confirmPassword, signup, navigate, executeAuth, setNotification, setError],
+    [email, password, confirmPassword, signup, navigate, executeAuth, setError, setNotification],
   );
 
   return (

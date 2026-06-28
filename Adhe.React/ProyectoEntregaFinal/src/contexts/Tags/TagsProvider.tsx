@@ -5,11 +5,13 @@ import type { ProviderProps } from "../../types/ProviderProps";
 import type { TagsContextType } from "./TagsContext";
 
 import { useCollectionCrud } from "../../hooks/useCollectionCrud";
+import useNotification from "../../hooks/selectors/useNotification";
 import { tagService } from "../../services/tagService";
 import TagsContext from "./TagsContext";
 
 export const TagsProvider: React.FC<ProviderProps> = (props) => {
   const { children } = props;
+  const { setNotification } = useNotification();
   const fetchAll: () => Promise<Tag[]> = useCallback(() => tagService.fetchTags(), []);
   const { data: tags, loading, findById, reload, addOptimistic } = useCollectionCrud(fetchAll);
 
@@ -20,10 +22,11 @@ export const TagsProvider: React.FC<ProviderProps> = (props) => {
         addOptimistic(created);
         return created;
       } catch {
+        setNotification("Error al crear etiqueta", 3000, "danger");
         return undefined;
       }
     },
-    [addOptimistic],
+    [addOptimistic, setNotification],
   );
 
   const value: TagsContextType = useMemo(

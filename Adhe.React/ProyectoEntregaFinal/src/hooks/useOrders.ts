@@ -91,6 +91,7 @@ const useOrders: () => UseOrdersReturn = (): UseOrdersReturn => {
     } catch (err: unknown) {
       const msg: string = extractErrorMessage(err, "Error al actualizar pedido");
       setError(msg);
+      throw err;
     }
   }, []);
 

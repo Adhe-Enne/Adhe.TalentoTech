@@ -21,6 +21,7 @@ interface AdminProductListViewProps {
   filtered: Product[];
   loading: boolean;
   search: string;
+  togglingIds: Set<string>;
   onDeleteCancel: () => void;
   onDeleteConfirm: () => void;
   onDeleteRequest: (id: string, label: string) => void;
@@ -30,8 +31,8 @@ interface AdminProductListViewProps {
 }
 
 const AdminProductListView: React.FC<AdminProductListViewProps> = (props) => {
-  const { deleting, deleteTarget, filtered, loading, search, onDeleteCancel, onDeleteConfirm, onDeleteRequest, onEdit, onSearchChange, onToggleEnabled } = props;
-  debugger;
+  const { deleting, deleteTarget, filtered, loading, search, togglingIds, onDeleteCancel, onDeleteConfirm, onDeleteRequest, onEdit, onSearchChange, onToggleEnabled } = props;
+
   if (loading) {
     return (
       <div aria-busy="true" className="d-flex justify-content-center py-5">
@@ -91,7 +92,7 @@ const AdminProductListView: React.FC<AdminProductListViewProps> = (props) => {
                   <td>{p.stock}</td>
                   <td>{p.category?.name ?? "Sin categoria"}</td>
                   <td>
-                    <ToggleSwitch checked={p.isEnabled} label={`${p.isEnabled ? "Desactivar" : "Activar"} ${p.name}`} onToggle={() => onToggleEnabled(p.id, p.isEnabled)} />
+                    <ToggleSwitch checked={p.isEnabled} label={`${p.isEnabled ? "Desactivar" : "Activar"} ${p.name}`} loading={togglingIds.has(p.id)} onToggle={() => onToggleEnabled(p.id, p.isEnabled)} />
                   </td>
                   <td>
                     <div className="d-flex gap-1">

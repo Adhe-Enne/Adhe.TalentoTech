@@ -8,10 +8,39 @@
   padding: 0;
   transition: background 200ms ease;
   background: #6c757d;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.track:disabled {
+  cursor: not-allowed;
+}
+
+.loading {
+  background: #5a6268 !important;
+  opacity: 0.8;
+}
+
+.spinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 600ms linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }
 
 .track[data-checked="true"] {
   background: #0f6670;
+}
+
+.track[data-checked="true"].loading {
+  background: #0d5e64 !important;
 }
 
 .knob {

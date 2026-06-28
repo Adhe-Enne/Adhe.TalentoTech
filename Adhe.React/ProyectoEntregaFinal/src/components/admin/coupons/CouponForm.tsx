@@ -1,9 +1,9 @@
 import React, { useCallback, useState } from "react";
 import { Button, Spinner } from "react-bootstrap";
 import { FaPlus } from "react-icons/fa";
+import { toast } from "react-toastify";
 
 import useCoupons from "../../../hooks/selectors/useCoupons";
-import useNotification from "../../../hooks/selectors/useNotification";
 import { getTodayString } from "../../../utils/dateUtils";
 import styles from "./CouponForm.module.css";
 
@@ -22,7 +22,6 @@ const CouponForm: React.FC = () => {
   const [errors, setErrors] = useState<FormErrors>({});
   const [submitting, setSubmitting] = useState(false);
   const { createCoupon } = useCoupons();
-  const { setNotification } = useNotification();
 
   const handleCodeChange: (val: string) => void = useCallback((val: string) => {
     setCode(val.toUpperCase());
@@ -65,6 +64,7 @@ const CouponForm: React.FC = () => {
         return;
       }
       setSubmitting(true);
+      const toastId: string | number = toast.loading("Creando cupón...");
       createCoupon({
         code: code.trim().toUpperCase(),
         discountValue: Number(discountValue),
@@ -75,16 +75,16 @@ const CouponForm: React.FC = () => {
           setDiscountValue("");
           setExpiresAt("");
           setErrors({});
-          setNotification("Cupon creado!", 3000, "success");
+          toast.update(toastId, { autoClose: 3000, isLoading: false, render: "¡Cupón creado!", type: "success" });
         })
         .catch(() => {
-          setNotification("Error al crear cupon", 3000, "danger");
+          toast.update(toastId, { autoClose: 3000, isLoading: false, render: "Error al crear cupón", type: "error" });
         })
         .finally(() => {
           setSubmitting(false);
         });
     },
-    [code, discountValue, expiresAt, createCoupon, setNotification, validate],
+    [code, discountValue, expiresAt, createCoupon, validate],
   );
 
   return (
@@ -96,14 +96,7 @@ const CouponForm: React.FC = () => {
             <label className="form-label" htmlFor="couponCode">
               Codigo
             </label>
-            <input
-              className={`form-control${errors.code ? " is-invalid" : ""}`}
-              id="couponCode"
-              maxLength={30}
-              onChange={(e) => handleCodeChange(e.target.value)}
-              placeholder="Ej: DESCUENTO10"
-              value={code}
-            />
+            <input className={`form-control${errors.code ? " is-invalid" : ""}`} id="couponCode" maxLength={30} onChange={(e) => handleCodeChange(e.target.value)} placeholder="Ej: DESCUENTO10" value={code} />
             {errors.code && <div className="invalid-feedback">{errors.code}</div>}
           </div>
           <div className="col-12 col-sm-3">
@@ -126,14 +119,7 @@ const CouponForm: React.FC = () => {
             <label className="form-label" htmlFor="couponExpiresAt">
               Vencimiento <small className="text-muted">(opcional)</small>
             </label>
-            <input
-              className={`form-control${errors.expiresAt ? " is-invalid" : ""}`}
-              id="couponExpiresAt"
-              min={today}
-              onChange={(e) => handleExpiresAtChange(e.target.value)}
-              type="date"
-              value={expiresAt}
-            />
+            <input className={`form-control${errors.expiresAt ? " is-invalid" : ""}`} id="couponExpiresAt" min={today} onChange={(e) => handleExpiresAtChange(e.target.value)} type="date" value={expiresAt} />
             {errors.expiresAt && <div className="invalid-feedback">{errors.expiresAt}</div>}
           </div>
         </div>

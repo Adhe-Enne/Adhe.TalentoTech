@@ -46,6 +46,7 @@ export const CouponsProvider: React.FC<ProviderProps> = (props) => {
         setCoupons((prev) => prev.map((c) => (c.id === id ? { ...c, ...data } : c)));
       } catch (err: unknown) {
         setError(err instanceof Error ? err.message : "Error al actualizar cupon");
+        throw err;
       }
     },
     [setCoupons, setError],

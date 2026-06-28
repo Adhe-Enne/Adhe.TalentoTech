@@ -1,11 +1,11 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useParams, type NavigateFunction } from "react-router-dom";
+import { toast } from "react-toastify";
 
 import type { Product, Tag } from "../../../models";
 import type { Fields, ProductFormPayload } from "../../product/product-form/ProductFormTypes";
 
 import useCategories from "../../../hooks/selectors/useCategories";
-import useNotification from "../../../hooks/selectors/useNotification";
 import useProducts from "../../../hooks/selectors/useProducts";
 import useTags from "../../../hooks/selectors/useTags";
 import { imageService } from "../../../services/imageService";
@@ -17,7 +17,6 @@ import HelmetMeta from "../../ui/HelmetMeta";
 const ProductFormFlow: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate: NavigateFunction = useNavigate();
-  const { setNotification } = useNotification();
   const { createProduct, findById, updateProduct } = useProducts();
   const { categories, createCategory } = useCategories();
   const { createTag, tags } = useTags();
@@ -121,6 +120,7 @@ const ProductFormFlow: React.FC = () => {
 
   const onSubmit: (p: ProductFormPayload) => Promise<void> = useCallback(
     async (p: ProductFormPayload): Promise<void> => {
+      const toastId: string | number = toast.loading(isEdit ? "Actualizando producto..." : "Subiendo producto...");
       try {
         await safeSubmit(async () => {
           const imageUrl: string = p.file ? await uploadMainImage(p.file) : (product?.image ?? "/images/avatar1.svg");
@@ -140,7 +140,7 @@ const ProductFormFlow: React.FC = () => {
               categoryId: p.categoriaId,
               tagIds,
             });
-            setNotification("Producto actualizado!", 3000, "success");
+            toast.update(toastId, { autoClose: 3000, isLoading: false, render: "¡Producto actualizado!", type: "success" });
             navigate("/admin/productos");
           } else {
             const created: Partial<Product> = {
@@ -155,17 +155,17 @@ const ProductFormFlow: React.FC = () => {
               tagIds,
             };
             const newId: string | undefined = await createProduct(created);
-            setNotification(`${created.name ?? "Producto"} creado!`, 3000, "info");
+            toast.update(toastId, { autoClose: 3000, isLoading: false, render: `¡${created.name ?? "Producto"} creado!`, type: "success" });
             if (newId) {
               navigate(`/producto/${newId}`);
             }
           }
         });
       } catch {
-        setNotification(`Error al ${isEdit ? "actualizar" : "subir"} el producto`, 3000, "danger");
+        toast.update(toastId, { autoClose: 3000, isLoading: false, render: `Error al ${isEdit ? "actualizar" : "subir"} el producto`, type: "error" });
       }
     },
-    [isEdit, id, product, safeSubmit, createProduct, updateProduct, resolveTagIds, uploadMainImage, uploadAdditionalImages, navigate, setNotification],
+    [isEdit, id, product, safeSubmit, createProduct, updateProduct, resolveTagIds, uploadMainImage, uploadAdditionalImages, navigate],
   );
 
   const handleCancel: () => void = useCallback(() => {
