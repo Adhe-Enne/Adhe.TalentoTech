@@ -2,8 +2,8 @@ import React, { useCallback, useState } from "react";
 import { useLocation, type Location } from "react-router-dom";
 
 import useAuth from "../../../hooks/selectors/useAuth";
-import useNotification from "../../../hooks/selectors/useNotification";
 import { useAuthForm } from "../../../hooks/useAuthForm";
+import { isValidEmail } from "../../../utils/validators";
 import LoginView from "./LoginView";
 
 const Login: React.FC = () => {
@@ -11,7 +11,6 @@ const Login: React.FC = () => {
 
   const { email, loading, password, error, setEmail, setPassword, navigate, executeAuth } = useAuthForm();
   const { login } = useAuth();
-  const { setNotification } = useNotification();
   const location: Location = useLocation();
 
   const from: string = (location.state as { from?: { pathname: string } })?.from?.pathname ?? "/";
@@ -21,14 +20,20 @@ const Login: React.FC = () => {
     (e) => {
       e.preventDefault();
       executeAuth(async () => {
+        if (!email.trim()) {
+          throw new Error("El correo electrónico es obligatorio");
+        }
+        if (!isValidEmail(email.trim())) {
+          throw new Error("El formato del correo electrónico no es válido");
+        }
+        if (!password) {
+          throw new Error("La contraseña es obligatoria");
+        }
         await login(email, password);
-        setNotification("Sesión iniciada correctamente", 3000, "success");
         navigate(from, { replace: true });
-      }).catch(() => {
-        setNotification("Error al iniciar sesión", 3000, "danger");
       });
     },
-    [email, password, login, navigate, from, executeAuth, setNotification],
+    [email, password, login, navigate, from, executeAuth],
   );
 
   const handleDismiss: () => void = useCallback(() => setDismissed(true), []);

@@ -20,6 +20,7 @@ export const TagsProvider: React.FC<ProviderProps> = (props) => {
       try {
         const created: Tag = await tagService.createTag(name, categoryId);
         addOptimistic(created);
+        setNotification(`Etiqueta "${name}" creada!`, 3000, "success");
         return created;
       } catch {
         setNotification("Error al crear etiqueta", 3000, "danger");

@@ -1,8 +1,6 @@
 import { useCallback, useState } from "react";
 import { useNavigate, type NavigateFunction } from "react-router-dom";
 
-import useNotification from "./selectors/useNotification";
-
 interface UseAuthFormReturn {
   email: string;
   error: string | null;
@@ -21,7 +19,6 @@ export function useAuthForm(): UseAuthFormReturn {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
 
-  const { setNotification } = useNotification();
   const navigate: NavigateFunction = useNavigate();
 
   const executeAuth: (action: () => Promise<void>) => Promise<void> = useCallback(
@@ -34,12 +31,12 @@ export function useAuthForm(): UseAuthFormReturn {
       } catch (err: unknown) {
         const msg: string = err instanceof Error ? err.message : "Error de autenticación";
         setError(msg);
-        setNotification(msg, 4000, "danger");
+        throw err;
       } finally {
         setLoading(false);
       }
     },
-    [setNotification],
+    [],
   );
 
   return { email, error, loading, password, navigate, executeAuth, setEmail, setError, setPassword };

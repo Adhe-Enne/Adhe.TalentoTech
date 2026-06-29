@@ -1,9 +1,10 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { toast } from "react-toastify";
 
 import { useErrorNotification } from "../../../hooks/useErrorNotification";
+import useExpandable from "../../../hooks/useExpandable";
 import useOrders from "../../../hooks/useOrders";
 import { type Order, type OrderStatusValue, OrderStatus } from "../../../models/Order";
+import { withDelay, withToast } from "../../../utils/withToast";
 import AdminOrderList from "./AdminOrderList";
 
 const statusOptions: OrderStatusValue[] = [OrderStatus.Pendiente, OrderStatus.Completado, OrderStatus.Cancelado];
@@ -11,7 +12,7 @@ const statusOptions: OrderStatusValue[] = [OrderStatus.Pendiente, OrderStatus.Co
 const AdminOrderListContainer: React.FC = () => {
   const { deleteOrder, error, fetchAllOrders, updateOrderStatus, isLoading } = useOrders();
   const [orders, setOrders] = useState<Order[]>([]);
-  const [expandedId, setExpandedId] = useState<string | null>(null);
+  const { expandedId, toggleExpand } = useExpandable();
   const [filter, setFilter] = useState<string>("all");
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
   const [deleting, setDeleting] = useState(false);
@@ -20,61 +21,35 @@ const AdminOrderListContainer: React.FC = () => {
   useErrorNotification(error);
 
   useEffect((): void => {
-    fetchAllOrders().then(setOrders);
+    fetchAllOrders()
+      .then(setOrders)
+      .catch((): void => {
+        /* error handled by useErrorNotification */
+      });
   }, [fetchAllOrders]);
 
-  const toggleExpand: (id: string) => void = useCallback((id: string): void => {
-    setExpandedId((prev: string | null) => (prev === id ? null : id));
-  }, []);
-
-  const handleApprove: (id: string) => Promise<void> = useCallback(
-    async (id: string): Promise<void> => {
-      const toastId: string | number = toast.loading("Aprobando pedido...");
-      setActionLoading((prev: Map<string, string>) => new Map(prev).set(id, "approve"));
-      try {
-        await Promise.all([
-          updateOrderStatus(id, OrderStatus.Completado),
-          new Promise<void>((resolve) => {
-            setTimeout(resolve, 800);
-          }),
-        ]);
-        setOrders((prev: Order[]) => prev.map((o: Order) => (o.id === id ? { ...o, status: OrderStatus.Completado, updatedAt: new Date().toISOString() } : o)));
-        toast.update(toastId, { autoClose: 3000, isLoading: false, render: "Pedido aprobado", type: "success" });
-      } catch {
-        toast.update(toastId, { autoClose: 3000, isLoading: false, render: "Error al aprobar pedido", type: "error" });
-      } finally {
-        setActionLoading((prev: Map<string, string>) => {
-          const next: Map<string, string> = new Map(prev);
-          next.delete(id);
-          return next;
-        });
+  const handleStatusChange: (id: string, status: OrderStatusValue, actionLabel: string, pastLabel: string) => Promise<void> = useCallback(
+    async (id: string, status: OrderStatusValue, actionLabel: string, pastLabel: string): Promise<void> => {
+      const action: string = status === OrderStatus.Completado ? "approve" : "reject";
+      setActionLoading((prev: Map<string, string>) => new Map(prev).set(id, action));
+      const result: void | undefined = await withToast(
+        () => withDelay(updateOrderStatus(id, status)),
+        `${actionLabel} pedido...`,
+        `Pedido ${pastLabel}`,
+        `Error al ${actionLabel.toLowerCase()} pedido`,
+      );
+      if (result !== undefined) {
+        setOrders((prev: Order[]) =>
+          prev.map((o: Order) =>
+            o.id === id ? { ...o, status, updatedAt: new Date().toISOString() } : o,
+          ),
+        );
       }
-    },
-    [updateOrderStatus],
-  );
-
-  const handleReject: (id: string) => Promise<void> = useCallback(
-    async (id: string): Promise<void> => {
-      const toastId: string | number = toast.loading("Rechazando pedido...");
-      setActionLoading((prev: Map<string, string>) => new Map(prev).set(id, "reject"));
-      try {
-        await Promise.all([
-          updateOrderStatus(id, OrderStatus.Cancelado),
-          new Promise<void>((resolve) => {
-            setTimeout(resolve, 800);
-          }),
-        ]);
-        setOrders((prev: Order[]) => prev.map((o: Order) => (o.id === id ? { ...o, status: OrderStatus.Cancelado, updatedAt: new Date().toISOString() } : o)));
-        toast.update(toastId, { autoClose: 3000, isLoading: false, render: "Pedido rechazado", type: "info" });
-      } catch {
-        toast.update(toastId, { autoClose: 3000, isLoading: false, render: "Error al rechazar pedido", type: "error" });
-      } finally {
-        setActionLoading((prev: Map<string, string>) => {
-          const next: Map<string, string> = new Map(prev);
-          next.delete(id);
-          return next;
-        });
-      }
+      setActionLoading((prev: Map<string, string>) => {
+        const next: Map<string, string> = new Map(prev);
+        next.delete(id);
+        return next;
+      });
     },
     [updateOrderStatus],
   );
@@ -83,18 +58,16 @@ const AdminOrderListContainer: React.FC = () => {
     if (!deleteTarget) {
       return;
     }
-    const toastId: string | number = toast.loading("Eliminando pedido...");
     setDeleting(true);
-    try {
-      await deleteOrder(deleteTarget);
-      setOrders((prev: Order[]) => prev.filter((o: Order) => o.id !== deleteTarget));
-      toast.update(toastId, { autoClose: 3000, isLoading: false, render: "Pedido eliminado", type: "success" });
-    } catch {
-      toast.update(toastId, { autoClose: 3000, isLoading: false, render: "Error al eliminar pedido", type: "error" });
-    } finally {
-      setDeleting(false);
-      setDeleteTarget(null);
-    }
+    await withToast(
+      () => deleteOrder(deleteTarget),
+      "Eliminando pedido...",
+      "Pedido eliminado",
+      "Error al eliminar pedido",
+    );
+    setOrders((prev: Order[]) => prev.filter((o: Order) => o.id !== deleteTarget));
+    setDeleting(false);
+    setDeleteTarget(null);
   }, [deleteTarget, deleteOrder]);
 
   return (
@@ -105,11 +78,11 @@ const AdminOrderListContainer: React.FC = () => {
       expandedId={expandedId}
       filter={filter}
       isLoading={isLoading}
-      onApprove={handleApprove}
+      onApprove={(id: string) => handleStatusChange(id, OrderStatus.Completado, "Aprobando", "aprobado")}
       onDeleteCancel={() => setDeleteTarget(null)}
       onDeleteConfirm={handleDeleteConfirm}
       onDeleteRequest={(id: string) => setDeleteTarget(id)}
-      onReject={handleReject}
+      onReject={(id: string) => handleStatusChange(id, OrderStatus.Cancelado, "Rechazando", "rechazado")}
       onStatusChange={setFilter}
       onToggleExpand={toggleExpand}
       orders={orders}

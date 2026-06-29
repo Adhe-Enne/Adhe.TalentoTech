@@ -27,7 +27,7 @@ import { tsToIso } from "../utils/parseDataUtils";
 
 function mapDocToOrder(d: DocumentSnapshot<DocumentData>): Order {
   const data: DocumentData | undefined = d.data();
-  return {
+    return {
     id: d.id,
     userId: data?.userId ?? "",
     userEmail: data?.userEmail ?? "",
@@ -35,6 +35,7 @@ function mapDocToOrder(d: DocumentSnapshot<DocumentData>): Order {
     subtotal: Number(data?.subtotal ?? 0),
     discount: Number(data?.discount ?? 0),
     discountCode: data?.discountCode ?? null,
+    couponId: data?.couponId ?? null,
     total: Number(data?.total ?? 0),
     status: data?.status ?? OrderStatus.Pendiente,
     shippingInfo: data?.shippingInfo ?? {},

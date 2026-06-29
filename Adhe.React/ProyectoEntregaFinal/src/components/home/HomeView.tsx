@@ -4,6 +4,7 @@ import { FaChevronUp, FaSearch, FaTimes } from "react-icons/fa";
 
 import type { Product } from "../../models";
 
+import LoadingSpinner from "../ui/LoadingSpinner";
 import ProductCard from "../product/product-card/ProductCard";
 import HelmetMeta from "../ui/HelmetMeta";
 import styles from "./Home.module.css";
@@ -48,12 +49,7 @@ const HomeView: React.FC<HomeViewProps> = (props) => {
     <Container className="py-4">
       <HelmetMeta description={pageDescription} title={pageTitle ? `Talento Tech | ${pageTitle}` : "Talento Tech"} />
       {loading ? (
-        <div aria-busy="true" className="d-flex justify-content-center py-5">
-          <div aria-hidden="true" className="spinner-border" />
-          <output aria-live="polite" className="visually-hidden">
-            Cargando...
-          </output>
-        </div>
+        <LoadingSpinner message="Cargando productos..." minHeight="40vh" />
       ) : (
         <>
           <div className="mb-3">
@@ -139,7 +135,7 @@ const HomeView: React.FC<HomeViewProps> = (props) => {
 
           {!hasMore && cardData.length > 8 && (
             <div className="text-center mt-3">
-              <output className="text-muted">No hay más productos para mostrar.</output>
+              <output aria-live="polite" className="text-muted" role="status">No hay más productos para mostrar.</output>
             </div>
           )}
         </>

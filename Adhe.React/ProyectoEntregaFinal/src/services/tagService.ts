@@ -40,8 +40,8 @@ export const tagService: {
         id: d.id,
         name: data.name,
         categoryId: data.categoryId,
-        createdAt: data.createdAt ?? "",
-        updatedAt: data.updatedAt ?? undefined,
+        createdAt: tsToIso(data.createdAt) ?? "",
+        updatedAt: tsToIso(data.updatedAt) ?? undefined,
       };
     }
 
@@ -56,7 +56,8 @@ export const tagService: {
       id: ref.id,
       name: payload.name ?? "Sin nombre",
       categoryId: payload.categoryId ?? "",
-      ...timestamps.onCreate(),
+      createdAt: payload.createdAt ?? "",
+      updatedAt: payload.updatedAt ?? undefined,
     };
   },
 };

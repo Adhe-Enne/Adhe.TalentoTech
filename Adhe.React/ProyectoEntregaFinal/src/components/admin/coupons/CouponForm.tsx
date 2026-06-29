@@ -1,10 +1,12 @@
 import React, { useCallback, useState } from "react";
 import { Button, Spinner } from "react-bootstrap";
 import { FaPlus } from "react-icons/fa";
-import { toast } from "react-toastify";
 
 import useCoupons from "../../../hooks/selectors/useCoupons";
+import { couponService } from "../../../services/couponService";
 import { getTodayString } from "../../../utils/dateUtils";
+import { isValidCouponCode } from "../../../utils/validators";
+import { withToast } from "../../../utils/withToast";
 import styles from "./CouponForm.module.css";
 
 interface FormErrors {
@@ -21,71 +23,106 @@ const CouponForm: React.FC = () => {
   const [expiresAt, setExpiresAt] = useState("");
   const [errors, setErrors] = useState<FormErrors>({});
   const [submitting, setSubmitting] = useState(false);
+  const [isDuplicate, setIsDuplicate] = useState(false);
   const { createCoupon } = useCoupons();
 
-  const handleCodeChange: (val: string) => void = useCallback((val: string) => {
-    setCode(val.toUpperCase());
+  const handleChange: (field: keyof FormErrors, value: string) => void = useCallback((field: keyof FormErrors, value: string): void => {
+    if (field === "code") {
+      setCode(value.toUpperCase().replace(/\s+/g, ""));
+      setIsDuplicate(false);
+    } else if (field === "discount") {
+      setDiscountValue(value);
+    } else {
+      setExpiresAt(value);
+    }
+    setErrors((prev: FormErrors) => {
+      const next: FormErrors = { ...prev };
+      delete next[field];
+      return next;
+    });
   }, []);
 
-  const handleDiscountChange: (val: string) => void = useCallback((val: string) => {
-    setDiscountValue(val);
-  }, []);
-
-  const handleExpiresAtChange: (val: string) => void = useCallback((val: string) => {
-    setExpiresAt(val);
-  }, []);
+  const handleCodeBlur: () => Promise<void> = useCallback(async () => {
+    const trimmed: string = code.trim();
+    if (!trimmed || trimmed.length < 3) {
+      return;
+    }
+    try {
+      const exists: boolean = await couponService.checkCodeExists(trimmed);
+      setIsDuplicate(exists);
+      if (exists) {
+        setErrors((prev: FormErrors) => ({ ...prev, code: "Este código ya existe" }));
+      }
+    } catch {
+      // fail open — don't block submission if Firestore is unreachable
+    }
+  }, [code]);
 
   const validate: () => boolean = useCallback((): boolean => {
     const errs: FormErrors = {};
     const trimmed: string = code.trim();
+
     if (!trimmed) {
-      errs.code = "El codigo es requerido";
+      errs.code = "El código es requerido";
     } else if (trimmed.length < 3) {
-      errs.code = "El codigo debe tener al menos 3 caracteres";
+      errs.code = "El código debe tener al menos 3 caracteres";
+    } else if (!isValidCouponCode(trimmed)) {
+      errs.code = "Solo letras, números y guiones";
+    } else if (isDuplicate) {
+      errs.code = "Este código ya existe";
     }
-    if (/\s/.test(trimmed)) {
-      errs.code = "El codigo no puede contener espacios";
-    }
+
     const discountNum: number = Number(discountValue);
     if (!discountValue || Number.isNaN(discountNum) || discountNum < 1 || discountNum > 100) {
-      errs.discount = "El descuento debe ser un numero entre 1 y 100";
+      errs.discount = "El descuento debe ser un número entre 1 y 100";
+    } else if (!Number.isInteger(discountNum)) {
+      errs.discount = "El descuento debe ser un número entero";
     }
     if (expiresAt && expiresAt < today) {
       errs.expiresAt = "La fecha debe ser hoy o futura";
     }
     setErrors(errs);
     return Object.keys(errs).length === 0;
-  }, [code, discountValue, expiresAt]);
+  }, [code, discountValue, expiresAt, isDuplicate]);
 
-  const handleSubmit: React.SubmitEventHandler<HTMLFormElement> = useCallback(
-    (e) => {
+  const handleSubmit: (e: React.SubmitEvent<HTMLFormElement>) => Promise<void> = useCallback(
+    async (e: React.SubmitEvent<HTMLFormElement>): Promise<void> => {
       e.preventDefault();
       if (!validate()) {
         return;
       }
       setSubmitting(true);
-      const toastId: string | number = toast.loading("Creando cupón...");
-      createCoupon({
-        code: code.trim().toUpperCase(),
-        discountValue: Number(discountValue),
-        expiresAt: expiresAt || null,
-      })
-        .then(() => {
-          setCode("");
-          setDiscountValue("");
-          setExpiresAt("");
-          setErrors({});
-          toast.update(toastId, { autoClose: 3000, isLoading: false, render: "¡Cupón creado!", type: "success" });
-        })
-        .catch(() => {
-          toast.update(toastId, { autoClose: 3000, isLoading: false, render: "Error al crear cupón", type: "error" });
-        })
-        .finally(() => {
-          setSubmitting(false);
-        });
+      const duplicate: boolean = await couponService.checkCodeExists(code.trim());
+      if (duplicate) {
+        setIsDuplicate(true);
+        setErrors((prev: FormErrors) => ({ ...prev, code: "Este código ya existe" }));
+        setSubmitting(false);
+        return;
+      }
+      const created: unknown = await withToast(
+        () =>
+          createCoupon({
+            code: code.trim().toUpperCase(),
+            discountValue: Number(discountValue),
+            expiresAt: expiresAt || null,
+          }) as Promise<unknown>,
+        "Creando cupón...",
+        "¡Cupón creado!",
+        "Error al crear cupón",
+      );
+      if (created !== undefined) {
+        setCode("");
+        setDiscountValue("");
+        setExpiresAt("");
+        setErrors({});
+        setIsDuplicate(false);
+      }
+      setSubmitting(false);
     },
     [code, discountValue, expiresAt, createCoupon, validate],
   );
+
+  const hasErrors: boolean = Object.keys(errors).length > 0;
 
   return (
     <form className={`card mb-4 ${styles.formCard}`} onSubmit={handleSubmit}>
@@ -96,36 +133,27 @@ const CouponForm: React.FC = () => {
             <label className="form-label" htmlFor="couponCode">
               Codigo
             </label>
-            <input className={`form-control${errors.code ? " is-invalid" : ""}`} id="couponCode" maxLength={30} onChange={(e) => handleCodeChange(e.target.value)} placeholder="Ej: DESCUENTO10" value={code} />
+            <input className={`form-control${errors.code ? " is-invalid" : ""}`} id="couponCode" maxLength={30} onBlur={handleCodeBlur} onChange={(e) => handleChange("code", e.target.value)} placeholder="Ej: DESCUENTO10" value={code} />
             {errors.code && <div className="invalid-feedback">{errors.code}</div>}
           </div>
           <div className="col-12 col-sm-3">
             <label className="form-label" htmlFor="couponDiscount">
               Descuento (%)
             </label>
-            <input
-              className={`form-control${errors.discount ? " is-invalid" : ""}`}
-              id="couponDiscount"
-              max={100}
-              min={1}
-              onChange={(e) => handleDiscountChange(e.target.value)}
-              placeholder="10"
-              type="number"
-              value={discountValue}
-            />
+            <input className={`form-control${errors.discount ? " is-invalid" : ""}`} id="couponDiscount" max={100} min={1} onChange={(e) => handleChange("discount", e.target.value)} placeholder="10" type="number" value={discountValue} />
             {errors.discount && <div className="invalid-feedback">{errors.discount}</div>}
           </div>
           <div className="col-12 col-sm-5">
             <label className="form-label" htmlFor="couponExpiresAt">
               Vencimiento <small className="text-muted">(opcional)</small>
             </label>
-            <input className={`form-control${errors.expiresAt ? " is-invalid" : ""}`} id="couponExpiresAt" min={today} onChange={(e) => handleExpiresAtChange(e.target.value)} type="date" value={expiresAt} />
+            <input className={`form-control${errors.expiresAt ? " is-invalid" : ""}`} id="couponExpiresAt" min={today} onChange={(e) => handleChange("expiresAt", e.target.value)} type="date" value={expiresAt} />
             {errors.expiresAt && <div className="invalid-feedback">{errors.expiresAt}</div>}
           </div>
         </div>
         <div className="row mt-3">
           <div className="col-12">
-            <Button aria-label="Crear cupón" className="w-100" disabled={submitting} type="submit" variant="primary">
+            <Button aria-label="Crear cupón" className="w-100" disabled={submitting || hasErrors} type="submit" variant="primary">
               {submitting ? (
                 <Spinner animation="border" size="sm" />
               ) : (

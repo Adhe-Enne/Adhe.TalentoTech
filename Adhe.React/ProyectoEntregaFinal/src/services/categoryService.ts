@@ -40,8 +40,8 @@ export const categoryService: {
         id: d.id,
         name: data.name,
         categorySlug: data.categorySlug,
-        createdAt: data.createdAt,
-        updatedAt: data.updatedAt,
+        createdAt: tsToIso(data.createdAt) ?? "",
+        updatedAt: tsToIso(data.updatedAt) ?? undefined,
       };
     }
 

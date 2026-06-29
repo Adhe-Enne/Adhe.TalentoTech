@@ -13,7 +13,7 @@ export const ProductsProvider: React.FC<ProviderProps> = (props) => {
   const { children } = props;
   const { setNotification } = useNotification();
   const fetchAllProducts: () => Promise<Product[]> = useCallback(() => productService.fetchProducts(), []);
-  const { products, loading, setData, reload } = useAsyncCollection(fetchAllProducts);
+  const { data: products, loading, setData, reload } = useAsyncCollection(fetchAllProducts);
 
   const enabledProducts: Product[] = useMemo(() => products.filter((p) => p.isEnabled !== false), [products]);
 
@@ -62,10 +62,9 @@ export const ProductsProvider: React.FC<ProviderProps> = (props) => {
     }, {});
   }, [products]);
 
-  const findByIdMemoized: (id: string | number) => Product | undefined = useCallback(
-    (id: string | number): Product | undefined => {
-      const sid: string = String(id);
-      return productById[sid];
+  const findByIdMemoized: (id: string) => Product | undefined = useCallback(
+    (id: string): Product | undefined => {
+      return productById[id];
     },
     [productById],
   );

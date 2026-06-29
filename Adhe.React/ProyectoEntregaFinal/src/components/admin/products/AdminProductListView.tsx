@@ -1,5 +1,5 @@
 import React from "react";
-import { Alert, Button, Spinner, Table } from "react-bootstrap";
+import { Alert, Button, Table } from "react-bootstrap";
 import { FaEdit, FaPlus, FaTrash } from "react-icons/fa";
 import { Link } from "react-router-dom";
 
@@ -7,6 +7,7 @@ import type { Product } from "../../../models";
 
 import { formatPrice } from "../../../utils/format";
 import ConfirmDialog from "../../ui/ConfirmDialog";
+import LoadingSpinner from "../../ui/LoadingSpinner";
 import ToggleSwitch from "../../ui/ToggleSwitch";
 import adminStyles from "./AdminProductList.module.css";
 
@@ -34,14 +35,7 @@ const AdminProductListView: React.FC<AdminProductListViewProps> = (props) => {
   const { deleting, deleteTarget, filtered, loading, search, togglingIds, onDeleteCancel, onDeleteConfirm, onDeleteRequest, onEdit, onSearchChange, onToggleEnabled } = props;
 
   if (loading) {
-    return (
-      <div aria-busy="true" className="d-flex justify-content-center py-5">
-        <Spinner animation="border" aria-hidden="true" />
-        <output aria-live="polite" className="visually-hidden">
-          Cargando productos...
-        </output>
-      </div>
-    );
+    return <LoadingSpinner message="Cargando productos..." />;
   }
 
   return (

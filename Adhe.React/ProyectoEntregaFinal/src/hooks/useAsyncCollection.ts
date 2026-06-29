@@ -3,7 +3,7 @@ import { useCallback, useEffect, useState, type Dispatch, type SetStateAction } 
 import { extractErrorMessage } from "../utils/errorUtils";
 
 function useAsyncCollection<T>(fetcher: () => Promise<T[]>): {
-  products: T[];
+  data: T[];
   error: string | null;
   loading: boolean;
   reload: () => Promise<void>;
@@ -53,7 +53,7 @@ function useAsyncCollection<T>(fetcher: () => Promise<T[]>): {
     }
   }, [fetcher]);
 
-  return { products: data, error, loading, reload, setData, setError };
+  return { data, error, loading, reload, setData, setError };
 }
 
 export default useAsyncCollection;

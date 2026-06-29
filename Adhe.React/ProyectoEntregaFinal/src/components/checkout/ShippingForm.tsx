@@ -3,6 +3,8 @@ import { Form } from "react-bootstrap";
 
 import type { ShippingInfo } from "../../models";
 
+import { isValidPhoneAR, isValidPostalCodeAR, minLength, maxLength } from "../../utils/validators";
+
 export interface ShippingFormHandle {
   getData: () => { valid: boolean; data?: ShippingInfo; error?: string };
 }
@@ -22,26 +24,89 @@ const fields: {
 
 const initialShipping: ShippingInfo = { fullName: "", address: "", city: "", postalCode: "", phone: "" };
 const emptyErrors: Record<keyof ShippingInfo, boolean> = { fullName: false, address: false, city: false, postalCode: false, phone: false };
+const emptyMessages: Record<keyof ShippingInfo, string> = { fullName: "", address: "", city: "", postalCode: "", phone: "" };
+
+const validateFullName: (v: string) => string = (v: string): string => {
+  if (!v) { return "El nombre completo es obligatorio"; }
+  if (!minLength(v, 2)) { return "Debe tener al menos 2 caracteres"; }
+  if (!maxLength(v, 100)) { return "No debe exceder los 100 caracteres"; }
+  return "";
+};
+
+const validateAddress: (v: string) => string = (v: string): string => {
+  if (!v) { return "La dirección es obligatoria"; }
+  if (!minLength(v, 3)) { return "Debe tener al menos 3 caracteres"; }
+  if (!maxLength(v, 200)) { return "No debe exceder los 200 caracteres"; }
+  return "";
+};
+
+const validateCity: (v: string) => string = (v: string): string => {
+  if (!v) { return "La ciudad es obligatoria"; }
+  if (!minLength(v, 2)) { return "Debe tener al menos 2 caracteres"; }
+  if (!maxLength(v, 100)) { return "No debe exceder los 100 caracteres"; }
+  return "";
+};
+
+const validatePostalCode: (v: string) => string = (v: string): string => {
+  if (!v) { return "El código postal es obligatorio"; }
+  if (!isValidPostalCodeAR(v)) { return "Debe ser un código postal argentino válido (4 dígitos)"; }
+  return "";
+};
+
+const validatePhone: (v: string) => string = (v: string): string => {
+  if (!v) { return "El teléfono es obligatorio"; }
+  if (!isValidPhoneAR(v)) { return "Debe ser un teléfono válido (8 a 15 dígitos)"; }
+  return "";
+};
+
+const VALIDATORS: Record<keyof ShippingInfo, (v: string) => string> = {
+  address: validateAddress,
+  city: validateCity,
+  fullName: validateFullName,
+  phone: validatePhone,
+  postalCode: validatePostalCode,
+};
 
 const ShippingForm: React.ForwardRefRenderFunction<ShippingFormHandle, object> = (_props, ref) => {
   const [values, setValues] = useState<ShippingInfo>(initialShipping);
   const [touched, setTouched] = useState<Record<keyof ShippingInfo, boolean>>(emptyErrors);
+  const [fieldErrors, setFieldErrors] = useState<Record<keyof ShippingInfo, string>>(emptyMessages);
+
+  const validateField: (key: keyof ShippingInfo, value: string) => string = useCallback(
+    (key: keyof ShippingInfo, value: string): string => {
+      const validator: (v: string) => string = VALIDATORS[key];
+      return validator ? validator(value.trim()) : "";
+    },
+    [],
+  );
 
   const getData: () => { valid: boolean; data?: ShippingInfo; error?: string } =
     useCallback((): { valid: boolean; data?: ShippingInfo; error?: string } => {
-      const missing: (keyof ShippingInfo)[] = fields.filter((f) => !values[f.key].trim()).map((f) => f.key);
+      const newFieldErrors: Record<keyof ShippingInfo, string> = { ...emptyMessages };
+      let firstError: string | null = null;
 
+      for (const field of fields) {
+        const error: string = validateField(field.key, values[field.key]);
+        newFieldErrors[field.key] = error;
+        if (error && !firstError) {
+          firstError = error;
+        }
+      }
+
+      setFieldErrors(newFieldErrors);
       setTouched((prev: Record<keyof ShippingInfo, boolean>) => {
         const next: Record<keyof ShippingInfo, boolean> = { ...prev };
-        missing.forEach((k: keyof ShippingInfo) => { next[k] = true; });
+        for (const field of fields) {
+          next[field.key] = true;
+        }
         return next;
       });
 
-      if (missing.length > 0) {
-        return { valid: false, error: "Completá todos los campos de envío" };
+      if (firstError) {
+        return { valid: false, error: firstError };
       }
       return { valid: true, data: { ...values } };
-    }, [values]);
+    }, [values, validateField]);
 
   useImperativeHandle<ShippingFormHandle, ShippingFormHandle>(
     ref,
@@ -54,6 +119,7 @@ const ShippingForm: React.ForwardRefRenderFunction<ShippingFormHandle, object> =
   const handleChange: (key: keyof ShippingInfo, value: string) => void = useCallback((key: keyof ShippingInfo, value: string): void => {
     setValues((prev: ShippingInfo) => ({ ...prev, [key]: value }));
     setTouched((prev: Record<keyof ShippingInfo, boolean>) => ({ ...prev, [key]: false }));
+    setFieldErrors((prev: Record<keyof ShippingInfo, string>) => ({ ...prev, [key]: "" }));
   }, []);
 
   return (
@@ -66,14 +132,14 @@ const ShippingForm: React.ForwardRefRenderFunction<ShippingFormHandle, object> =
             <Form.Label htmlFor={`shipping-${f.key}`}>{f.label}</Form.Label>
             <Form.Control
               id={`shipping-${f.key}`}
-              isInvalid={touched[f.key]}
+              isInvalid={touched[f.key] && !!fieldErrors[f.key]}
               onChange={(e: ChangeEvent<HTMLInputElement>) => handleChange(f.key, e.target.value)}
               placeholder={f.placeholder}
               required
               type={f.type}
               value={values[f.key]}
             />
-            <Form.Control.Feedback type="invalid">{f.label} es obligatorio</Form.Control.Feedback>
+            <Form.Control.Feedback type="invalid">{touched[f.key] ? fieldErrors[f.key] || `${f.label} es obligatorio` : ""}</Form.Control.Feedback>
           </Form.Group>
         ))}
       </div>

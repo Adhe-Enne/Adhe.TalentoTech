@@ -1,9 +1,10 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import type { Order } from "../../models";
 
 import useAuth from "../../hooks/selectors/useAuth";
 import { useErrorNotification } from "../../hooks/useErrorNotification";
+import useExpandable from "../../hooks/useExpandable";
 import useOrders from "../../hooks/useOrders";
 import OrderHistoryView from "./OrderHistoryView";
 
@@ -11,7 +12,7 @@ const OrderHistoryContainer: React.FC = () => {
   const { user } = useAuth();
   const { error, fetchUserOrders, isLoading } = useOrders();
   const [orders, setOrders] = useState<Order[]>([]);
-  const [expandedId, setExpandedId] = useState<string | null>(null);
+  const { expandedId, toggleExpand } = useExpandable();
 
   useErrorNotification(error);
 
@@ -21,10 +22,6 @@ const OrderHistoryContainer: React.FC = () => {
     }
     fetchUserOrders(user.uid).then(setOrders);
   }, [user, fetchUserOrders]);
-
-  const toggleExpand: (id: string) => void = useCallback((id: string): void => {
-    setExpandedId((prev: string | null) => (prev === id ? null : id));
-  }, []);
 
   if (!user) {
     return null;

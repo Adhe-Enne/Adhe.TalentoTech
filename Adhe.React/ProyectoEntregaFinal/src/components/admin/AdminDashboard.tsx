@@ -21,10 +21,14 @@ const AdminDashboard: React.FC = () => {
   useErrorNotification(error);
 
   useEffect((): void => {
-    fetchAllOrders().then((data: Order[]) => {
-      setOrders(data);
-      setOrdersLoading(false);
-    });
+    fetchAllOrders()
+      .then((data: Order[]) => {
+        setOrders(data);
+        setOrdersLoading(false);
+      })
+      .catch((): void => {
+        setOrdersLoading(false);
+      });
   }, [fetchAllOrders]);
 
   const loading: boolean = productsLoading || couponsLoading || ordersLoading;

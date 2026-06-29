@@ -5,41 +5,24 @@ import { Link } from "react-router-dom";
 
 import type { CartItem } from "../../models";
 
+import useCart from "../../hooks/selectors/useCart";
 import { formatPrice } from "../../utils/format";
 import HelmetMeta from "../ui/HelmetMeta";
 import CartItemRow from "./CartItemRow";
 import CouponSection from "./CouponSection";
 
-interface AppliedCouponData {
-  code: string;
-  discountValue: number;
-  expiresAt?: string | null;
-}
-
 interface CartListViewProps {
-  appliedCoupon: AppliedCouponData | null;
   cart: CartItem[];
-  couponCode: string;
-  couponError: string | null;
-  daysUntilExpiry: number | null;
-  discountedTotal: number | null;
-  isApplyingCoupon: boolean;
-  rawTotal: number;
-  onApplyCoupon: () => void;
   onBack: () => void;
-  onCouponCodeChange: (code: string) => void;
   onItemDecrement: (item: CartItem) => void;
   onItemIncrement: (item: CartItem) => void;
   onItemRemove: (item: CartItem) => void;
   onPurchase: () => void;
-  onRemoveCoupon: () => void;
 }
 
 const CartView: React.FC<CartListViewProps> = (props) => {
-  const {
-    appliedCoupon, cart, couponCode, couponError, daysUntilExpiry, discountedTotal, isApplyingCoupon, rawTotal,
-    onApplyCoupon, onBack, onCouponCodeChange, onItemDecrement, onItemIncrement, onItemRemove, onPurchase, onRemoveCoupon,
-  } = props;
+  const { cart, onBack, onItemDecrement, onItemIncrement, onItemRemove, onPurchase } = props;
+  const { appliedCoupon, discountedTotal, rawTotal } = useCart();
 
   return (
     <Container className="py-4">
@@ -78,18 +61,7 @@ const CartView: React.FC<CartListViewProps> = (props) => {
         </div>
       )}
 
-      {cart.length > 0 && (
-        <CouponSection
-          appliedCoupon={appliedCoupon}
-          couponCode={couponCode}
-          couponError={couponError}
-          daysUntilExpiry={daysUntilExpiry}
-          isApplyingCoupon={isApplyingCoupon}
-          onApplyCoupon={onApplyCoupon}
-          onCouponCodeChange={onCouponCodeChange}
-          onRemoveCoupon={onRemoveCoupon}
-        />
-      )}
+      {cart.length > 0 && <CouponSection />}
 
       <div className="d-flex justify-content-between align-items-center mt-3 p-3 bg-light rounded">
         <strong>Total final:</strong>

@@ -1,6 +1,7 @@
 import React from "react";
 import { Badge, Button } from "react-bootstrap";
 import { FaShoppingBag } from "react-icons/fa";
+import { useNavigate, type NavigateFunction } from "react-router-dom";
 
 import type { UserInfo } from "../../../types/auth";
 
@@ -14,12 +15,12 @@ interface ProfileViewProps {
   user: UserInfo | null;
   onHideConfirm: () => void;
   onLogout: () => void;
-  onNavigate: (path: string) => void;
   onShowConfirm: () => void;
 }
 
 const ProfileView: React.FC<ProfileViewProps> = (props) => {
-  const { loggingOut, onLogout, onNavigate, onShowConfirm, onHideConfirm, showConfirm, user } = props;
+  const { loggingOut, onLogout, onShowConfirm, onHideConfirm, showConfirm, user } = props;
+  const navigate: NavigateFunction = useNavigate();
 
   const roleLabel: string = user?.rol === "admin" ? "Administrador" : "Usuario";
 
@@ -39,11 +40,11 @@ const ProfileView: React.FC<ProfileViewProps> = (props) => {
           <hr />
 
           <div className="d-flex flex-column gap-2">
-            <Button aria-label="Mis pedidos" onClick={() => onNavigate("/mis-ordenes")} variant="outline-primary">
+            <Button aria-label="Mis pedidos" onClick={() => navigate("/mis-ordenes")} variant="outline-primary">
               <FaShoppingBag aria-hidden="true" className="me-1" />
               Mis pedidos
             </Button>
-            <Button aria-label="Volver al inicio" onClick={() => onNavigate("/")} variant="outline-secondary">
+            <Button aria-label="Volver al inicio" onClick={() => navigate("/")} variant="outline-secondary">
               Volver al inicio
             </Button>
             <Button aria-label="Cerrar sesión" disabled={loggingOut} onClick={onShowConfirm} variant="outline-danger">

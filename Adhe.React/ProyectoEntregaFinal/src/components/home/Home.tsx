@@ -26,7 +26,7 @@ const Home: React.FC = () => {
     return enabled;
   }, []);
 
-  const { products: paginatedProducts, loading, reload: reloadProducts, setData, setError } = useAsyncCollection<Product>(fetcher);
+  const { data: paginatedProducts, loading, reload: reloadProducts, setData, setError } = useAsyncCollection<Product>(fetcher);
 
   const loadNextPage: () => Promise<void> = useCallback(async (): Promise<void> => {
     if (!hasMore || loadingMore) {
@@ -40,7 +40,7 @@ const Home: React.FC = () => {
       lastKeyRef.current = result.lastKey;
       setHasMore(result.hasMore);
     } catch (err: unknown) {
-      setError((err as Error)?.message ?? "Error loading more products");
+      setError(err instanceof Error ? err.message : "Error loading more products");
     } finally {
       setLoadingMore(false);
     }

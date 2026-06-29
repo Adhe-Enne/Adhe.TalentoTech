@@ -93,6 +93,9 @@ const ProductForm: React.FC<ProductFormProps> = (props) => {
               <small className="text-muted">Imagen actual:</small>
             </div>
           )}
+          <div className="mb-2">
+            {errors.file && <div className="invalid-feedback d-block">{errors.file}</div>}
+          </div>
           <ProductImagePreview name={fields.file?.name} onClear={() => setFile(null)} onFileChange={setFile} url={displayUrl} />
           {isEdit && existingImageUrl && !fields.file && (
             <div className="mt-1">
@@ -115,6 +118,7 @@ const ProductForm: React.FC<ProductFormProps> = (props) => {
             onChange={(files: File[]) => setField("images", files)}
             onExistingChange={(urls) => setField("existingImageUrls", urls)}
           />
+          {errors.images && <div className="invalid-feedback d-block">{errors.images}</div>}
         </div>
       </div>
 
@@ -168,7 +172,8 @@ const ProductForm: React.FC<ProductFormProps> = (props) => {
             <label className="form-label" htmlFor="stock">
               Stock
             </label>
-            <input className="form-control" id="stock" min="0" onChange={(e) => setField("stock", e.target.value)} step="1" type="number" value={fields.stock} />
+            <input className={`form-control${errors.stock ? " is-invalid" : ""}`} id="stock" min="0" onChange={(e) => setField("stock", e.target.value)} step="1" type="number" value={fields.stock} />
+            {errors.stock && <div className="invalid-feedback">{errors.stock}</div>}
           </div>
           <div className={styles.currencyField}>
             <label className="form-label" htmlFor="currency">
@@ -186,7 +191,8 @@ const ProductForm: React.FC<ProductFormProps> = (props) => {
           <label className="form-label" htmlFor="descripcion">
             Descripción
           </label>
-          <textarea className="form-control" id="descripcion" onChange={(e) => setField("descripcion", e.target.value)} value={fields.descripcion} />
+          <textarea className={`form-control${errors.descripcion ? " is-invalid" : ""}`} id="descripcion" onChange={(e) => setField("descripcion", e.target.value)} value={fields.descripcion} />
+          {errors.descripcion && <div className="invalid-feedback">{errors.descripcion}</div>}
         </div>
 
         <TagAutocomplete

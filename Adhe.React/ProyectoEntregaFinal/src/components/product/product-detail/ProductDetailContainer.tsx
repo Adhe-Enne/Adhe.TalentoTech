@@ -1,8 +1,7 @@
 import React, { useCallback } from "react";
 import { useNavigate, useParams, type NavigateFunction } from "react-router-dom";
 
-import type { Product } from "../../../models";
-import type { Tag } from "../../../models/Tag";
+import type { Product, Tag } from "../../../models";
 
 import useCart from "../../../hooks/selectors/useCart";
 import useCategories from "../../../hooks/selectors/useCategories";
@@ -86,7 +85,7 @@ const ProductDetailContainer: React.FC = () => {
   }
 
   const categoryName: string | undefined = product?.categoryId ? findCategory(product.categoryId)?.name : undefined;
-  const tags: Tag[] | undefined = product?.tagIds ? (product.tagIds.map((t) => findTag(t)).filter(Boolean) as Tag[]) : undefined;
+  const tags: Tag[] | undefined = product?.tagIds ? product.tagIds.map((t) => findTag(t)).filter((t): t is Tag => t != null) : undefined;
 
   return <ProductDetail categoryName={categoryName} onAddToCart={handleAddToCart} onBack={handleBack} product={product} tags={tags} />;
 };

@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from "react"
 
 import type { CartItem, CouponValidationResult, Product } from "../../models";
 import type { ProviderProps } from "../../types/ProviderProps";
-import type { CartContextType } from "./CartContext";
+import type { CartContextType, AppliedCoupon } from "./CartContext";
 
 import useAuth from "../../hooks/selectors/useAuth";
 import { couponService } from "../../services/couponService";
@@ -18,13 +18,6 @@ function getCartKey(userId?: string): string {
 
 function getCouponKey(userId?: string): string {
   return userId ? `${COUPON_KEY_PREFIX}_${userId}` : COUPON_KEY_PREFIX;
-}
-
-interface AppliedCoupon {
-  code: string;
-  discountValue: number;
-  expiresAt: string | null;
-  id: string;
 }
 
 export const CartProvider: React.FC<ProviderProps> = (props) => {

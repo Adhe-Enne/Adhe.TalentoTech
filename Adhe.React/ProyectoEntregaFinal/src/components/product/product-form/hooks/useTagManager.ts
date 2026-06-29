@@ -69,17 +69,17 @@ export function useTagManager(fields: TagManagerDeps, setField: SetFieldFn, crea
     setShowSuggestions(false);
   }
 
-  function onRemoveTag(tag: string): void {
-    const idx: number = fields.tags.indexOf(tag);
+  function onRemoveTag(tagName: string): void {
+    const idx: number = fields.tags.indexOf(tagName);
     if (idx === -1) {
       return;
     }
     setField(
       "tags",
-      fields.tags.filter((x: string) => x !== tag),
+      fields.tags.filter((x: string) => x !== tagName),
     );
     const newTagIds: string[] = [...fields.tagIds];
-    if (fields.tagIds.length > idx) {
+    if (newTagIds.length > idx) {
       newTagIds.splice(idx, 1);
     }
     setField("tagIds", newTagIds);

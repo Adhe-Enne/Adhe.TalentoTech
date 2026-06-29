@@ -1,20 +1,42 @@
-import React, { type ChangeEvent } from "react";
+import React, { useCallback, useMemo, useState, type ChangeEvent } from "react";
 import { Badge, Button } from "react-bootstrap";
 import { FaTrash } from "react-icons/fa";
 
-interface CouponSectionProps {
-  appliedCoupon: { code: string; discountValue: number; expiresAt?: string | null } | null;
-  couponCode: string;
-  couponError: string | null;
-  daysUntilExpiry: number | null;
-  isApplyingCoupon: boolean;
-  onApplyCoupon: () => void;
-  onCouponCodeChange: (code: string) => void;
-  onRemoveCoupon: () => void;
-}
+import useCart from "../../hooks/selectors/useCart";
+import useNotification from "../../hooks/selectors/useNotification";
 
-const CouponSection: React.FC<CouponSectionProps> = (props) => {
-  const { appliedCoupon, couponCode, couponError, daysUntilExpiry, isApplyingCoupon, onApplyCoupon, onCouponCodeChange, onRemoveCoupon } = props;
+const CouponSection: React.FC = () => {
+  const { appliedCoupon, isApplyingCoupon, applyCoupon, removeCoupon } = useCart();
+  const { setNotification } = useNotification();
+  const [couponCode, setCouponCode] = useState<string>("");
+  const [couponError, setCouponError] = useState<string | null>(null);
+
+  const daysUntilExpiry: number | null = useMemo((): number | null => {
+    if (!appliedCoupon?.expiresAt) {
+      return null;
+    }
+    const now: Date = new Date();
+    const expiry: Date = new Date(appliedCoupon.expiresAt);
+    const diff: number = expiry.getTime() - now.getTime();
+    return Math.ceil(diff / (1000 * 60 * 60 * 24));
+  }, [appliedCoupon]);
+
+  const handleApplyCoupon: () => Promise<void> = useCallback(async (): Promise<void> => {
+    setCouponError(null);
+    const result: { success: boolean; error?: string } = await applyCoupon(couponCode);
+    if (result.success) {
+      setCouponCode("");
+      setNotification("Cupon aplicado con exito", 2000, "success");
+    } else {
+      setCouponError(result.error ?? "Error al aplicar cupon");
+      setNotification(result.error ?? "Error al aplicar cupon", 3000, "danger");
+    }
+  }, [applyCoupon, couponCode, setNotification]);
+
+  const handleRemoveCoupon: () => void = useCallback(() => {
+    removeCoupon();
+    setCouponError(null);
+  }, [removeCoupon]);
 
   return (
     <div className="card mt-3">
@@ -31,7 +53,7 @@ const CouponSection: React.FC<CouponSectionProps> = (props) => {
                 Vence en {daysUntilExpiry} d&iacute;a{daysUntilExpiry === 1 ? "" : "s"}
               </Badge>
             )}
-            <Button aria-label="Quitar cupón" className="ms-auto" onClick={onRemoveCoupon} size="sm" variant="outline-danger">
+            <Button aria-label="Quitar cupón" className="ms-auto" onClick={handleRemoveCoupon} size="sm" variant="outline-danger">
               <FaTrash className="me-1" />
               Quitar
             </Button>
@@ -42,12 +64,12 @@ const CouponSection: React.FC<CouponSectionProps> = (props) => {
               className="form-control text-uppercase"
               disabled={isApplyingCoupon}
               maxLength={20}
-              onChange={(e: ChangeEvent<HTMLInputElement>) => onCouponCodeChange(e.target.value)}
+              onChange={(e: ChangeEvent<HTMLInputElement>) => setCouponCode(e.target.value)}
               placeholder="INGRESA TU CODIGO"
               type="text"
               value={couponCode}
             />
-            <Button aria-label="Aplicar cupón" disabled={isApplyingCoupon || !couponCode.trim()} onClick={onApplyCoupon} variant="primary">
+            <Button aria-label="Aplicar cupón" disabled={isApplyingCoupon || !couponCode.trim()} onClick={() => void handleApplyCoupon()} variant="primary">
               {isApplyingCoupon ? "Aplicando..." : "Aplicar"}
             </Button>
           </div>

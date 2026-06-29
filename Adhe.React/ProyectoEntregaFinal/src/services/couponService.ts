@@ -26,6 +26,7 @@ export const couponService: {
   deleteCoupon: (id: string) => Promise<void>;
   updateCoupon: (id: string, payload: CouponUpdatePayload) => Promise<void>;
   validateCoupon: (code: string) => Promise<CouponValidationResult>;
+  checkCodeExists: (code: string) => Promise<boolean>;
 } = {
   fetchCoupons: async (): Promise<Coupon[]> => {
     const snap: QuerySnapshot<DocumentData> = await getDocs(collection(db, COUPONS_COLLECTION));
@@ -101,5 +102,15 @@ export const couponService: {
       return { valid: false, error: "Este cupón ha alcanzado su límite de usos" };
     }
     return { valid: true, discountValue: coupon.discountValue, id: coupon.id, expiresAt: coupon.expiresAt ?? null };
+  },
+
+  checkCodeExists: async (code: string): Promise<boolean> => {
+    const normalized: string = code.trim().toUpperCase();
+    if (normalized.length < 3) {
+      return false;
+    }
+    const q: Query<DocumentData> = query(collection(db, COUPONS_COLLECTION), where("code", "==", normalized));
+    const snap: QuerySnapshot<DocumentData> = await getDocs(q);
+    return !snap.empty;
   },
 };

@@ -69,10 +69,8 @@ function notifyListeners(user: UserInfo | null): void {
 cachedUser = loadFromStorage<UserInfo | null>(SESSION_KEY, null);
 
 function syncUserFromFirestore(firebaseUser: FirebaseUser): void {
-  const cached: UserInfo | null = loadFromStorage<UserInfo | null>(SESSION_KEY, null);
-
-  if (cached?.uid === firebaseUser.uid) {
-    notifyListeners(cached);
+  if (cachedUser?.uid === firebaseUser.uid) {
+    notifyListeners(cachedUser);
   }
 
   const docRef: DocumentReference = doc(db, USERS_COLLECTION, firebaseUser.uid);
@@ -84,11 +82,9 @@ function syncUserFromFirestore(firebaseUser: FirebaseUser): void {
       notifyListeners(userInfo);
     })
     .catch(() => {
-      if (cached?.uid !== firebaseUser.uid) {
-        const fallback: UserInfo = { uid: firebaseUser.uid, email: firebaseUser.email ?? "", rol: "user" };
-        setSession(fallback);
-        notifyListeners(fallback);
-      }
+      const fallback: UserInfo = { uid: firebaseUser.uid, email: firebaseUser.email ?? "", rol: "user" };
+      setSession(fallback);
+      notifyListeners(fallback);
     });
 }
 

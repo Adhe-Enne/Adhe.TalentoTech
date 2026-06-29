@@ -13,7 +13,7 @@ interface UseCollectionCrudReturn<T> {
 }
 
 export function useCollectionCrud<T extends { id: string }>(fetchFn: () => Promise<T[]>): UseCollectionCrudReturn<T> {
-  const { products: data, error, loading, setData, reload } = useAsyncCollection(fetchFn);
+  const { data, error, loading, setData, reload } = useAsyncCollection(fetchFn);
 
   const findById: (id: string) => T | undefined = useCallback((id: string): T | undefined => data.find((item) => item.id === id), [data]);
 

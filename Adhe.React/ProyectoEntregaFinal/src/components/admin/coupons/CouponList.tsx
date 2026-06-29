@@ -1,18 +1,23 @@
 import React from "react";
 import { Alert, Table } from "react-bootstrap";
 
-import useCoupons from "../../../hooks/selectors/useCoupons";
+import type { Coupon, CouponUpdatePayload } from "../../../models";
+
+import useCouponsSelective from "../../../hooks/selectors/useCouponsSelective";
 import ListStateDisplay from "../../ui/ListStateDisplay";
 import CouponItem from "./CouponItem";
 
 interface CouponListProps {
   onDeleteRequest: (id: string, label: string) => void;
+  onUpdateCoupon: (id: string, data: CouponUpdatePayload) => Promise<void>;
 }
 
 const CouponList: React.FC<CouponListProps> = (props) => {
-  const { onDeleteRequest } = props;
-  const { coupons, loading, error, fetchCoupons } = useCoupons();
-
+  const { onDeleteRequest, onUpdateCoupon } = props;
+  const coupons: Coupon[] = useCouponsSelective((c) => c.coupons);
+  const loading: boolean = useCouponsSelective((c) => c.loading);
+  const error: string | null = useCouponsSelective((c) => c.error);
+  const fetchCoupons: () => Promise<void> = useCouponsSelective((c) => c.fetchCoupons);
   return (
     <ListStateDisplay error={error} loading={loading} loadingMessage="Cargando cupones..." onRetry={fetchCoupons}>
       {coupons.length === 0 ? (
@@ -35,7 +40,7 @@ const CouponList: React.FC<CouponListProps> = (props) => {
             </thead>
             <tbody>
               {coupons.map((c) => (
-                <CouponItem coupon={c} key={c.id} onDeleteRequest={onDeleteRequest} />
+                <CouponItem coupon={c} key={c.id} onDeleteRequest={onDeleteRequest} onUpdateCoupon={onUpdateCoupon} />
               ))}
             </tbody>
           </Table>

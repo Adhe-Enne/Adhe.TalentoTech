@@ -13,6 +13,7 @@ import { parseCurrency } from "../../../utils/currency";
 import { useCancelable } from "../../product/product-form/hooks/useCancelable";
 import ProductForm from "../../product/product-form/ProductForm";
 import HelmetMeta from "../../ui/HelmetMeta";
+import LoadingSpinner from "../../ui/LoadingSpinner";
 
 const ProductFormFlow: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -51,21 +52,28 @@ const ProductFormFlow: React.FC = () => {
     [setLoading],
   );
 
-  const resolveTagIds: (tags?: string[], categoryId?: string) => Promise<string[]> = useCallback(
-    async (tags?: string[], categoryId?: string): Promise<string[]> => {
-      const ids: string[] = [];
-      if (!tags?.length) {
-        return ids;
+  const resolveTagIds: (tagNames?: string[], categoryId?: string, existingTagIds?: string[]) => Promise<string[]> = useCallback(
+    async (tagNames?: string[], categoryId?: string, existingTagIds?: string[]): Promise<string[]> => {
+      const resolved: string[] = [...(existingTagIds ?? [])];
+      if (!tagNames?.length) {
+        return resolved;
       }
-      for (const name of tags) {
+      for (const name of tagNames) {
+        const alreadyResolved: boolean = resolved.some((id) => {
+          const tag: Tag | undefined = tags.find((t) => t.id === id);
+          return tag?.name.toLowerCase() === name.toLowerCase();
+        });
+        if (alreadyResolved) {
+          continue;
+        }
         const createdTag: Tag | undefined = await createTag(name, categoryId ?? "");
         if (createdTag) {
-          ids.push(createdTag.id);
+          resolved.push(createdTag.id);
         }
       }
-      return ids;
+      return resolved;
     },
-    [createTag],
+    [createTag, tags],
   );
 
   const uploadMainImage: (file: File) => Promise<string> = useCallback(
@@ -105,6 +113,7 @@ const ProductFormFlow: React.FC = () => {
     if (!product) {
       return undefined;
     }
+    const productTagIds: string[] = product.tagIds ?? [];
     return {
       nombre: product.name,
       precio: String(product.price),
@@ -112,11 +121,11 @@ const ProductFormFlow: React.FC = () => {
       descripcion: product.description ?? "",
       categoriaId: product.categoryId ?? "",
       currency: parseCurrency(product.currency),
-      tagIds: product.tagIds ?? [],
-      tags: product.tags?.map((t) => t.name) ?? [],
+      tagIds: productTagIds,
+      tags: productTagIds.map((tagId) => tags.find((t) => t.id === tagId)?.name ?? "").filter(Boolean),
       existingImageUrls: product.images ?? [],
     };
-  }, [product]);
+  }, [product, tags]);
 
   const onSubmit: (p: ProductFormPayload) => Promise<void> = useCallback(
     async (p: ProductFormPayload): Promise<void> => {
@@ -126,7 +135,7 @@ const ProductFormFlow: React.FC = () => {
           const imageUrl: string = p.file ? await uploadMainImage(p.file) : (product?.image ?? "/images/avatar1.svg");
           const newImages: string[] = await uploadAdditionalImages(p.images ?? []);
           const images: string[] = isEdit ? [...(p.existingImageUrls ?? []), ...newImages] : newImages;
-          const tagIds: string[] = p.tagIds?.length === (p.tags?.length ?? 0) ? p.tagIds : await resolveTagIds(p.tags, p.categoriaId);
+          const tagIds: string[] = await resolveTagIds(p.tags, p.categoriaId, p.tagIds);
 
           if (isEdit) {
             await updateProduct(id!, {
@@ -173,13 +182,7 @@ const ProductFormFlow: React.FC = () => {
   }, [navigate]);
 
   if (isEdit && !product) {
-    return (
-      <div className="d-flex justify-content-center py-5">
-        <output className="spinner-border">
-          <span className="visually-hidden">Cargando producto...</span>
-        </output>
-      </div>
-    );
+    return <LoadingSpinner message="Cargando producto..." />;
   }
 
   return (

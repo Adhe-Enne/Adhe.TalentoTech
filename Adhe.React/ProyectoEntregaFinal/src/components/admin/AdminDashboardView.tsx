@@ -1,8 +1,9 @@
 import React from "react";
-import { Col, Row, Spinner } from "react-bootstrap";
+import { Col, Row } from "react-bootstrap";
 import { Link } from "react-router-dom";
 
 import HelmetMeta from "../ui/HelmetMeta";
+import LoadingSpinner from "../ui/LoadingSpinner";
 import styles from "./AdminDashboard.module.css";
 
 interface Metric {
@@ -21,14 +22,7 @@ const AdminDashboardView: React.FC<AdminDashboardViewProps> = (props) => {
   const { loading, metrics } = props;
 
   if (loading) {
-    return (
-      <div aria-busy="true" className="d-flex justify-content-center py-5">
-        <Spinner animation="border" aria-hidden="true" />
-        <output aria-live="polite" className="visually-hidden">
-          Cargando...
-        </output>
-      </div>
-    );
+    return <LoadingSpinner message="Cargando dashboard..." />;
   }
 
   return (

@@ -8,6 +8,7 @@ import useCategories from "../../../hooks/selectors/useCategories";
 import useProducts from "../../../hooks/selectors/useProducts";
 import useConfirmDelete from "../../../hooks/useConfirmDelete";
 import { productService } from "../../../services/productService";
+import { withDelay } from "../../../utils/withToast";
 import AdminProductListView from "./AdminProductListView";
 
 const AdminProductList: React.FC = () => {
@@ -24,23 +25,13 @@ const AdminProductList: React.FC = () => {
 
   const handleToggleEnabled: (id: string, current: boolean) => Promise<void> = useCallback(
     async (id: string, current: boolean) => {
-      const toastId: string | number = toast.loading("Procesando...");
       setTogglingIds((prev) => new Set(prev).add(id));
-      try {
-        await Promise.all([
-          updateProduct(id, { isEnabled: !current }),
-          new Promise<void>((r) => { setTimeout(r, 800); }),
-        ]);
-        toast.update(toastId, { autoClose: 2000, isLoading: false, render: `Producto ${current ? "desactivado" : "activado"}`, type: "info" });
-      } catch {
-        toast.update(toastId, { autoClose: 3000, isLoading: false, render: "Error al cambiar estado", type: "error" });
-      } finally {
-        setTogglingIds((prev) => {
-          const next: Set<string> = new Set(prev);
-          next.delete(id);
-          return next;
-        });
-      }
+      await withDelay(updateProduct(id, { isEnabled: !current }));
+      setTogglingIds((prev) => {
+        const next: Set<string> = new Set(prev);
+        next.delete(id);
+        return next;
+      });
     },
     [updateProduct],
   );

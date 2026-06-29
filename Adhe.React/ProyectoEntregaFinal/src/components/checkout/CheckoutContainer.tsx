@@ -1,6 +1,5 @@
 import React, { useCallback, useRef } from "react";
 import { useNavigate, type NavigateFunction } from "react-router-dom";
-import { toast } from "react-toastify";
 
 import type { ShippingInfo } from "../../models";
 
@@ -9,6 +8,7 @@ import useCart from "../../hooks/selectors/useCart";
 import useNotification from "../../hooks/selectors/useNotification";
 import useOrders from "../../hooks/useOrders";
 import { OrderStatus } from "../../models/Order";
+import { withToast } from "../../utils/withToast";
 import CheckoutView from "./CheckoutView";
 import { type ShippingFormHandle } from "./ShippingForm";
 
@@ -35,35 +35,36 @@ const CheckoutContainer: React.FC = () => {
       return;
     }
 
-    const toastId: string | number = toast.loading("Procesando compra...");
-    try {
-      const orderId: string = await checkout({
-        userId: user.uid,
-        userEmail: user.email,
-        items: cart.map((item) => ({
-          productId: item.product.id,
-          productName: item.product.name,
-          productImage: item.product.image,
-          price: item.product.price,
-          quantity: item.quantity,
-          subtotal: item.product.price * item.quantity,
-        })),
-        subtotal: rawTotal,
-        discount: appliedCoupon ? rawTotal - discountedTotal : 0,
-        discountCode: appliedCoupon?.code ?? null,
-        couponId: appliedCoupon?.id ?? null,
-        total: discountedTotal,
-        status: OrderStatus.Completado,
-        shippingInfo: result.data,
-      });
-
+    const orderId: string | undefined = await withToast(
+      () =>
+        checkout({
+          userId: user.uid,
+          userEmail: user.email,
+          items: cart.map((item) => ({
+            productId: item.product.id,
+            productName: item.product.name,
+            productImage: item.product.image,
+            price: item.product.price,
+            quantity: item.quantity,
+            subtotal: item.product.price * item.quantity,
+          })),
+          subtotal: rawTotal,
+          discount: appliedCoupon ? rawTotal - discountedTotal : 0,
+          discountCode: appliedCoupon?.code ?? null,
+          couponId: appliedCoupon?.id ?? null,
+          total: discountedTotal,
+          status: OrderStatus.Completado,
+          shippingInfo: result.data!,
+        }),
+      "Procesando compra...",
+      "Compra realizada con éxito",
+      "Error al procesar la compra",
+    );
+    if (orderId) {
       clearCart();
-      toast.update(toastId, { autoClose: 3000, isLoading: false, render: "Compra realizada con éxito", type: "success" });
       navigate(`/orden/${orderId}`);
-    } catch {
-      toast.update(toastId, { autoClose: 4000, isLoading: false, render: error ?? "Error al procesar la compra", type: "error" });
     }
-  }, [user, cart, checkout, clearCart, navigate, setNotification, rawTotal, appliedCoupon, discountedTotal, error]);
+  }, [user, cart, checkout, clearCart, navigate, setNotification, rawTotal, appliedCoupon, discountedTotal]);
 
   const handleBack: () => void = useCallback(() => {
     navigate("/carrito");

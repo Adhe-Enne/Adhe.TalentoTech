@@ -4,10 +4,11 @@ import { toast } from "react-toastify";
 import useCoupons from "../../../hooks/selectors/useCoupons";
 import useConfirmDelete from "../../../hooks/useConfirmDelete";
 import { couponService } from "../../../services/couponService";
+import ConfirmDialog from "../../ui/ConfirmDialog";
 import CouponManagerPageView from "./CouponManagerPageView";
 
 const CouponManagerPage: React.FC = () => {
-  const { fetchCoupons } = useCoupons();
+  const { fetchCoupons, updateCoupon } = useCoupons();
   const { deleteTarget: rawDeleteTarget, deleting, handleDeleteRequest: baseDeleteRequest, handleDeleteCancel, handleDeleteConfirm: baseDeleteConfirm } = useConfirmDelete();
 
   const deleteTarget: { id: string; code: string } | null = useMemo(() => (rawDeleteTarget ? { id: rawDeleteTarget.id, code: rawDeleteTarget.label } : null), [rawDeleteTarget]);
@@ -27,7 +28,21 @@ const CouponManagerPage: React.FC = () => {
     }
   }, [baseDeleteConfirm, deleteTarget, fetchCoupons]);
 
-  return <CouponManagerPageView deleteTarget={deleteTarget} deleting={deleting} onDeleteCancel={handleDeleteCancel} onDeleteConfirm={handleDeleteConfirm} onDeleteRequest={baseDeleteRequest} />;
+  return (
+    <>
+      <CouponManagerPageView onDeleteRequest={baseDeleteRequest} onUpdateCoupon={updateCoupon} />
+      <ConfirmDialog
+        confirmLabel="Eliminar"
+        confirmVariant="danger"
+        loading={deleting}
+        message={`¿Eliminar el cupon ${deleteTarget?.code}? No se podra deshacer.`}
+        onCancel={handleDeleteCancel}
+        onConfirm={handleDeleteConfirm}
+        open={deleteTarget !== null}
+        title="Eliminar cupon"
+      />
+    </>
+  );
 };
 
 export default CouponManagerPage;

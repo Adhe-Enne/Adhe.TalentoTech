@@ -11,7 +11,7 @@ import CouponsContext from "./CouponsContext";
 export const CouponsProvider: React.FC<ProviderProps> = (props) => {
   const { children } = props;
   const fetchAll: () => Promise<Coupon[]> = useCallback(() => couponService.fetchCoupons(), []);
-  const { products: coupons, loading, error, setData: setCoupons, setError, reload: fetchCoupons } = useAsyncCollection<Coupon>(fetchAll);
+  const { data: coupons, loading, error, setData: setCoupons, setError, reload: fetchCoupons } = useAsyncCollection<Coupon>(fetchAll);
 
   const createCoupon: (data: CouponCreatePayload) => Promise<Coupon | undefined> = useCallback(
     async (data: CouponCreatePayload): Promise<Coupon | undefined> => {

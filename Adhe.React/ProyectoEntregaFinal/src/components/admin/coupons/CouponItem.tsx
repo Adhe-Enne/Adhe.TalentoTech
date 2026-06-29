@@ -3,10 +3,10 @@ import { Badge, Button } from "react-bootstrap";
 import { FaTrash } from "react-icons/fa";
 import { toast } from "react-toastify";
 
-import type { Coupon } from "../../../models";
+import type { Coupon, CouponUpdatePayload } from "../../../models";
 
-import useCoupons from "../../../hooks/selectors/useCoupons";
 import { getTodayString } from "../../../utils/dateUtils";
+import { withToast } from "../../../utils/withToast";
 import ToggleSwitch from "../../ui/ToggleSwitch";
 import styles from "./CouponItem.module.css";
 
@@ -15,6 +15,7 @@ const today: string = getTodayString();
 interface CouponItemProps {
   coupon: Coupon;
   onDeleteRequest: (id: string, label: string) => void;
+  onUpdateCoupon: (id: string, data: CouponUpdatePayload) => Promise<void>;
 }
 
 const getStatusBadge: (coupon: Coupon) => { label: string; variant: string } = (coupon: Coupon) => {
@@ -31,9 +32,8 @@ const getStatusBadge: (coupon: Coupon) => { label: string; variant: string } = (
 };
 
 const CouponItem: React.FC<CouponItemProps> = (props) => {
-  const { coupon, onDeleteRequest } = props;
+  const { coupon, onDeleteRequest, onUpdateCoupon } = props;
   const badge: { label: string; variant: string } = getStatusBadge(coupon);
-  const { updateCoupon } = useCoupons();
   const [isEditingDate, setIsEditingDate] = useState(false);
   const [editDate, setEditDate] = useState("");
   const [toggling, setToggling] = useState(false);
@@ -46,38 +46,38 @@ const CouponItem: React.FC<CouponItemProps> = (props) => {
   }, [isEditingDate]);
 
   const handleToggle: () => Promise<void> = useCallback(async (): Promise<void> => {
-    const toastId: string | number = toast.loading("Procesando...");
     setToggling(true);
-    try {
-      await updateCoupon(coupon.id, { isEnabled: !coupon.isEnabled });
-      toast.update(toastId, { autoClose: 2000, isLoading: false, render: coupon.isEnabled ? "Cupon desactivado" : "Cupon activado", type: "info" });
-    } catch {
-      toast.update(toastId, { autoClose: 3000, isLoading: false, render: "Error al cambiar estado del cupon", type: "error" });
-    } finally {
-      setToggling(false);
-    }
-  }, [coupon.id, coupon.isEnabled, updateCoupon]);
+    await withToast(
+      () => onUpdateCoupon(coupon.id, { isEnabled: !coupon.isEnabled }),
+      "Procesando...",
+      coupon.isEnabled ? "Cupon desactivado" : "Cupon activado",
+      "Error al cambiar estado del cupon",
+    );
+    setToggling(false);
+  }, [coupon.id, coupon.isEnabled, onUpdateCoupon]);
 
   const handleDateClick: () => void = useCallback((): void => {
     setEditDate(coupon.expiresAt ?? "");
     setIsEditingDate(true);
   }, [coupon.expiresAt]);
 
-  const handleDateSave: () => void = useCallback((): void => {
+  const handleDateSave: () => Promise<void> = useCallback(async (): Promise<void> => {
     setIsEditingDate(false);
     const newDate: string | null = editDate || null;
     if (newDate === (coupon.expiresAt ?? null)) {
       return;
     }
-    const toastId: string | number = toast.loading("Actualizando fecha...");
-    updateCoupon(coupon.id, { expiresAt: newDate })
-      .then(() => {
-        toast.update(toastId, { autoClose: 2000, isLoading: false, render: newDate ? "Fecha de vencimiento actualizada" : "Vencimiento eliminado", type: "success" });
-      })
-      .catch(() => {
-        toast.update(toastId, { autoClose: 3000, isLoading: false, render: "Error al actualizar fecha", type: "error" });
-      });
-  }, [editDate, coupon.id, coupon.expiresAt, updateCoupon]);
+    if (newDate && newDate < today) {
+      toast.error("La fecha debe ser hoy o futura", { autoClose: 3000 });
+      return;
+    }
+    await withToast(
+      () => onUpdateCoupon(coupon.id, { expiresAt: newDate }),
+      "Actualizando fecha...",
+      newDate ? "Fecha de vencimiento actualizada" : "Vencimiento eliminado",
+      "Error al actualizar fecha",
+    );
+  }, [editDate, coupon.id, coupon.expiresAt, onUpdateCoupon]);
 
   const handleDateCancel: () => void = useCallback((): void => {
     setIsEditingDate(false);
@@ -87,7 +87,7 @@ const CouponItem: React.FC<CouponItemProps> = (props) => {
   const handleDateKeyDown: (e: React.KeyboardEvent) => void = useCallback(
     (e: React.KeyboardEvent): void => {
       if (e.key === "Enter") {
-        handleDateSave();
+        void handleDateSave();
       }
       if (e.key === "Escape") {
         handleDateCancel();
@@ -113,7 +113,7 @@ const CouponItem: React.FC<CouponItemProps> = (props) => {
       </td>
       <td>
         {isEditingDate ? (
-          <input className="form-control form-control-sm" min={today} onBlur={handleDateSave} onChange={(e) => setEditDate(e.target.value)} onKeyDown={handleDateKeyDown} ref={dateInputRef} type="date" value={editDate} />
+          <input className="form-control form-control-sm" min={today} onBlur={() => void handleDateSave()} onChange={(e) => setEditDate(e.target.value)} onKeyDown={handleDateKeyDown} ref={dateInputRef} type="date" value={editDate} />
         ) : (
           <button
             aria-label="Editar fecha de vencimiento"
