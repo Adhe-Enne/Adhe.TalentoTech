@@ -5,14 +5,18 @@ import { Link } from "react-router-dom";
 
 import type { CartItem } from "../../models";
 
-import useCart from "../../hooks/selectors/useCart";
+import type { AppliedCoupon } from "../../contexts/Cart/CartContext";
 import { formatPrice } from "../../utils/format";
+import EmptyState from "../ui/EmptyState";
 import HelmetMeta from "../ui/HelmetMeta";
 import CartItemRow from "./CartItemRow";
 import CouponSection from "./CouponSection";
 
 interface CartListViewProps {
+  appliedCoupon: AppliedCoupon | null;
   cart: CartItem[];
+  discountedTotal: number;
+  rawTotal: number;
   onBack: () => void;
   onItemDecrement: (item: CartItem) => void;
   onItemIncrement: (item: CartItem) => void;
@@ -21,21 +25,18 @@ interface CartListViewProps {
 }
 
 const CartView: React.FC<CartListViewProps> = (props) => {
-  const { cart, onBack, onItemDecrement, onItemIncrement, onItemRemove, onPurchase } = props;
-  const { appliedCoupon, discountedTotal, rawTotal } = useCart();
+  const { appliedCoupon, cart, discountedTotal, onBack, onItemDecrement, onItemIncrement, onItemRemove, onPurchase, rawTotal } = props;
 
   return (
     <Container className="py-4">
       <HelmetMeta description="Revisa tu carrito de compras en Talento Tech." title="Talento Tech | Carrito" />
       <h2>Carrito</h2>
       {cart.length === 0 ? (
-        <div className="text-center py-5">
-          <h4>Tu carrito está vacío</h4>
-          <p className="text-muted">Agregá productos para continuar la compra.</p>
-          <Link className="btn btn-primary" to="/productos">
-            Ver Productos
-          </Link>
-        </div>
+        <EmptyState
+          action={<Link className="btn btn-primary" to="/productos">Ver Productos</Link>}
+          message="Agregá productos para continuar la compra."
+          title="Tu carrito está vacío"
+        />
       ) : (
         <div className="cart-list">
           <ListGroup>

@@ -1,12 +1,12 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { Badge, Button } from "react-bootstrap";
-import { FaTrash } from "react-icons/fa";
+import { Badge } from "react-bootstrap";
 import { toast } from "react-toastify";
 
 import type { Coupon, CouponUpdatePayload } from "../../../models";
 
 import { getTodayString } from "../../../utils/dateUtils";
 import { withToast } from "../../../utils/withToast";
+import DeleteButton from "../../ui/DeleteButton";
 import ToggleSwitch from "../../ui/ToggleSwitch";
 import styles from "./CouponItem.module.css";
 
@@ -135,10 +135,7 @@ const CouponItem: React.FC<CouponItemProps> = (props) => {
         <ToggleSwitch checked={coupon.isEnabled} label={`${coupon.isEnabled ? "Desactivar" : "Activar"} cupon ${coupon.code}`} loading={toggling} onToggle={handleToggle} />
       </td>
       <td>
-        <Button aria-label={`Eliminar cupon ${coupon.code}`} onClick={() => onDeleteRequest(coupon.id, coupon.code)} size="sm" variant="outline-danger">
-          <FaTrash className="me-1" />
-          Eliminar
-        </Button>
+        <DeleteButton aria-label={`Eliminar cupon ${coupon.code}`} onClick={() => onDeleteRequest(coupon.id, coupon.code)} />
       </td>
     </tr>
   );

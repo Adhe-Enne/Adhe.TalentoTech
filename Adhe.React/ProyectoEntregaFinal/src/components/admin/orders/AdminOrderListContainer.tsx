@@ -7,8 +7,6 @@ import { type Order, type OrderStatusValue, OrderStatus } from "../../../models/
 import { withDelay, withToast } from "../../../utils/withToast";
 import AdminOrderList from "./AdminOrderList";
 
-const statusOptions: OrderStatusValue[] = [OrderStatus.Pendiente, OrderStatus.Completado, OrderStatus.Cancelado];
-
 const AdminOrderListContainer: React.FC = () => {
   const { deleteOrder, error, fetchAllOrders, updateOrderStatus, isLoading } = useOrders();
   const [orders, setOrders] = useState<Order[]>([]);
@@ -89,7 +87,6 @@ const AdminOrderListContainer: React.FC = () => {
       onStatusChange={setFilter}
       onToggleExpand={toggleExpand}
       orders={orders}
-      statusOptions={statusOptions}
     />
   );
 };

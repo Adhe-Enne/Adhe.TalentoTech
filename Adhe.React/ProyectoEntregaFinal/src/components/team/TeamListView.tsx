@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 
 import type { Person } from "../../models";
 
+import LoadingSpinner from "../ui/LoadingSpinner";
 import styles from "./TeamList.module.css";
 
 interface TeamListViewProps {
@@ -17,7 +18,7 @@ const TeamListView: React.FC<TeamListViewProps> = (props) => {
   const limitedTeam: Person[] = team.slice(0, 6);
 
   if (loading) {
-    return <div className={styles.loading}>Cargando equipo...</div>;
+    return <LoadingSpinner message="Cargando equipo..." />;
   }
   if (error) {
     return <div className={styles.error}>Error: {error}</div>;

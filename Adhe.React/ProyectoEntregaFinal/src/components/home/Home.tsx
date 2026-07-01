@@ -9,6 +9,7 @@ import useFavorites from "../../hooks/selectors/useFavorites";
 import useNotification from "../../hooks/selectors/useNotification";
 import useAsyncCollection from "../../hooks/useAsyncCollection";
 import { productService } from "../../services/productService";
+import { extractErrorMessage } from "../../utils/errorUtils";
 import HomeView from "./HomeView";
 
 const ITEMS_PER_PAGE: number = 8;
@@ -40,7 +41,7 @@ const Home: React.FC = () => {
       lastKeyRef.current = result.lastKey;
       setHasMore(result.hasMore);
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "Error loading more products");
+      setError(extractErrorMessage(err, "Error loading more products"));
     } finally {
       setLoadingMore(false);
     }

@@ -6,6 +6,7 @@ import type { CouponsContextType } from "./CouponsContext";
 
 import useAsyncCollection from "../../hooks/useAsyncCollection";
 import { couponService } from "../../services/couponService";
+import { extractErrorMessage } from "../../utils/errorUtils";
 import CouponsContext from "./CouponsContext";
 
 export const CouponsProvider: React.FC<ProviderProps> = (props) => {
@@ -20,7 +21,7 @@ export const CouponsProvider: React.FC<ProviderProps> = (props) => {
         setCoupons((prev) => [created, ...prev]);
         return created;
       } catch (err: unknown) {
-        setError(err instanceof Error ? err.message : "Error al crear cupon");
+        setError(extractErrorMessage(err, "Error al crear cupon"));
         return undefined;
       }
     },
@@ -33,7 +34,7 @@ export const CouponsProvider: React.FC<ProviderProps> = (props) => {
         await couponService.deleteCoupon(id);
         setCoupons((prev) => prev.filter((c) => c.id !== id));
       } catch (err: unknown) {
-        setError(err instanceof Error ? err.message : "Error al eliminar cupon");
+        setError(extractErrorMessage(err, "Error al eliminar cupon"));
       }
     },
     [setCoupons, setError],
@@ -45,7 +46,7 @@ export const CouponsProvider: React.FC<ProviderProps> = (props) => {
         await couponService.updateCoupon(id, data);
         setCoupons((prev) => prev.map((c) => (c.id === id ? { ...c, ...data } : c)));
       } catch (err: unknown) {
-        setError(err instanceof Error ? err.message : "Error al actualizar cupon");
+        setError(extractErrorMessage(err, "Error al actualizar cupon"));
         throw err;
       }
     },

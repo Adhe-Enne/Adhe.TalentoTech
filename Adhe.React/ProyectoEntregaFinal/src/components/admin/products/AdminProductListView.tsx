@@ -1,12 +1,13 @@
 import React from "react";
 import { Alert, Button, Table } from "react-bootstrap";
-import { FaEdit, FaPlus, FaTrash } from "react-icons/fa";
+import { FaEdit, FaPlus } from "react-icons/fa";
 import { Link } from "react-router-dom";
 
 import type { Product } from "../../../models";
 
 import { formatPrice } from "../../../utils/format";
 import ConfirmDialog from "../../ui/ConfirmDialog";
+import DeleteButton from "../../ui/DeleteButton";
 import LoadingSpinner from "../../ui/LoadingSpinner";
 import RefreshButton from "../../ui/RefreshButton";
 import ToggleSwitch from "../../ui/ToggleSwitch";
@@ -97,10 +98,7 @@ const AdminProductListView: React.FC<AdminProductListViewProps> = (props) => {
                         <FaEdit className="me-1" />
                         Editar
                       </Button>
-                      <Button aria-label={`Eliminar ${p.name}`} onClick={() => onDeleteRequest(p.id, p.name)} size="sm" variant="outline-danger">
-                        <FaTrash className="me-1" />
-                        Eliminar
-                      </Button>
+                      <DeleteButton aria-label={`Eliminar ${p.name}`} onClick={() => onDeleteRequest(p.id, p.name)} />
                     </div>
                   </td>
                 </tr>
@@ -111,8 +109,6 @@ const AdminProductListView: React.FC<AdminProductListViewProps> = (props) => {
       )}
 
       <ConfirmDialog
-        confirmLabel="Eliminar"
-        confirmVariant="danger"
         loading={deleting}
         message={`¿Eliminar "${deleteTarget?.label}"? No se podrá deshacer.`}
         onCancel={onDeleteCancel}

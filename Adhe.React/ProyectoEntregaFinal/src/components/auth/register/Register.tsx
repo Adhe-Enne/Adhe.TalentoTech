@@ -1,11 +1,9 @@
 import React, { useCallback, useState } from "react";
-import { toast } from "react-toastify";
-
-import type { UserInfo } from "../../../types/auth";
 
 import useAuth from "../../../hooks/selectors/useAuth";
 import { useAuthForm } from "../../../hooks/useAuthForm";
 import { hasNumber, hasUpperCase, isValidEmail } from "../../../utils/validators";
+import { withToast } from "../../../utils/withToast";
 import RegisterView from "./RegisterView";
 
 const Register: React.FC = () => {
@@ -15,7 +13,7 @@ const Register: React.FC = () => {
   const { signup } = useAuth();
 
   const handleSubmit: React.SubmitEventHandler<HTMLFormElement> = useCallback(
-    async (e) => {
+    (e) => {
       e.preventDefault();
       setError(null);
       const trimmedEmail: string = email.trim();
@@ -50,15 +48,16 @@ const Register: React.FC = () => {
         return;
       }
 
-      const toastId: string | number = toast.loading("Creando cuenta...");
-
-      executeAuth(async () => {
-        const user: UserInfo = await signup(email, password);
-        toast.update(toastId, { autoClose: 4000, isLoading: false, render: `¡Cuenta creada! Bienvenido, ${user.email}`, type: "success" });
-        navigate("/");
-      }).catch((err) => {
-        toast.update(toastId, { autoClose: 3000, isLoading: false, render: err.message || "Error al crear la cuenta", type: "error" });
-      });
+      withToast(
+        () =>
+          executeAuth(async () => {
+            await signup(email, password);
+            navigate("/");
+          }),
+        "Creando cuenta...",
+        `¡Cuenta creada! Bienvenido, ${email}`,
+        "Error al crear la cuenta",
+      );
     },
     [email, password, confirmPassword, signup, navigate, executeAuth, setError],
   );

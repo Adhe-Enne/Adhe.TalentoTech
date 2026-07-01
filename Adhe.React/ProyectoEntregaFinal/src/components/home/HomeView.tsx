@@ -7,6 +7,7 @@ import type { Product } from "../../models";
 import ProductCard from "../product/product-card/ProductCard";
 import HelmetMeta from "../ui/HelmetMeta";
 import LoadingSpinner from "../ui/LoadingSpinner";
+import PageHeader from "../ui/PageHeader";
 import RefreshButton from "../ui/RefreshButton";
 import styles from "./Home.module.css";
 
@@ -49,10 +50,9 @@ const HomeView: React.FC<HomeViewProps> = (props) => {
         <LoadingSpinner message="Cargando productos..." minHeight="40vh" />
       ) : (
         <>
-          <div className="d-flex justify-content-between align-items-center mb-3">
-            <h3 className="mb-0">{pageTitle ?? "Productos"}</h3>
+          <PageHeader headingTag="h3" title={pageTitle ?? "Productos"}>
             <RefreshButton loading={loading} onRefresh={onReload} />
-          </div>
+          </PageHeader>
           <div className="mb-3">
             <InputGroup>
               <InputGroup.Text>

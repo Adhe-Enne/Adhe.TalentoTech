@@ -56,7 +56,6 @@ const ProfileView: React.FC<ProfileViewProps> = (props) => {
 
       <ConfirmDialog
         confirmLabel="Cerrar sesión"
-        confirmVariant="danger"
         loading={loggingOut}
         loadingLabel="Cerrando sesión..."
         message="¿Estás seguro de que querés cerrar la sesión?"

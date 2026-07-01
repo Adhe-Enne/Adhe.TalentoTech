@@ -1,14 +1,16 @@
 import React from "react";
 import { Badge, Button, Container, Form, ListGroup, Spinner } from "react-bootstrap";
-import { FaCheck, FaChevronDown, FaChevronUp, FaTimes, FaTrash } from "react-icons/fa";
+import { FaCheck, FaChevronDown, FaChevronUp, FaTimes } from "react-icons/fa";
 
-import { type Order, type OrderStatusValue, ORDER_STATUS_LABELS, OrderStatus } from "../../../models/Order";
+import { type Order, ORDER_STATUS_LABELS, OrderStatus } from "../../../models/Order";
 import { formatPrice } from "../../../utils/format";
-import { ORDER_STATUS_VARIANT } from "../../../utils/orderUtils";
+import { ORDER_STATUS_OPTIONS, ORDER_STATUS_VARIANT } from "../../../utils/orderUtils";
 import OrderItemRow from "../../orders/OrderItemRow";
 import ConfirmDialog from "../../ui/ConfirmDialog";
+import DeleteButton from "../../ui/DeleteButton";
 import HelmetMeta from "../../ui/HelmetMeta";
 import ListStateDisplay from "../../ui/ListStateDisplay";
+import PageHeader from "../../ui/PageHeader";
 import RefreshButton from "../../ui/RefreshButton";
 import styles from "./AdminOrderList.module.css";
 
@@ -20,7 +22,6 @@ interface AdminOrderListProps {
   filter: string;
   isLoading: boolean;
   orders: Order[];
-  statusOptions: OrderStatusValue[];
   onApprove: (id: string) => void;
   onDeleteCancel: () => void;
   onDeleteConfirm: () => void;
@@ -32,21 +33,20 @@ interface AdminOrderListProps {
 }
 
 const AdminOrderList: React.FC<AdminOrderListProps> = (props) => {
-  const { actionLoading, orders, filter, isLoading, expandedId, deleteTarget, deleting, statusOptions, onStatusChange, onToggleExpand, onApprove, onReject, onDeleteRequest, onDeleteCancel, onDeleteConfirm, onRefresh } = props;
+  const { actionLoading, orders, filter, isLoading, expandedId, deleteTarget, deleting, onStatusChange, onToggleExpand, onApprove, onReject, onDeleteRequest, onDeleteCancel, onDeleteConfirm, onRefresh } = props;
 
   const filtered: Order[] = filter === "all" ? orders : orders.filter((o: Order) => o.status === filter);
 
   return (
     <Container className="py-4">
       <HelmetMeta description="Administración de pedidos en Talento Tech." title="Talento Tech | Admin Pedidos" />
-      <div className="d-flex justify-content-between align-items-center mb-3">
-        <h2 className="mb-0">Pedidos</h2>
+      <PageHeader title="Pedidos">
         <RefreshButton loading={isLoading} onRefresh={onRefresh} />
-      </div>
+      </PageHeader>
 
       <Form.Select aria-label="Filtrar por estado" className="mb-3 w-auto" onChange={(e) => onStatusChange(e.target.value)} value={filter}>
         <option value="all">Todos</option>
-        {statusOptions.map((s) => (
+        {ORDER_STATUS_OPTIONS.map((s) => (
           <option key={s} value={s}>
             {ORDER_STATUS_LABELS[s]}
           </option>
@@ -120,10 +120,7 @@ const AdminOrderList: React.FC<AdminOrderListProps> = (props) => {
                             </>
                           )}
                         </Button>
-                        <Button aria-label="Eliminar pedido" className="btn-sm" disabled={actionLoading.has(order.id)} onClick={() => onDeleteRequest(order.id)} variant="outline-danger">
-                          <FaTrash className="me-1" />
-                          Eliminar
-                        </Button>
+                        <DeleteButton aria-label="Eliminar pedido" disabled={actionLoading.has(order.id)} onClick={() => onDeleteRequest(order.id)} />
                       </div>
                     )}
                   </div>
@@ -135,10 +132,7 @@ const AdminOrderList: React.FC<AdminOrderListProps> = (props) => {
       </ListStateDisplay>
 
       <ConfirmDialog
-        confirmLabel="Eliminar"
-        confirmVariant="danger"
         loading={deleting}
-        loadingLabel="Eliminando..."
         message="Esta accion no se puede deshacer."
         onCancel={onDeleteCancel}
         onConfirm={onDeleteConfirm}

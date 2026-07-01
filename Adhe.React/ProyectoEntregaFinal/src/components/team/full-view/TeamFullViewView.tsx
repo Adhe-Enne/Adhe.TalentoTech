@@ -3,6 +3,7 @@ import React, { type RefObject } from "react";
 import type { Person } from "../../../models";
 
 import HelmetMeta from "../../ui/HelmetMeta";
+import LoadingSpinner from "../../ui/LoadingSpinner";
 import modalStyles from "./bio-modal/ContactBioModal.module.css";
 import styles from "./TeamFullView.module.css";
 import expandedStyles from "./TeamMemberCardExpanded.module.css";
@@ -22,11 +23,7 @@ const TeamFullViewView: React.FC<TeamFullViewViewProps> = (props) => {
   const { dialogRef, error, loading, onClose, onShowMore, selected, showModal, team } = props;
 
   if (loading) {
-    return (
-      <div aria-live="polite" className={styles.loading} role="status">
-        Cargando equipo...
-      </div>
-    );
+    return <LoadingSpinner message="Cargando equipo..." />;
   }
   if (error) {
     return (

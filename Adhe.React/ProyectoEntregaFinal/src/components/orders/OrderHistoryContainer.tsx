@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import type { Order } from "../../models";
 
@@ -6,13 +6,13 @@ import useAuth from "../../hooks/selectors/useAuth";
 import { useErrorNotification } from "../../hooks/useErrorNotification";
 import useExpandable from "../../hooks/useExpandable";
 import useOrders from "../../hooks/useOrders";
+import useRefresh from "../../hooks/useRefresh";
 import OrderHistoryView from "./OrderHistoryView";
 
 const OrderHistoryContainer: React.FC = () => {
   const { user } = useAuth();
   const { error, fetchUserOrders, isLoading } = useOrders();
   const [orders, setOrders] = useState<Order[]>([]);
-  const [refreshing, setRefreshing] = useState<boolean>(false);
   const { expandedId, toggleExpand } = useExpandable();
 
   useErrorNotification(error);
@@ -24,17 +24,12 @@ const OrderHistoryContainer: React.FC = () => {
     fetchUserOrders(user.uid).then(setOrders);
   }, [user, fetchUserOrders]);
 
-  const handleRefresh: () => void = useCallback((): void => {
+  const { refreshing, handleRefresh } = useRefresh(() => {
     if (!user) {
-      return;
+      return Promise.resolve();
     }
-    setRefreshing(true);
-    fetchUserOrders(user.uid)
-      .then(setOrders)
-      .finally((): void => {
-        setRefreshing(false);
-      });
-  }, [user, fetchUserOrders]);
+    return fetchUserOrders(user.uid).then(setOrders);
+  });
 
   if (!user) {
     return null;

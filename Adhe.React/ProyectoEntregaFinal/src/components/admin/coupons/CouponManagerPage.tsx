@@ -1,10 +1,11 @@
 import React, { useCallback, useMemo } from "react";
-import { toast } from "react-toastify";
 
 import useCoupons from "../../../hooks/selectors/useCoupons";
 import useConfirmDelete from "../../../hooks/useConfirmDelete";
 import { couponService } from "../../../services/couponService";
+import { withToast } from "../../../utils/withToast";
 import ConfirmDialog from "../../ui/ConfirmDialog";
+import CouponList from "./CouponList";
 import CouponManagerPageView from "./CouponManagerPageView";
 
 const CouponManagerPage: React.FC = () => {
@@ -14,18 +15,20 @@ const CouponManagerPage: React.FC = () => {
   const deleteTarget: { id: string; code: string } | null = useMemo(() => (rawDeleteTarget ? { id: rawDeleteTarget.id, code: rawDeleteTarget.label } : null), [rawDeleteTarget]);
 
   const handleDeleteConfirm: () => Promise<void> = useCallback(async () => {
-    const toastId: string | number = toast.loading("Eliminando cupón...");
-    const success: boolean = await baseDeleteConfirm(
-      (id: string) => couponService.deleteCoupon(id),
-      () => {
-        fetchCoupons();
+    await withToast(
+      async () => {
+        const success: boolean = await baseDeleteConfirm(
+          (id: string) => couponService.deleteCoupon(id),
+          () => { fetchCoupons(); },
+        );
+        if (!success) {
+          throw new Error("Error al eliminar cupón");
+        }
       },
+      "Eliminando cupón...",
+      deleteTarget ? `Cupón ${deleteTarget.code} eliminado` : "Eliminado",
+      "Error al eliminar cupón",
     );
-    if (success && deleteTarget) {
-      toast.update(toastId, { autoClose: 3000, isLoading: false, render: `Cupón ${deleteTarget.code} eliminado`, type: "success" });
-    } else if (!success) {
-      toast.update(toastId, { autoClose: 3000, isLoading: false, render: "Error al eliminar cupón", type: "error" });
-    }
   }, [baseDeleteConfirm, deleteTarget, fetchCoupons]);
 
   const handleRefresh: () => void = useCallback((): void => {
@@ -34,10 +37,10 @@ const CouponManagerPage: React.FC = () => {
 
   return (
     <>
-      <CouponManagerPageView onDeleteRequest={baseDeleteRequest} onRefresh={handleRefresh} onUpdateCoupon={updateCoupon} refreshLoading={couponsLoading} />
+      <CouponManagerPageView onRefresh={handleRefresh} refreshLoading={couponsLoading}>
+        <CouponList onDeleteRequest={baseDeleteRequest} onUpdateCoupon={updateCoupon} />
+      </CouponManagerPageView>
       <ConfirmDialog
-        confirmLabel="Eliminar"
-        confirmVariant="danger"
         loading={deleting}
         message={`¿Eliminar el cupon ${deleteTarget?.code}? No se podra deshacer.`}
         onCancel={handleDeleteCancel}

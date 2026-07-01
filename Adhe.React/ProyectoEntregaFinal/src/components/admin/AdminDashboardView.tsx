@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 
 import HelmetMeta from "../ui/HelmetMeta";
 import LoadingSpinner from "../ui/LoadingSpinner";
+import PageHeader from "../ui/PageHeader";
 import RefreshButton from "../ui/RefreshButton";
 import styles from "./AdminDashboard.module.css";
 
@@ -30,10 +31,9 @@ const AdminDashboardView: React.FC<AdminDashboardViewProps> = (props) => {
   return (
     <div>
       <HelmetMeta description="Panel de administración de Talento Tech." title="Admin | Talento Tech" />
-      <div className="d-flex justify-content-between align-items-center mb-4">
-        <h3 className="mb-0">Dashboard</h3>
+      <PageHeader className="mb-4" headingTag="h3" title="Dashboard">
         <RefreshButton loading={loading} onRefresh={onRefresh} />
-      </div>
+      </PageHeader>
       <Row className="g-3">
         {metrics.map((m) => (
           <Col key={m.label} lg={3} sm={6} xs={12}>

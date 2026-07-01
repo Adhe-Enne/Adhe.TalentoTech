@@ -5,3 +5,5 @@ export const ORDER_STATUS_VARIANT: Record<OrderStatusValue, string> = {
   [OrderStatus.Cancelado]: "danger",
   [OrderStatus.Pendiente]: "warning",
 };
+
+export const ORDER_STATUS_OPTIONS: OrderStatusValue[] = [OrderStatus.Pendiente, OrderStatus.Completado, OrderStatus.Cancelado];

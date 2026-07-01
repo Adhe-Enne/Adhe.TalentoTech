@@ -1,6 +1,8 @@
 import { useCallback, useState } from "react";
 import { useNavigate, type NavigateFunction } from "react-router-dom";
 
+import { extractErrorMessage } from "../utils/errorUtils";
+
 interface UseAuthFormReturn {
   email: string;
   error: string | null;
@@ -29,7 +31,7 @@ export function useAuthForm(): UseAuthFormReturn {
       try {
         await action();
       } catch (err: unknown) {
-        const msg: string = err instanceof Error ? err.message : "Error de autenticación";
+        const msg: string = extractErrorMessage(err, "Error de autenticación");
         setError(msg);
         throw err;
       } finally {

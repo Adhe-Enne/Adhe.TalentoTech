@@ -1,7 +1,8 @@
 import React from "react";
-import { Alert, Button, Spinner } from "react-bootstrap";
+import { Alert } from "react-bootstrap";
 import { Link } from "react-router-dom";
 
+import SubmitButton from "../../ui/SubmitButton";
 import AuthLayout from "../AuthLayout";
 
 interface RegisterViewProps {
@@ -32,17 +33,7 @@ const RegisterView: React.FC<RegisterViewProps> = (props) => {
           <label className="form-label" htmlFor="reg-password">
             Contraseña
           </label>
-          <input
-            autoComplete="new-password"
-            className="form-control"
-            id="reg-password"
-            minLength={6}
-            onChange={(e) => onPasswordChange(e.target.value)}
-            placeholder="Mínimo 6 caracteres"
-            required
-            type="password"
-            value={password}
-          />
+          <input autoComplete="new-password" className="form-control" id="reg-password" minLength={6} onChange={(e) => onPasswordChange(e.target.value)} placeholder="Mínimo 6 caracteres" required type="password" value={password} />
         </div>
         <div className="mb-3">
           <label className="form-label" htmlFor="reg-confirm">
@@ -65,10 +56,9 @@ const RegisterView: React.FC<RegisterViewProps> = (props) => {
             {error}
           </Alert>
         )}
-        <Button aria-label="Crear cuenta" className="w-100" disabled={loading} type="submit" variant="primary">
-          {loading && <Spinner animation="border" className="me-2" size="sm" />}
-          {loading ? "Creando cuenta..." : "Crear cuenta"}
-        </Button>
+        <SubmitButton loading={loading} loadingLabel="Creando cuenta...">
+          Crear cuenta
+        </SubmitButton>
       </form>
       <p className="text-center mt-3 mb-0 small">
         ¿Ya tenés una cuenta? <Link to="/login">Iniciá sesión</Link>

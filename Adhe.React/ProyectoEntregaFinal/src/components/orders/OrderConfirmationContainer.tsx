@@ -5,6 +5,7 @@ import type { Order } from "../../models";
 
 import useAuth from "../../hooks/selectors/useAuth";
 import useOrders from "../../hooks/useOrders";
+import useRefresh from "../../hooks/useRefresh";
 import OrderConfirmationView from "./OrderConfirmationView";
 
 const OrderConfirmationContainer: React.FC = () => {
@@ -14,7 +15,6 @@ const OrderConfirmationContainer: React.FC = () => {
   const { fetchOrderById } = useOrders();
   const [order, setOrder] = useState<Order | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
-  const [refreshing, setRefreshing] = useState<boolean>(false);
 
   useEffect((): void => {
     if (!id) {
@@ -33,19 +33,12 @@ const OrderConfirmationContainer: React.FC = () => {
     navigate("/");
   }, [navigate]);
 
-  const handleRefresh: () => void = useCallback((): void => {
+  const { refreshing, handleRefresh } = useRefresh(() => {
     if (!id) {
-      return;
+      return Promise.resolve();
     }
-    setRefreshing(true);
-    fetchOrderById(id)
-      .then((o: Order | null): void => {
-        setOrder(o);
-      })
-      .finally((): void => {
-        setRefreshing(false);
-      });
-  }, [id, fetchOrderById]);
+    return fetchOrderById(id).then(setOrder);
+  });
 
   return <OrderConfirmationView loading={loading} onBack={handleBack} onRefresh={handleRefresh} order={order} refreshLoading={refreshing} />;
 };

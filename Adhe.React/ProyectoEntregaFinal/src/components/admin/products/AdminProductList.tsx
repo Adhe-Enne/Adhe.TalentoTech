@@ -1,6 +1,5 @@
 import React, { useCallback, useMemo, useState } from "react";
 import { useNavigate, type NavigateFunction } from "react-router-dom";
-import { toast } from "react-toastify";
 
 import type { Product } from "../../../models";
 
@@ -8,7 +7,7 @@ import useCategories from "../../../hooks/selectors/useCategories";
 import useProducts from "../../../hooks/selectors/useProducts";
 import useConfirmDelete from "../../../hooks/useConfirmDelete";
 import { productService } from "../../../services/productService";
-import { withDelay } from "../../../utils/withToast";
+import { withDelay, withToast } from "../../../utils/withToast";
 import AdminProductListView from "./AdminProductListView";
 
 const AdminProductList: React.FC = () => {
@@ -37,18 +36,20 @@ const AdminProductList: React.FC = () => {
   );
 
   const handleDeleteConfirm: () => Promise<void> = useCallback(async () => {
-    const toastId: string | number = toast.loading("Eliminando...");
-    const success: boolean = await baseDeleteConfirm(
-      (id: string) => productService.deleteProduct(id),
-      () => {
-        reload();
+    await withToast(
+      async () => {
+        const success: boolean = await baseDeleteConfirm(
+          (id: string) => productService.deleteProduct(id),
+          () => { reload(); },
+        );
+        if (!success) {
+          throw new Error("Error al eliminar producto");
+        }
       },
+      "Eliminando...",
+      deleteTarget ? `${deleteTarget.label} eliminado` : "Eliminado",
+      "Error al eliminar producto",
     );
-    if (success && deleteTarget) {
-      toast.update(toastId, { autoClose: 3000, isLoading: false, render: `${deleteTarget.label} eliminado`, type: "success" });
-    } else if (!success) {
-      toast.update(toastId, { autoClose: 3000, isLoading: false, render: "Error al eliminar producto", type: "error" });
-    }
   }, [baseDeleteConfirm, deleteTarget, reload]);
 
   const handleEdit: (id: string) => void = useCallback(

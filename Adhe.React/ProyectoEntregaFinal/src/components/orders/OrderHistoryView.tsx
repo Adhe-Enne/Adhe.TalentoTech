@@ -8,8 +8,10 @@ import type { Order } from "../../models";
 import { ORDER_STATUS_LABELS } from "../../models";
 import { formatPrice } from "../../utils/format";
 import { ORDER_STATUS_VARIANT } from "../../utils/orderUtils";
+import EmptyState from "../ui/EmptyState";
 import HelmetMeta from "../ui/HelmetMeta";
 import ListStateDisplay from "../ui/ListStateDisplay";
+import PageHeader from "../ui/PageHeader";
 import RefreshButton from "../ui/RefreshButton";
 import styles from "./OrderHistory.module.css";
 import OrderItemRow from "./OrderItemRow";
@@ -29,20 +31,17 @@ const OrderHistoryView: React.FC<OrderHistoryViewProps> = (props) => {
   return (
     <Container className="py-4">
       <HelmetMeta description="Historial de pedidos en Talento Tech." title="Talento Tech | Mis pedidos" />
-      <div className="d-flex justify-content-between align-items-center mb-3">
-        <h2 className="mb-0">Mis pedidos</h2>
+      <PageHeader title="Mis pedidos">
         <RefreshButton loading={refreshLoading} onRefresh={onRefresh} />
-      </div>
+      </PageHeader>
       <ListStateDisplay error={null} loading={loading} loadingMessage="Cargando pedidos...">
         {orders.length === 0 ? (
-          <div className="text-center py-5">
-            <FaBox className="text-muted mb-3" size={48} />
-            <h4>No tenés pedidos aún</h4>
-            <p className="text-muted">Tus compras aparecerán aquí.</p>
-            <Link className="btn btn-primary" to="/productos">
-              Ver productos
-            </Link>
-          </div>
+          <EmptyState
+            action={<Link className="btn btn-primary" to="/productos">Ver productos</Link>}
+            icon={<FaBox className="text-muted mb-3" size={48} />}
+            message="Tus compras aparecerán aquí."
+            title="No tenés pedidos aún"
+          />
         ) : (
           <ListGroup>
             {orders.map((order: Order) => (

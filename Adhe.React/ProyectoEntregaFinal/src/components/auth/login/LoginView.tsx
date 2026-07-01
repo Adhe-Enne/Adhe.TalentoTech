@@ -1,7 +1,8 @@
 import React from "react";
-import { Alert, Button, Spinner } from "react-bootstrap";
+import { Alert } from "react-bootstrap";
 import { Link } from "react-router-dom";
 
+import SubmitButton from "../../ui/SubmitButton";
 import AuthLayout from "../AuthLayout";
 import styles from "./Login.module.css";
 
@@ -61,10 +62,9 @@ const LoginView: React.FC<LoginViewProps> = (props) => {
             {error}
           </Alert>
         )}
-        <Button aria-label="Iniciar sesión" className="w-100" disabled={loading} type="submit" variant="primary">
-          {loading && <Spinner animation="border" className="me-2" size="sm" />}
-          {loading ? "Ingresando..." : "Ingresar"}
-        </Button>
+        <SubmitButton loading={loading} loadingLabel="Ingresando...">
+          Ingresar
+        </SubmitButton>
       </form>
       <p className="text-center mt-3 mb-0 small">
         ¿No tenés una cuenta? <Link to="/registro">Registrate aquí</Link>

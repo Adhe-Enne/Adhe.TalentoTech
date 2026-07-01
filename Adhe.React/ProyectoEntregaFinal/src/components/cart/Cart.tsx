@@ -8,7 +8,7 @@ import CartView from "./CartView";
 
 const Cart: React.FC = () => {
   const navigate: NavigateFunction = useNavigate();
-  const { cart, updateQuantity, removeFromCart } = useCart();
+  const { appliedCoupon, cart, discountedTotal, rawTotal, updateQuantity, removeFromCart } = useCart();
 
   const handleBack: () => void = useCallback(() => {
     navigate("/");
@@ -48,12 +48,15 @@ const Cart: React.FC = () => {
 
   return (
     <CartView
+      appliedCoupon={appliedCoupon}
       cart={cart}
+      discountedTotal={discountedTotal}
       onBack={handleBack}
       onItemDecrement={handleItemDecrement}
       onItemIncrement={handleItemIncrement}
       onItemRemove={handleItemRemove}
       onPurchase={handlePurchase}
+      rawTotal={rawTotal}
     />
   );
 };
