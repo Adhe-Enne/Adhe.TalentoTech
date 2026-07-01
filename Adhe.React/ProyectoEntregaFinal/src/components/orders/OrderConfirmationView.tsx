@@ -8,12 +8,15 @@ import type { Order } from "../../models";
 import { type OrderStatusValue, OrderStatus } from "../../models/Order";
 import { formatPrice } from "../../utils/format";
 import HelmetMeta from "../ui/HelmetMeta";
+import RefreshButton from "../ui/RefreshButton";
 import OrderItemRow from "./OrderItemRow";
 
 interface OrderConfirmationViewProps {
   loading: boolean;
   order: Order | null;
+  refreshLoading: boolean;
   onBack: () => void;
+  onRefresh: () => void;
 }
 
 interface StatusConfig {
@@ -45,7 +48,7 @@ const STATUS_CONFIG: Record<OrderStatusValue, StatusConfig> = {
 };
 
 const OrderConfirmationView: React.FC<OrderConfirmationViewProps> = (props) => {
-  const { loading, onBack, order } = props;
+  const { loading, onBack, onRefresh, order, refreshLoading } = props;
 
   if (loading) {
     return (
@@ -78,6 +81,9 @@ const OrderConfirmationView: React.FC<OrderConfirmationViewProps> = (props) => {
   return (
     <Container className="py-4">
       <HelmetMeta description="Estado del pedido en Talento Tech." title={`Talento Tech | ${helmetTitle}`} />
+      <div className="d-flex justify-content-end mb-2">
+        <RefreshButton loading={refreshLoading} onRefresh={onRefresh} />
+      </div>
       <div className="text-center mb-4">
         {statusIcon}
         <h2 className={statusColor}>{statusTitle}</h2>

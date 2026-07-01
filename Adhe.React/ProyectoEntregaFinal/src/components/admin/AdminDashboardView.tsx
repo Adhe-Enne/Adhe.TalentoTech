@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 
 import HelmetMeta from "../ui/HelmetMeta";
 import LoadingSpinner from "../ui/LoadingSpinner";
+import RefreshButton from "../ui/RefreshButton";
 import styles from "./AdminDashboard.module.css";
 
 interface Metric {
@@ -16,10 +17,11 @@ interface Metric {
 interface AdminDashboardViewProps {
   loading: boolean;
   metrics: Metric[];
+  onRefresh: () => void;
 }
 
 const AdminDashboardView: React.FC<AdminDashboardViewProps> = (props) => {
-  const { loading, metrics } = props;
+  const { loading, metrics, onRefresh } = props;
 
   if (loading) {
     return <LoadingSpinner message="Cargando dashboard..." />;
@@ -28,7 +30,10 @@ const AdminDashboardView: React.FC<AdminDashboardViewProps> = (props) => {
   return (
     <div>
       <HelmetMeta description="Panel de administración de Talento Tech." title="Admin | Talento Tech" />
-      <h3 className="mb-4">Dashboard</h3>
+      <div className="d-flex justify-content-between align-items-center mb-4">
+        <h3 className="mb-0">Dashboard</h3>
+        <RefreshButton loading={loading} onRefresh={onRefresh} />
+      </div>
       <Row className="g-3">
         {metrics.map((m) => (
           <Col key={m.label} lg={3} sm={6} xs={12}>

@@ -8,6 +8,7 @@ import type { Product } from "../../../models";
 import { formatPrice } from "../../../utils/format";
 import ConfirmDialog from "../../ui/ConfirmDialog";
 import LoadingSpinner from "../../ui/LoadingSpinner";
+import RefreshButton from "../../ui/RefreshButton";
 import ToggleSwitch from "../../ui/ToggleSwitch";
 import adminStyles from "./AdminProductList.module.css";
 
@@ -27,12 +28,13 @@ interface AdminProductListViewProps {
   onDeleteConfirm: () => void;
   onDeleteRequest: (id: string, label: string) => void;
   onEdit: (id: string) => void;
+  onRefresh: () => void;
   onSearchChange: (value: string) => void;
   onToggleEnabled: (id: string, current: boolean) => void;
 }
 
 const AdminProductListView: React.FC<AdminProductListViewProps> = (props) => {
-  const { deleting, deleteTarget, filtered, loading, search, togglingIds, onDeleteCancel, onDeleteConfirm, onDeleteRequest, onEdit, onSearchChange, onToggleEnabled } = props;
+  const { deleting, deleteTarget, filtered, loading, onRefresh, search, togglingIds, onDeleteCancel, onDeleteConfirm, onDeleteRequest, onEdit, onSearchChange, onToggleEnabled } = props;
 
   if (loading) {
     return <LoadingSpinner message="Cargando productos..." />;
@@ -54,6 +56,7 @@ const AdminProductListView: React.FC<AdminProductListViewProps> = (props) => {
             placeholder="Buscar por nombre..."
             value={search}
           />
+          <RefreshButton loading={loading} onRefresh={onRefresh} />
         </div>
       </div>
 

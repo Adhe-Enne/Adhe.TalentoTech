@@ -15,7 +15,7 @@ import styles from "./ProductDetail.module.css";
 const ProductDetailContainer: React.FC = () => {
   const { id } = useParams();
   const product: Product | undefined = useProduct(id);
-  const { loading } = useProducts();
+  const { loading, reload } = useProducts();
   const { findById: findCategory } = useCategories();
   const { findById: findTag } = useTags();
   const { addToCart } = useCart();
@@ -40,6 +40,10 @@ const ProductDetailContainer: React.FC = () => {
   const handleBack: () => void = useCallback(() => {
     navigate("/");
   }, [navigate]);
+
+  const handleRefresh: () => void = useCallback((): void => {
+    reload();
+  }, [reload]);
 
   if (loading) {
     return (
@@ -87,7 +91,7 @@ const ProductDetailContainer: React.FC = () => {
   const categoryName: string | undefined = product?.categoryId ? findCategory(product.categoryId)?.name : undefined;
   const tags: Tag[] | undefined = product?.tagIds ? product.tagIds.map((t) => findTag(t)).filter((t): t is Tag => t != null) : undefined;
 
-  return <ProductDetail categoryName={categoryName} onAddToCart={handleAddToCart} onBack={handleBack} product={product} tags={tags} />;
+  return <ProductDetail categoryName={categoryName} loading={loading} onAddToCart={handleAddToCart} onBack={handleBack} onRefresh={handleRefresh} product={product} tags={tags} />;
 };
 
 export default ProductDetailContainer;

@@ -68,6 +68,7 @@ const AdminProductList: React.FC = () => {
       onDeleteConfirm={handleDeleteConfirm}
       onDeleteRequest={handleDeleteRequest}
       onEdit={handleEdit}
+      onRefresh={reload}
       onSearchChange={setSearch}
       onToggleEnabled={handleToggleEnabled}
       search={search}

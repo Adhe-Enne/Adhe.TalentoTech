@@ -4,9 +4,10 @@ import { FaChevronUp, FaSearch, FaTimes } from "react-icons/fa";
 
 import type { Product } from "../../models";
 
-import LoadingSpinner from "../ui/LoadingSpinner";
 import ProductCard from "../product/product-card/ProductCard";
 import HelmetMeta from "../ui/HelmetMeta";
+import LoadingSpinner from "../ui/LoadingSpinner";
+import RefreshButton from "../ui/RefreshButton";
 import styles from "./Home.module.css";
 
 interface ProductCardData {
@@ -39,11 +40,7 @@ interface HomeViewProps {
 }
 
 const HomeView: React.FC<HomeViewProps> = (props) => {
-  const {
-    cardData, emptyMessage, hasLocalFilter, hasMore, loading, loadingMore, localQ,
-    pageDescription, pageTitle, showLoadMore, showReset,
-    onClearFilter, onLoadMore, onLocalQChange, onReload,
-  } = props;
+  const { cardData, emptyMessage, hasLocalFilter, hasMore, loading, loadingMore, localQ, pageDescription, pageTitle, showLoadMore, showReset, onClearFilter, onLoadMore, onLocalQChange, onReload } = props;
 
   return (
     <Container className="py-4">
@@ -52,19 +49,16 @@ const HomeView: React.FC<HomeViewProps> = (props) => {
         <LoadingSpinner message="Cargando productos..." minHeight="40vh" />
       ) : (
         <>
+          <div className="d-flex justify-content-between align-items-center mb-3">
+            <h3 className="mb-0">{pageTitle ?? "Productos"}</h3>
+            <RefreshButton loading={loading} onRefresh={onReload} />
+          </div>
           <div className="mb-3">
             <InputGroup>
               <InputGroup.Text>
                 <FaSearch aria-hidden="true" />
               </InputGroup.Text>
-              <input
-                aria-label="Filtrar productos por nombre"
-                className="form-control"
-                onChange={(e) => onLocalQChange(e.target.value)}
-                placeholder="Filtrar resultados..."
-                type="text"
-                value={localQ}
-              />
+              <input aria-label="Filtrar productos por nombre" className="form-control" onChange={(e) => onLocalQChange(e.target.value)} placeholder="Filtrar resultados..." type="text" value={localQ} />
               {hasLocalFilter && (
                 <Button aria-label="Limpiar filtro local" onClick={onClearFilter} variant="outline-secondary">
                   <FaTimes aria-hidden="true" className="me-1" />
@@ -135,7 +129,9 @@ const HomeView: React.FC<HomeViewProps> = (props) => {
 
           {!hasMore && cardData.length > 8 && (
             <div className="text-center mt-3">
-              <output aria-live="polite" className="text-muted" role="status">No hay más productos para mostrar.</output>
+              <output aria-live="polite" className="text-muted">
+                No hay más productos para mostrar.
+              </output>
             </div>
           )}
         </>

@@ -20,7 +20,7 @@ const AdminOrderListContainer: React.FC = () => {
 
   useErrorNotification(error);
 
-  useEffect((): void => {
+  const handleRefresh: () => void = useCallback((): void => {
     fetchAllOrders()
       .then(setOrders)
       .catch((): void => {
@@ -28,23 +28,25 @@ const AdminOrderListContainer: React.FC = () => {
       });
   }, [fetchAllOrders]);
 
+  useEffect((): void => {
+    handleRefresh();
+  }, [handleRefresh]);
+
   const handleStatusChange: (id: string, status: OrderStatusValue, actionLabel: string, pastLabel: string) => Promise<void> = useCallback(
     async (id: string, status: OrderStatusValue, actionLabel: string, pastLabel: string): Promise<void> => {
       const action: string = status === OrderStatus.Completado ? "approve" : "reject";
       setActionLoading((prev: Map<string, string>) => new Map(prev).set(id, action));
-      const result: void | undefined = await withToast(
+      await withToast(
         () => withDelay(updateOrderStatus(id, status)),
         `${actionLabel} pedido...`,
         `Pedido ${pastLabel}`,
         `Error al ${actionLabel.toLowerCase()} pedido`,
       );
-      if (result !== undefined) {
-        setOrders((prev: Order[]) =>
-          prev.map((o: Order) =>
-            o.id === id ? { ...o, status, updatedAt: new Date().toISOString() } : o,
-          ),
-        );
-      }
+      setOrders((prev: Order[]) =>
+        prev.map((o: Order) =>
+          o.id === id ? { ...o, status, updatedAt: new Date().toISOString() } : o,
+        ),
+      );
       setActionLoading((prev: Map<string, string>) => {
         const next: Map<string, string> = new Map(prev);
         next.delete(id);
@@ -82,6 +84,7 @@ const AdminOrderListContainer: React.FC = () => {
       onDeleteCancel={() => setDeleteTarget(null)}
       onDeleteConfirm={handleDeleteConfirm}
       onDeleteRequest={(id: string) => setDeleteTarget(id)}
+      onRefresh={handleRefresh}
       onReject={(id: string) => handleStatusChange(id, OrderStatus.Cancelado, "Rechazando", "rechazado")}
       onStatusChange={setFilter}
       onToggleExpand={toggleExpand}

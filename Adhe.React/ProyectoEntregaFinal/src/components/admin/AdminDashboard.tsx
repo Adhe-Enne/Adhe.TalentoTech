@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { FaBox, FaCheckCircle, FaClipboardList, FaClock, FaDollarSign, FaTag, FaTimesCircle } from "react-icons/fa";
 
 import type { Order } from "../../models";
@@ -12,11 +12,12 @@ import { formatPrice } from "../../utils/format";
 import AdminDashboardView from "./AdminDashboardView";
 
 const AdminDashboard: React.FC = () => {
-  const { products, loading: productsLoading } = useProducts();
-  const { coupons, loading: couponsLoading } = useCoupons();
+  const { products, loading: productsLoading, reload } = useProducts();
+  const { coupons, loading: couponsLoading, fetchCoupons } = useCoupons();
   const { error, fetchAllOrders } = useOrders();
   const [orders, setOrders] = useState<Order[]>([]);
   const [ordersLoading, setOrdersLoading] = useState<boolean>(true);
+  const [refreshing, setRefreshing] = useState<boolean>(false);
 
   useErrorNotification(error);
 
@@ -31,7 +32,21 @@ const AdminDashboard: React.FC = () => {
       });
   }, [fetchAllOrders]);
 
-  const loading: boolean = productsLoading || couponsLoading || ordersLoading;
+  const handleRefresh: () => void = useCallback((): void => {
+    setRefreshing(true);
+    reload();
+    void fetchCoupons();
+    fetchAllOrders()
+      .then(setOrders)
+      .catch((): void => {
+        /* error handled by useErrorNotification */
+      })
+      .finally((): void => {
+        setRefreshing(false);
+      });
+  }, [reload, fetchCoupons, fetchAllOrders]);
+
+  const loading: boolean = productsLoading || couponsLoading || ordersLoading || refreshing;
   const metrics: { label: string; value: string; icon: React.ReactNode; link?: string }[] = useMemo(() => {
     const totalProducts: number = products?.length ?? 0;
     const activeProducts: number = products?.filter((p) => p.isEnabled).length ?? 0;
@@ -56,7 +71,7 @@ const AdminDashboard: React.FC = () => {
     ];
   }, [products, coupons, orders]);
 
-  return <AdminDashboardView loading={loading} metrics={metrics} />;
+  return <AdminDashboardView loading={loading} metrics={metrics} onRefresh={handleRefresh} />;
 };
 
 export default AdminDashboard;

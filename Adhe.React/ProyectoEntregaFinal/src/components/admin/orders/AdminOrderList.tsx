@@ -9,6 +9,7 @@ import OrderItemRow from "../../orders/OrderItemRow";
 import ConfirmDialog from "../../ui/ConfirmDialog";
 import HelmetMeta from "../../ui/HelmetMeta";
 import ListStateDisplay from "../../ui/ListStateDisplay";
+import RefreshButton from "../../ui/RefreshButton";
 import styles from "./AdminOrderList.module.css";
 
 interface AdminOrderListProps {
@@ -24,20 +25,24 @@ interface AdminOrderListProps {
   onDeleteCancel: () => void;
   onDeleteConfirm: () => void;
   onDeleteRequest: (id: string) => void;
+  onRefresh: () => void;
   onReject: (id: string) => void;
   onStatusChange: (filter: string) => void;
   onToggleExpand: (id: string) => void;
 }
 
 const AdminOrderList: React.FC<AdminOrderListProps> = (props) => {
-  const { actionLoading, orders, filter, isLoading, expandedId, deleteTarget, deleting, statusOptions, onStatusChange, onToggleExpand, onApprove, onReject, onDeleteRequest, onDeleteCancel, onDeleteConfirm } = props;
+  const { actionLoading, orders, filter, isLoading, expandedId, deleteTarget, deleting, statusOptions, onStatusChange, onToggleExpand, onApprove, onReject, onDeleteRequest, onDeleteCancel, onDeleteConfirm, onRefresh } = props;
 
   const filtered: Order[] = filter === "all" ? orders : orders.filter((o: Order) => o.status === filter);
 
   return (
     <Container className="py-4">
       <HelmetMeta description="Administración de pedidos en Talento Tech." title="Talento Tech | Admin Pedidos" />
-      <h2>Pedidos</h2>
+      <div className="d-flex justify-content-between align-items-center mb-3">
+        <h2 className="mb-0">Pedidos</h2>
+        <RefreshButton loading={isLoading} onRefresh={onRefresh} />
+      </div>
 
       <Form.Select aria-label="Filtrar por estado" className="mb-3 w-auto" onChange={(e) => onStatusChange(e.target.value)} value={filter}>
         <option value="all">Todos</option>

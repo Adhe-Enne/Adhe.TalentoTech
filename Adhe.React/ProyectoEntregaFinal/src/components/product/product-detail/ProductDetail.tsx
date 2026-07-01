@@ -8,18 +8,21 @@ import type { Tag } from "../../../models/Tag";
 import { formatPrice } from "../../../utils/format";
 import HelmetMeta from "../../ui/HelmetMeta";
 import QuantityStepper from "../../ui/QuantityStepper";
+import RefreshButton from "../../ui/RefreshButton";
 import ProductImageCarousel from "./ProductImageCarousel";
 
 interface ProductDetailProps {
+  loading: boolean;
   product: Product;
   categoryName?: string;
   tags?: Tag[];
   onAddToCart: (cantidad: number) => void;
   onBack: () => void;
+  onRefresh: () => void;
 }
 
 const ProductDetail: React.FC<ProductDetailProps> = (props) => {
-  const { categoryName, onAddToCart, onBack, product, tags } = props;
+  const { categoryName, loading, onAddToCart, onBack, onRefresh, product, tags } = props;
   const [cantidad, setCantidad] = useState<number>(1);
   const { images, stock } = product;
 
@@ -46,7 +49,10 @@ const ProductDetail: React.FC<ProductDetailProps> = (props) => {
             </div>
           </Col>
           <Col md={5} xs={12}>
-            <h2>{product.name}</h2>
+            <div className="d-flex justify-content-between align-items-start">
+              <h2>{product.name}</h2>
+              <RefreshButton loading={loading} onRefresh={onRefresh} />
+            </div>
             {categoryName && <div className="mb-1 text-muted">Categoría: {categoryName}</div>}
 
             <div className="mb-3 text-muted">{product.description ?? "Sin descripción"}</div>

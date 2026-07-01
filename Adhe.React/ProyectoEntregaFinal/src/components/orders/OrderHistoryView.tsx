@@ -10,6 +10,7 @@ import { formatPrice } from "../../utils/format";
 import { ORDER_STATUS_VARIANT } from "../../utils/orderUtils";
 import HelmetMeta from "../ui/HelmetMeta";
 import ListStateDisplay from "../ui/ListStateDisplay";
+import RefreshButton from "../ui/RefreshButton";
 import styles from "./OrderHistory.module.css";
 import OrderItemRow from "./OrderItemRow";
 
@@ -17,16 +18,21 @@ interface OrderHistoryViewProps {
   expandedId: string | null;
   loading: boolean;
   orders: Order[];
+  refreshLoading: boolean;
+  onRefresh: () => void;
   onToggleExpand: (id: string) => void;
 }
 
 const OrderHistoryView: React.FC<OrderHistoryViewProps> = (props) => {
-  const { expandedId, loading, onToggleExpand, orders } = props;
+  const { expandedId, loading, onRefresh, onToggleExpand, orders, refreshLoading } = props;
 
   return (
     <Container className="py-4">
       <HelmetMeta description="Historial de pedidos en Talento Tech." title="Talento Tech | Mis pedidos" />
-      <h2>Mis pedidos</h2>
+      <div className="d-flex justify-content-between align-items-center mb-3">
+        <h2 className="mb-0">Mis pedidos</h2>
+        <RefreshButton loading={refreshLoading} onRefresh={onRefresh} />
+      </div>
       <ListStateDisplay error={null} loading={loading} loadingMessage="Cargando pedidos...">
         {orders.length === 0 ? (
           <div className="text-center py-5">

@@ -8,7 +8,7 @@ import ConfirmDialog from "../../ui/ConfirmDialog";
 import CouponManagerPageView from "./CouponManagerPageView";
 
 const CouponManagerPage: React.FC = () => {
-  const { fetchCoupons, updateCoupon } = useCoupons();
+  const { fetchCoupons, loading: couponsLoading, updateCoupon } = useCoupons();
   const { deleteTarget: rawDeleteTarget, deleting, handleDeleteRequest: baseDeleteRequest, handleDeleteCancel, handleDeleteConfirm: baseDeleteConfirm } = useConfirmDelete();
 
   const deleteTarget: { id: string; code: string } | null = useMemo(() => (rawDeleteTarget ? { id: rawDeleteTarget.id, code: rawDeleteTarget.label } : null), [rawDeleteTarget]);
@@ -28,9 +28,13 @@ const CouponManagerPage: React.FC = () => {
     }
   }, [baseDeleteConfirm, deleteTarget, fetchCoupons]);
 
+  const handleRefresh: () => void = useCallback((): void => {
+    fetchCoupons();
+  }, [fetchCoupons]);
+
   return (
     <>
-      <CouponManagerPageView onDeleteRequest={baseDeleteRequest} onUpdateCoupon={updateCoupon} />
+      <CouponManagerPageView onDeleteRequest={baseDeleteRequest} onRefresh={handleRefresh} onUpdateCoupon={updateCoupon} refreshLoading={couponsLoading} />
       <ConfirmDialog
         confirmLabel="Eliminar"
         confirmVariant="danger"

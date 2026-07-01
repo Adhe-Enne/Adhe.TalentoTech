@@ -14,6 +14,7 @@ const OrderConfirmationContainer: React.FC = () => {
   const { fetchOrderById } = useOrders();
   const [order, setOrder] = useState<Order | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
+  const [refreshing, setRefreshing] = useState<boolean>(false);
 
   useEffect((): void => {
     if (!id) {
@@ -32,7 +33,21 @@ const OrderConfirmationContainer: React.FC = () => {
     navigate("/");
   }, [navigate]);
 
-  return <OrderConfirmationView loading={loading} onBack={handleBack} order={order} />;
+  const handleRefresh: () => void = useCallback((): void => {
+    if (!id) {
+      return;
+    }
+    setRefreshing(true);
+    fetchOrderById(id)
+      .then((o: Order | null): void => {
+        setOrder(o);
+      })
+      .finally((): void => {
+        setRefreshing(false);
+      });
+  }, [id, fetchOrderById]);
+
+  return <OrderConfirmationView loading={loading} onBack={handleBack} onRefresh={handleRefresh} order={order} refreshLoading={refreshing} />;
 };
 
 export default OrderConfirmationContainer;
