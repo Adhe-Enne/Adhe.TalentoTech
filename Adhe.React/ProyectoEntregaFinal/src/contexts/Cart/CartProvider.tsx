@@ -104,6 +104,9 @@ export const CartProvider: React.FC<ProviderProps> = (props) => {
         if (existing) {
           return prev.map((it) => (it.product.id === product.id ? { ...it, quantity: it.quantity + cantidad } : it));
         }
+        if (prev.length > 0 && prev[0].product.currency !== product.currency) {
+          return prev;
+        }
         return [...prev, { product, quantity: cantidad }];
       });
     },

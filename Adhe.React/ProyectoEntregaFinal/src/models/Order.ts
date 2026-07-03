@@ -17,12 +17,16 @@ export const ORDER_STATUS_LABELS: Record<OrderStatusValue, string> = {
 };
 
 export interface Order extends BaseEntity {
+  baseCurrency: string;
+  currency: string;
   discount: number;
+  exchangeRate: number;
   items: OrderItem[];
   shippingInfo: ShippingInfo;
   status: OrderStatusValue;
   subtotal: number;
   total: number;
+  totalInBase: number;
   userEmail: string;
   userId: string;
   couponId?: string | null;

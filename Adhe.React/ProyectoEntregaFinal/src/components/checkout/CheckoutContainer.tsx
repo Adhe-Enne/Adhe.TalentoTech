@@ -8,6 +8,7 @@ import useCart from "../../hooks/selectors/useCart";
 import useNotification from "../../hooks/selectors/useNotification";
 import useOrders from "../../hooks/useOrders";
 import { OrderStatus } from "../../models/Order";
+import { exchangeRateService } from "../../services/exchangeRateService";
 import { withToast } from "../../utils/withToast";
 import CheckoutView from "./CheckoutView";
 import { type ShippingFormHandle } from "./ShippingForm";
@@ -35,6 +36,10 @@ const CheckoutContainer: React.FC = () => {
       return;
     }
 
+    const orderCurrency: string = cart[0].product.currency ?? "USD";
+    const exchangeRate: number = await exchangeRateService.getRate(orderCurrency);
+    const totalInBase: number = Number((discountedTotal * exchangeRate).toFixed(2));
+
     const orderId: string | undefined = await withToast(
       () =>
         checkout({
@@ -47,7 +52,12 @@ const CheckoutContainer: React.FC = () => {
             price: item.product.price,
             quantity: item.quantity,
             subtotal: item.product.price * item.quantity,
+            currency: orderCurrency,
           })),
+          currency: orderCurrency,
+          exchangeRate,
+          baseCurrency: "USD",
+          totalInBase,
           subtotal: rawTotal,
           discount: appliedCoupon ? rawTotal - discountedTotal : 0,
           discountCode: appliedCoupon?.code ?? null,

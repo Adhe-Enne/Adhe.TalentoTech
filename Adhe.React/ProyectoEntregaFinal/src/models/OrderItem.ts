@@ -1,4 +1,5 @@
 export interface OrderItem {
+  currency: string;
   price: number;
   productId: string;
   productImage: string;

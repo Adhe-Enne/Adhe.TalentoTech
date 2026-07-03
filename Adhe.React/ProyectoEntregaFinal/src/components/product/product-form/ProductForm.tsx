@@ -182,7 +182,8 @@ const ProductForm: React.FC<ProductFormProps> = (props) => {
             <select className="form-select" id="currency" onChange={(e) => setField("currency", parseCurrency(e.target.value))} value={fields.currency}>
               <option value="USD">USD</option>
               <option value="ARS">ARS</option>
-              <option value="BTC">BTC</option>
+              <option value="EUR">EUR</option>
+              <option value="BRL">BRL</option>
             </select>
           </div>
         </div>
