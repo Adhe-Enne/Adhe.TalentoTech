@@ -20,15 +20,18 @@ const CheckoutContainer: React.FC = () => {
   const { setNotification } = useNotification();
   const { checkout, isLoading, error } = useOrders();
   const shippingRef: React.RefObject<ShippingFormHandle | null> = useRef<ShippingFormHandle>(null);
+  const isSubmittingRef: React.MutableRefObject<boolean> = useRef<boolean>(false);
 
   const handleConfirm: () => Promise<void> = useCallback(async (): Promise<void> => {
-    if (!user) {
+    if (!user || isSubmittingRef.current) {
       return;
     }
-    if (cart.length === 0) {
-      setNotification("El carrito está vacío", 3000, "warning");
-      return;
-    }
+    isSubmittingRef.current = true;
+    try {
+      if (cart.length === 0) {
+        setNotification("El carrito está vacío", 3000, "warning");
+        return;
+      }
 
     const result: { valid: boolean; data?: ShippingInfo; error?: string } = shippingRef.current?.getData() ?? { valid: false, error: "Error inesperado" };
     if (!result.valid || !result.data) {
@@ -74,6 +77,9 @@ const CheckoutContainer: React.FC = () => {
       clearCart();
       navigate(`/orden/${orderId}`);
     }
+    } finally {
+      isSubmittingRef.current = false;
+    }
   }, [user, cart, checkout, clearCart, navigate, setNotification, rawTotal, appliedCoupon, discountedTotal]);
 
   const handleBack: () => void = useCallback(() => {
@@ -89,7 +95,7 @@ const CheckoutContainer: React.FC = () => {
     return null;
   }
 
-  return <CheckoutView error={error} isLoading={isLoading} onBack={handleBack} onConfirm={handleConfirm} shippingRef={shippingRef} />;
+  return <CheckoutView error={error} isLoading={isLoading || isSubmittingRef.current} onBack={handleBack} onConfirm={handleConfirm} shippingRef={shippingRef} />;
 };
 
 export default CheckoutContainer;

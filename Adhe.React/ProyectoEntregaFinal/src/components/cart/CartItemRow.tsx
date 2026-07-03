@@ -22,7 +22,7 @@ const CartItemRow: React.FC<CartItemRowProps> = (props) => {
       <img alt={item.product.name} className={`rounded ${styles.thumb}`} src={item.product.image} />
       <div className="flex-grow-1">
         <strong>{item.product.name}</strong>
-        <div className="text-muted">{formatPrice(item.product.price)}</div>
+        <div className="text-muted">{formatPrice(item.product.price, item.product.currency)}</div>
       </div>
       <div className="d-flex align-items-center gap-2">
         <Button aria-label="Reducir cantidad" onClick={onDecrement} size="sm" variant="outline-secondary">
@@ -33,7 +33,7 @@ const CartItemRow: React.FC<CartItemRowProps> = (props) => {
           <FaPlus />
         </Button>
       </div>
-      <div className={styles.totalPrice}>{formatPrice(item.product.price * item.quantity)}</div>
+      <div className={styles.totalPrice}>{formatPrice(item.product.price * item.quantity, item.product.currency)}</div>
       <div>
         <Button aria-label={`Eliminar ${item.product.name}`} onClick={onRemove} size="sm" variant="danger">
           <FaTrash />

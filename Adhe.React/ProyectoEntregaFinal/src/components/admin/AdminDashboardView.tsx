@@ -10,6 +10,8 @@ import PageHeader from "../ui/PageHeader";
 import RefreshButton from "../ui/RefreshButton";
 import AverageTicketByCurrency from "./dashboard/AverageTicketByCurrency";
 import CouponInsights from "./dashboard/CouponInsights";
+import MonthlyTrends from "./dashboard/MonthlyTrends";
+import TopProducts from "./dashboard/TopProducts";
 import DiscountsByCurrency from "./dashboard/DiscountsByCurrency";
 import InventoryByCurrency from "./dashboard/InventoryByCurrency";
 import OrderStatusBreakdown from "./dashboard/OrderStatusBreakdown";
@@ -119,6 +121,14 @@ const AdminDashboardView: React.FC<AdminDashboardViewProps> = (props) => {
       <Row className="g-3 mt-3">
         <Col lg={6} xs={12}>
           <AverageTicketByCurrency orders={orders} />
+        </Col>
+      </Row>
+      <Row className="g-3 mt-3">
+        <Col lg={6} xs={12}>
+          <TopProducts orders={orders} />
+        </Col>
+        <Col lg={6} xs={12}>
+          <MonthlyTrends orders={orders} />
         </Col>
       </Row>
     </div>

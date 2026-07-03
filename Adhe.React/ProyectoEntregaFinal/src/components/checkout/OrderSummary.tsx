@@ -21,10 +21,10 @@ const OrderSummary: React.FC = () => {
                 <div className="flex-grow-1">
                   <strong className="small">{item.product.name}</strong>
                   <div className="text-muted small">
-                    {item.quantity} x {formatPrice(item.product.price)}
+                    {item.quantity} x {formatPrice(item.product.price, item.product.currency)}
                   </div>
                 </div>
-                <div className="small">{formatPrice(item.product.price * item.quantity)}</div>
+                <div className="small">{formatPrice(item.product.price * item.quantity, item.product.currency)}</div>
               </ListGroup.Item>
             ),
           )}
@@ -32,18 +32,18 @@ const OrderSummary: React.FC = () => {
 
         <div className="d-flex justify-content-between small">
           <span>Subtotal</span>
-          <span>{formatPrice(rawTotal)}</span>
+          <span>{formatPrice(rawTotal, cart[0]?.product.currency)}</span>
         </div>
         {appliedCoupon && (
           <div className="d-flex justify-content-between small text-success">
             <span>Descuento ({appliedCoupon.code})</span>
-            <span>-{formatPrice(rawTotal - discountedTotal)}</span>
+            <span>-{formatPrice(rawTotal - discountedTotal, cart[0]?.product.currency)}</span>
           </div>
         )}
         <hr />
         <div className="d-flex justify-content-between fw-bold">
           <span>Total</span>
-          <span>{formatPrice(discountedTotal)}</span>
+          <span>{formatPrice(discountedTotal, cart[0]?.product.currency)}</span>
         </div>
       </div>
     </div>

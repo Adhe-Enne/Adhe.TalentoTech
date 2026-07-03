@@ -86,7 +86,7 @@ const AdminProductListView: React.FC<AdminProductListViewProps> = (props) => {
                     <img alt={p.name} className={`rounded ${adminStyles.thumb}`} src={p.image} />
                   </td>
                   <td className="fw-semibold">{p.name}</td>
-                  <td className="text-primary fw-bold">{formatPrice(p.price)}</td>
+                  <td className="text-primary fw-bold">{formatPrice(p.price, p.currency)}</td>
                   <td>{p.stock}</td>
                   <td>{p.category?.name ?? "Sin categoria"}</td>
                   <td>

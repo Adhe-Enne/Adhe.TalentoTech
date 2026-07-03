@@ -60,7 +60,7 @@ const ProductDetail: React.FC<ProductDetailProps> = (props) => {
             <div className="mb-3">
               <span className="badge-price">
                 {" "}
-                {product.currency} {formatPrice(product.price)}
+                {formatPrice(product.price, product.currency)}
               </span>
             </div>
 
