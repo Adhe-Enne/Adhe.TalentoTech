@@ -12,8 +12,10 @@ export interface AppliedCoupon {
 export type CartContextType = {
   cart: CartItem[];
   appliedCoupon: AppliedCoupon | null;
+  discountedByCurrency: Record<string, number>;
   discountedTotal: number;
   rawTotal: number;
+  totalsByCurrency: Record<string, number>;
   isApplyingCoupon: boolean;
   addToCart: (product: Product, cantidad?: number) => void;
   removeFromCart: (productId: string) => void;

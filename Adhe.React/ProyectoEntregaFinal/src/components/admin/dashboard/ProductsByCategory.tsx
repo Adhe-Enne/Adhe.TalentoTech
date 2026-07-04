@@ -1,7 +1,10 @@
 import React, { useMemo } from "react";
 import { FaFolder } from "react-icons/fa";
 
-import type { Category, Product } from "../../../models";
+import type { Category } from "../../../models";
+
+import useCategories from "../../../hooks/selectors/useCategories";
+import useProducts from "../../../hooks/selectors/useProducts";
 
 interface CategoryRow {
   categoryName: string;
@@ -9,15 +12,11 @@ interface CategoryRow {
   percentage: number;
 }
 
-interface ProductsByCategoryProps {
-  categories: Category[];
-  products: Product[];
-}
-
 const CATEGORY_COLORS: string[] = ["primary", "success", "info", "warning", "danger", "secondary", "dark"];
 
-const ProductsByCategory: React.FC<ProductsByCategoryProps> = (props) => {
-  const { products, categories } = props;
+const ProductsByCategory: React.FC = () => {
+  const { products } = useProducts();
+  const { categories } = useCategories();
 
   const categoryData: CategoryRow[] = useMemo(() => {
     const categoryMap: Map<string, string> = new Map(categories.map((c: Category) => [c.id, c.name]));
@@ -72,7 +71,8 @@ const ProductsByCategory: React.FC<ProductsByCategoryProps> = (props) => {
         <h5 className="mb-0">Productos por Categoría</h5>
       </div>
       <div className="card-body">
-        {categoryData.map(({ categoryName, count, percentage }: CategoryRow, index: number) => {
+        {categoryData.map((row: CategoryRow, index: number) => {
+          const { categoryName, count, percentage } = row;
           const color: string = CATEGORY_COLORS[index % CATEGORY_COLORS.length];
           return (
             <div className="mb-3" key={categoryName}>
@@ -84,11 +84,12 @@ const ProductsByCategory: React.FC<ProductsByCategoryProps> = (props) => {
                   {count} ({percentage.toFixed(1)}%)
                 </span>
               </div>
-              <div aria-valuemax={100} aria-valuemin={0} aria-valuenow={Math.round(percentage)} className="progress" role="progressbar" style={{ height: 20 }}>
+              <div className="progress" style={{ height: 20 }}>
                 <div className={`progress-bar bg-${color}`} style={{ width: `${percentage}%` }}>
                   {percentage > 8 && `${percentage.toFixed(1)}%`}
                 </div>
               </div>
+              <progress aria-label={`${categoryName}: ${percentage.toFixed(1)}%`} className="visually-hidden" max={100} value={Math.round(percentage)} />
             </div>
           );
         })}

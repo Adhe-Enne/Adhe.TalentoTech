@@ -1,31 +1,31 @@
-import { useEffect, useState } from "react";
+import { useCallback } from "react";
 
 import { exchangeRateService, FALLBACK_RATES } from "../services/exchangeRateService";
+import useAsyncCollection from "./useAsyncCollection";
+
+interface RateEntry {
+  lastUpdated: number;
+  rates: Record<string, number>;
+}
 
 interface UseAllExchangeRatesReturn {
   error: string | null;
+  lastUpdated: number | null;
   loading: boolean;
   rates: Record<string, number>;
 }
 
 export function useAllExchangeRates(): UseAllExchangeRatesReturn {
-  const [rates, setRates] = useState<Record<string, number>>(FALLBACK_RATES);
-  const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    setLoading(true);
-    exchangeRateService
-      .getAllRates()
-      .then((data: Record<string, number>) => {
-        setRates(data);
-        setLoading(false);
-      })
-      .catch((): void => {
-        setError("No se pudieron obtener las tasas de cambio");
-        setLoading(false);
-      });
+  const fetchRates: () => Promise<RateEntry[]> = useCallback(async (): Promise<RateEntry[]> => {
+    const rates: Record<string, number> = await exchangeRateService.getAllRates();
+    return [{ rates, lastUpdated: Date.now() }];
   }, []);
 
-  return { error, loading, rates };
+  const { data, error, loading } = useAsyncCollection(fetchRates);
+
+  const [entry]: RateEntry[] = data;
+  const rates: Record<string, number> = entry?.rates ?? FALLBACK_RATES;
+  const lastUpdated: number | null = entry?.lastUpdated ?? null;
+
+  return { error, loading, rates, lastUpdated };
 }

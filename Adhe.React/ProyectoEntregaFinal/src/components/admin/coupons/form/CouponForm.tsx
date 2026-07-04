@@ -2,11 +2,11 @@ import React, { useCallback, useState } from "react";
 import { Button, Spinner } from "react-bootstrap";
 import { FaPlus } from "react-icons/fa";
 
-import useCoupons from "../../../hooks/selectors/useCoupons";
-import { couponService } from "../../../services/couponService";
-import { getTodayString } from "../../../utils/dateUtils";
-import { isValidCouponCode } from "../../../utils/validators";
-import { withToast } from "../../../utils/withToast";
+import useCoupons from "../../../../hooks/selectors/useCoupons";
+import { couponService } from "../../../../services/couponService";
+import { getTodayString } from "../../../../utils/dateUtils";
+import { isValidCouponCode } from "../../../../utils/validators";
+import { withToast } from "../../../../utils/withToast";
 import styles from "./CouponForm.module.css";
 
 interface FormErrors {
@@ -92,13 +92,6 @@ const CouponForm: React.FC = () => {
         return;
       }
       setSubmitting(true);
-      const duplicate: boolean = await couponService.checkCodeExists(code.trim());
-      if (duplicate) {
-        setIsDuplicate(true);
-        setErrors((prev: FormErrors) => ({ ...prev, code: "Este código ya existe" }));
-        setSubmitting(false);
-        return;
-      }
       const created: unknown = await withToast(
         () =>
           createCoupon({

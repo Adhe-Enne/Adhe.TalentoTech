@@ -3,6 +3,7 @@ import { Container } from "react-bootstrap";
 import { NavLink, Outlet, useLocation } from "react-router-dom";
 
 import "./Layout.css";
+import ExchangeRatesBanner from "../common/ExchangeRatesBanner";
 import Footer from "./Footer";
 import NavLinks from "./NavLinks";
 import SearchForm from "./SearchForm";
@@ -72,6 +73,7 @@ const Layout: React.FC<LayoutProps> = (props) => {
             </div>
           </Container>
         </nav>
+        <ExchangeRatesBanner />
       </header>
       <main className="main-content">
         <Container className="container-tight main-wrapper">{children ?? <Outlet />}</Container>

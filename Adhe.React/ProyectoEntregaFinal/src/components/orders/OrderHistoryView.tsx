@@ -60,7 +60,7 @@ const OrderHistoryView: React.FC<OrderHistoryViewProps> = (props) => {
                   </div>
                   <div className="d-flex align-items-center gap-2">
                     <Badge bg={ORDER_STATUS_VARIANT[order.status] ?? "secondary"}>{ORDER_STATUS_LABELS[order.status]}</Badge>
-                    <span>{formatPrice(order.total)}</span>
+                    <span>{formatPrice(order.total, order.currency)}</span>
                     {expandedId === order.id ? <FaChevronUp /> : <FaChevronDown />}
                   </div>
                 </button>

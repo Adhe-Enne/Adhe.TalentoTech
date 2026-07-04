@@ -5,8 +5,8 @@ import useConfirmDelete from "../../../hooks/useConfirmDelete";
 import { couponService } from "../../../services/couponService";
 import { withToast } from "../../../utils/withToast";
 import ConfirmDialog from "../../ui/ConfirmDialog";
-import CouponList from "./CouponList";
 import CouponManagerPageView from "./CouponManagerPageView";
+import CouponList from "./item/CouponList";
 
 const CouponManagerPage: React.FC = () => {
   const { fetchCoupons, loading: couponsLoading, updateCoupon } = useCoupons();
@@ -19,7 +19,9 @@ const CouponManagerPage: React.FC = () => {
       async () => {
         const success: boolean = await baseDeleteConfirm(
           (id: string) => couponService.deleteCoupon(id),
-          () => { fetchCoupons(); },
+          () => {
+            fetchCoupons();
+          },
         );
         if (!success) {
           throw new Error("Error al eliminar cupón");
@@ -40,14 +42,7 @@ const CouponManagerPage: React.FC = () => {
       <CouponManagerPageView onRefresh={handleRefresh} refreshLoading={couponsLoading}>
         <CouponList onDeleteRequest={baseDeleteRequest} onUpdateCoupon={updateCoupon} />
       </CouponManagerPageView>
-      <ConfirmDialog
-        loading={deleting}
-        message={`¿Eliminar el cupon ${deleteTarget?.code}? No se podra deshacer.`}
-        onCancel={handleDeleteCancel}
-        onConfirm={handleDeleteConfirm}
-        open={deleteTarget !== null}
-        title="Eliminar cupon"
-      />
+      <ConfirmDialog loading={deleting} message={`¿Eliminar el cupon ${deleteTarget?.code}? No se podra deshacer.`} onCancel={handleDeleteCancel} onConfirm={handleDeleteConfirm} open={deleteTarget !== null} title="Eliminar cupon" />
     </>
   );
 };

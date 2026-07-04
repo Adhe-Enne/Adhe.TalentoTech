@@ -56,7 +56,7 @@ const RecentOrders: React.FC<RecentOrdersProps> = (props) => {
                     </span>
                   </td>
                   <td className="small">{order.userEmail}</td>
-                  <td className="small">{formatPrice(order.total)}</td>
+                  <td className="small">{formatPrice(order.total, order.currency)}</td>
                   <td>
                     <Badge bg={ORDER_STATUS_VARIANT[order.status] ?? "secondary"}>
                       {order.status}

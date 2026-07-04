@@ -8,7 +8,7 @@ import modalStyles from "./bio-modal/ContactBioModal.module.css";
 import styles from "./TeamFullView.module.css";
 import expandedStyles from "./TeamMemberCardExpanded.module.css";
 
-interface TeamFullViewViewProps {
+interface TeamFullViewContentProps {
   dialogRef: RefObject<HTMLDialogElement | null>;
   error: string | null;
   loading: boolean;
@@ -19,7 +19,7 @@ interface TeamFullViewViewProps {
   onShowMore: (p: Person) => void;
 }
 
-const TeamFullViewView: React.FC<TeamFullViewViewProps> = (props) => {
+const TeamFullViewContent: React.FC<TeamFullViewContentProps> = (props) => {
   const { dialogRef, error, loading, onClose, onShowMore, selected, showModal, team } = props;
 
   if (loading) {
@@ -96,4 +96,4 @@ const TeamFullViewView: React.FC<TeamFullViewViewProps> = (props) => {
   );
 };
 
-export default TeamFullViewView;
+export default TeamFullViewContent;

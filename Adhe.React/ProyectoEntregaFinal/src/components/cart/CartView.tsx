@@ -3,9 +3,9 @@ import { Button, Container, ListGroup } from "react-bootstrap";
 import { FaCreditCard } from "react-icons/fa";
 import { Link } from "react-router-dom";
 
+import type { AppliedCoupon } from "../../contexts/Cart/CartContext";
 import type { CartItem } from "../../models";
 
-import type { AppliedCoupon } from "../../contexts/Cart/CartContext";
 import { formatPrice } from "../../utils/format";
 import EmptyState from "../ui/EmptyState";
 import HelmetMeta from "../ui/HelmetMeta";
@@ -15,8 +15,8 @@ import CouponSection from "./CouponSection";
 interface CartListViewProps {
   appliedCoupon: AppliedCoupon | null;
   cart: CartItem[];
-  discountedTotal: number;
-  rawTotal: number;
+  discountedByCurrency: Record<string, number>;
+  totalsByCurrency: Record<string, number>;
   onBack: () => void;
   onItemDecrement: (item: CartItem) => void;
   onItemIncrement: (item: CartItem) => void;
@@ -25,7 +25,7 @@ interface CartListViewProps {
 }
 
 const CartView: React.FC<CartListViewProps> = (props) => {
-  const { appliedCoupon, cart, discountedTotal, onBack, onItemDecrement, onItemIncrement, onItemRemove, onPurchase, rawTotal } = props;
+  const { appliedCoupon, cart, discountedByCurrency, onBack, onItemDecrement, onItemIncrement, onItemRemove, onPurchase, totalsByCurrency } = props;
 
   return (
     <Container className="py-4">
@@ -51,12 +51,14 @@ const CartView: React.FC<CartListViewProps> = (props) => {
             ))}
           </ListGroup>
 
-          <div className="d-flex justify-content-between align-items-center mt-3">
+          <div className="d-flex justify-content-between align-items-start mt-3">
             <div>
-              <strong>Total:</strong>
+              <strong>Subtotal:</strong>
             </div>
             <div className="text-end">
-              <strong className="d-block">{formatPrice(rawTotal)}</strong>
+              {Object.entries(totalsByCurrency).map(([c, total]) => (
+                <span className="d-block" key={c}>{formatPrice(total, c)}</span>
+              ))}
             </div>
           </div>
         </div>
@@ -64,11 +66,17 @@ const CartView: React.FC<CartListViewProps> = (props) => {
 
       {cart.length > 0 && <CouponSection />}
 
-      <div className="d-flex justify-content-between align-items-center mt-3 p-3 bg-light rounded">
-        <strong>Total final:</strong>
+      <div className="d-flex justify-content-between align-items-start mt-3 p-3 bg-light rounded">
+        <div>
+          <strong>Total{appliedCoupon ? " final" : ""}:</strong>
+        </div>
         <div className="text-end">
-          {appliedCoupon && <small className="text-muted text-decoration-line-through d-block">{formatPrice(rawTotal)}</small>}
-          <strong className="fs-4">{formatPrice(discountedTotal ?? rawTotal)}</strong>
+          {appliedCoupon && Object.entries(totalsByCurrency).map(([c, total]) => (
+            <small className="text-muted text-decoration-line-through d-block" key={c}>{formatPrice(total, c)}</small>
+          ))}
+          {Object.entries(discountedByCurrency).map(([c, total]) => (
+            <strong className="fs-5 d-block" key={c}>{formatPrice(total, c)}</strong>
+          ))}
         </div>
       </div>
 

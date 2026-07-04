@@ -3,7 +3,7 @@ import React, { type ReactNode } from "react";
 import HelmetMeta from "../../ui/HelmetMeta";
 import PageHeader from "../../ui/PageHeader";
 import RefreshButton from "../../ui/RefreshButton";
-import CouponForm from "./CouponForm";
+import CouponForm from "./form/CouponForm";
 
 interface CouponManagerPageViewProps {
   refreshLoading: boolean;

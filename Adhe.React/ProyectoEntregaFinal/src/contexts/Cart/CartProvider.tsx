@@ -36,6 +36,26 @@ export const CartProvider: React.FC<ProviderProps> = (props) => {
   const rawTotal: number = useMemo(() => cart.reduce((s, it) => s + it.product.price * it.quantity, 0), [cart]);
 
   const [appliedCoupon, setAppliedCoupon] = useState<AppliedCoupon | null>(null);
+
+  const totalsByCurrency: Record<string, number> = useMemo(() => {
+    const result: Record<string, number> = {};
+    for (const it of cart) {
+      const c: string = it.product.currency ?? "USD";
+      result[c] = (result[c] ?? 0) + it.product.price * it.quantity;
+    }
+    return result;
+  }, [cart]);
+
+  const discountedByCurrency: Record<string, number> = useMemo(() => {
+    if (!appliedCoupon) {
+      return totalsByCurrency;
+    }
+    const result: Record<string, number> = {};
+    for (const [c, total] of Object.entries(totalsByCurrency)) {
+      result[c] = Math.max(0, total - total * (appliedCoupon.discountValue / 100));
+    }
+    return result;
+  }, [totalsByCurrency, appliedCoupon]);
   const [isApplyingCoupon, setIsApplyingCoupon] = useState(false);
 
   useEffect((): void => {
@@ -104,9 +124,6 @@ export const CartProvider: React.FC<ProviderProps> = (props) => {
         if (existing) {
           return prev.map((it) => (it.product.id === product.id ? { ...it, quantity: it.quantity + cantidad } : it));
         }
-        if (prev.length > 0 && prev[0].product.currency !== product.currency) {
-          return prev;
-        }
         return [...prev, { product, quantity: cantidad }];
       });
     },
@@ -148,6 +165,8 @@ export const CartProvider: React.FC<ProviderProps> = (props) => {
       getCartQuantity,
       getCantidadActual,
       rawTotal,
+      totalsByCurrency,
+      discountedByCurrency,
       appliedCoupon,
       discountedTotal,
       applyCoupon,
@@ -163,6 +182,8 @@ export const CartProvider: React.FC<ProviderProps> = (props) => {
       getCartQuantity,
       getCantidadActual,
       rawTotal,
+      totalsByCurrency,
+      discountedByCurrency,
       appliedCoupon,
       discountedTotal,
       applyCoupon,

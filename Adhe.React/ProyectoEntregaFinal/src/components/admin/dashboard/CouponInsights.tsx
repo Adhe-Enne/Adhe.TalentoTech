@@ -4,12 +4,10 @@ import { FaTicketAlt } from "react-icons/fa";
 
 import type { Coupon } from "../../../models";
 
-interface CouponInsightsProps {
-  coupons: Coupon[];
-}
+import useCoupons from "../../../hooks/selectors/useCoupons";
 
-const CouponInsights: React.FC<CouponInsightsProps> = (props) => {
-  const { coupons } = props;
+const CouponInsights: React.FC = () => {
+  const { coupons } = useCoupons();
 
   const insights: {
     total: number;
@@ -25,8 +23,7 @@ const CouponInsights: React.FC<CouponInsightsProps> = (props) => {
     const expired: number = coupons.filter((c: Coupon) => c.expiresAt && new Date(c.expiresAt) < now).length;
     const nearLimit: number = coupons.filter((c: Coupon) => c.usageLimit != null && c.usedCount >= c.usageLimit * 0.8).length;
 
-    //destructure this
-    const mostUsed: Coupon | undefined = [...coupons].sort((a: Coupon, b: Coupon) => b.usedCount - a.usedCount)[0];
+    const [mostUsed] = [...coupons].sort((a: Coupon, b: Coupon) => b.usedCount - a.usedCount);
 
     const totalUsage: number = coupons.reduce((s: number, c: Coupon) => s + (c.usedCount ?? 0), 0);
 

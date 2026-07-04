@@ -9,7 +9,7 @@ const currencyFormatters: Record<string, Intl.NumberFormat> = {
 
 export function formatPrice(amount: number, currency?: string): string {
   if (currency && currencyFormatters[currency]) {
-    return currencyFormatters[currency].format(amount);
+    return `${currencyFormatters[currency].format(amount)} ${currency}`;
   }
   if (currency) {
     return `${currency} ${priceFormatter.format(amount)}`;

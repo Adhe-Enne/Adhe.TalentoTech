@@ -14,7 +14,7 @@ import PageHeader from "../../ui/PageHeader";
 import RefreshButton from "../../ui/RefreshButton";
 import styles from "./AdminOrderList.module.css";
 
-interface AdminOrderListProps {
+interface AdminOrderListViewProps {
   actionLoading: Map<string, string>;
   deleteTarget: string | null;
   deleting: boolean;
@@ -32,7 +32,7 @@ interface AdminOrderListProps {
   onToggleExpand: (id: string) => void;
 }
 
-const AdminOrderList: React.FC<AdminOrderListProps> = (props) => {
+const AdminOrderListView: React.FC<AdminOrderListViewProps> = (props) => {
   const { actionLoading, orders, filter, isLoading, expandedId, deleteTarget, deleting, onStatusChange, onToggleExpand, onApprove, onReject, onDeleteRequest, onDeleteCancel, onDeleteConfirm, onRefresh } = props;
 
   const filtered: Order[] = filter === "all" ? orders : orders.filter((o: Order) => o.status === filter);
@@ -74,7 +74,7 @@ const AdminOrderList: React.FC<AdminOrderListProps> = (props) => {
                   </div>
                   <div className="d-flex align-items-center gap-2">
                     <Badge bg={ORDER_STATUS_VARIANT[order.status] ?? "secondary"}>{ORDER_STATUS_LABELS[order.status]}</Badge>
-                    <span>{formatPrice(order.total)}</span>
+                    <span>{formatPrice(order.total, order.currency)}</span>
                     {expandedId === order.id ? <FaChevronUp /> : <FaChevronDown />}
                   </div>
                 </button>
@@ -91,7 +91,7 @@ const AdminOrderList: React.FC<AdminOrderListProps> = (props) => {
                     )}
                     {order.discount > 0 && (
                       <div className="small text-success mt-1">
-                        Descuento{order.discountCode ? ` (${order.discountCode})` : ""}: -{formatPrice(order.discount)}
+                        Descuento{order.discountCode ? ` (${order.discountCode})` : ""}: -{formatPrice(order.discount, order.currency)}
                       </div>
                     )}
                     {order.status === OrderStatus.Pendiente && (
@@ -143,4 +143,4 @@ const AdminOrderList: React.FC<AdminOrderListProps> = (props) => {
   );
 };
 
-export default AdminOrderList;
+export default AdminOrderListView;

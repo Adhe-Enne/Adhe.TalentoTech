@@ -9,8 +9,8 @@ import useNotification from "../../../hooks/selectors/useNotification";
 import { useProduct } from "../../../hooks/selectors/useProduct";
 import useProducts from "../../../hooks/selectors/useProducts";
 import useTags from "../../../hooks/selectors/useTags";
-import ProductDetail from "./ProductDetail";
 import styles from "./ProductDetail.module.css";
+import ProductDetailView from "./ProductDetailView";
 
 const ProductDetailContainer: React.FC = () => {
   const { id } = useParams();
@@ -91,7 +91,7 @@ const ProductDetailContainer: React.FC = () => {
   const categoryName: string | undefined = product?.categoryId ? findCategory(product.categoryId)?.name : undefined;
   const tags: Tag[] | undefined = product?.tagIds ? product.tagIds.map((t) => findTag(t)).filter((t): t is Tag => t != null) : undefined;
 
-  return <ProductDetail categoryName={categoryName} loading={loading} onAddToCart={handleAddToCart} onBack={handleBack} onRefresh={handleRefresh} product={product} tags={tags} />;
+  return <ProductDetailView categoryName={categoryName} loading={loading} onAddToCart={handleAddToCart} onBack={handleBack} onRefresh={handleRefresh} product={product} tags={tags} />;
 };
 
 export default ProductDetailContainer;

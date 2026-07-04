@@ -101,18 +101,18 @@ const OrderConfirmationView: React.FC<OrderConfirmationViewProps> = (props) => {
               <hr />
               <div className="d-flex justify-content-between small">
                 <span>Subtotal</span>
-                <span>{formatPrice(order.subtotal)}</span>
+                <span>{formatPrice(order.subtotal, order.currency)}</span>
               </div>
               {order.discount > 0 && (
                 <div className="d-flex justify-content-between small text-success">
                   <span>Descuento{order.discountCode ? ` (${order.discountCode})` : ""}</span>
-                  <span>-{formatPrice(order.discount)}</span>
+                  <span>-{formatPrice(order.discount, order.currency)}</span>
                 </div>
               )}
               <hr />
               <div className="d-flex justify-content-between fw-bold">
                 <span>Total</span>
-                <span>{formatPrice(order.total)}</span>
+                <span>{formatPrice(order.total, order.currency)}</span>
               </div>
             </div>
           </div>

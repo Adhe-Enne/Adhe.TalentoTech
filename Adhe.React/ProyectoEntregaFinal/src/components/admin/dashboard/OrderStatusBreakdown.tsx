@@ -39,7 +39,7 @@ const OrderStatusBreakdown: React.FC<OrderStatusBreakdownProps> = (props) => {
     }
 
     return Object.entries(byStatus).map(([status, count]: [string, number]) => ({
-      status: status as OrderStatusValue,
+      status,
       count,
       percentage: total > 0 ? (count / total) * 100 : 0,
     }));
@@ -52,9 +52,7 @@ const OrderStatusBreakdown: React.FC<OrderStatusBreakdownProps> = (props) => {
           <FaCheckCircle className="text-success" />
           <h5 className="mb-0">Estado de Pedidos</h5>
         </div>
-        <div className="card-body text-center text-muted py-4">
-          No hay pedidos registrados
-        </div>
+        <div className="card-body text-center text-muted py-4">No hay pedidos registrados</div>
       </div>
     );
   }
@@ -66,7 +64,8 @@ const OrderStatusBreakdown: React.FC<OrderStatusBreakdownProps> = (props) => {
         <h5 className="mb-0">Estado de Pedidos</h5>
       </div>
       <div className="card-body">
-        {statusData.map(({ status, count, percentage }: StatusRow) => {
+        {statusData.map((statusRow: StatusRow) => {
+          const { status, count, percentage } = statusRow;
           const variant: string = ORDER_STATUS_VARIANT[status] ?? "secondary";
           const meta: StatusMeta = STATUS_META[status] ?? { icon: null, label: status };
           return (
@@ -80,21 +79,12 @@ const OrderStatusBreakdown: React.FC<OrderStatusBreakdownProps> = (props) => {
                   {count} ({percentage.toFixed(1)}%)
                 </span>
               </div>
-              <div
-                aria-valuemax={100}
-                aria-valuemin={0}
-                aria-valuenow={Math.round(percentage)}
-                className="progress"
-                role="progressbar"
-                style={{ height: 20 }}
-              >
-                <div
-                  className={`progress-bar bg-${variant}`}
-                  style={{ width: `${percentage}%` }}
-                >
+              <div className="progress" style={{ height: 20 }}>
+                <div className={`progress-bar bg-${variant}`} style={{ width: `${percentage}%` }}>
                   {percentage > 8 && `${percentage.toFixed(1)}%`}
                 </div>
               </div>
+              <progress aria-label={`${meta.label}: ${percentage.toFixed(1)}%`} className="visually-hidden" max={100} value={Math.round(percentage)} />
             </div>
           );
         })}

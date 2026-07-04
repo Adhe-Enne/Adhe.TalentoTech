@@ -1,4 +1,4 @@
-import React, { useCallback, useRef } from "react";
+import React, { useCallback, useRef, useState } from "react";
 import { useNavigate, type NavigateFunction } from "react-router-dom";
 
 import type { ShippingInfo } from "../../models";
@@ -19,14 +19,16 @@ const CheckoutContainer: React.FC = () => {
   const { cart, clearCart, rawTotal, appliedCoupon, discountedTotal } = useCart();
   const { setNotification } = useNotification();
   const { checkout, isLoading, error } = useOrders();
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const shippingRef: React.RefObject<ShippingFormHandle | null> = useRef<ShippingFormHandle>(null);
-  const isSubmittingRef: React.MutableRefObject<boolean> = useRef<boolean>(false);
+  const isSubmittingRef: React.RefObject<boolean> = useRef<boolean>(false);
 
   const handleConfirm: () => Promise<void> = useCallback(async (): Promise<void> => {
     if (!user || isSubmittingRef.current) {
       return;
     }
     isSubmittingRef.current = true;
+    setIsSubmitting(true);
     try {
       if (cart.length === 0) {
         setNotification("El carrito está vacío", 3000, "warning");
@@ -39,9 +41,45 @@ const CheckoutContainer: React.FC = () => {
       return;
     }
 
-    const orderCurrency: string = cart[0].product.currency ?? "USD";
-    const exchangeRate: number = await exchangeRateService.getRate(orderCurrency);
-    const totalInBase: number = Number((discountedTotal * exchangeRate).toFixed(2));
+    const currencies: string[] = [...new Set(cart.map((it) => it.product.currency ?? "USD"))];
+    const isMixed: boolean = currencies.length > 1;
+
+    const rates: Record<string, number> = {};
+    for (const c of currencies) {
+      rates[c] = await exchangeRateService.getRate(c);
+    }
+
+    let orderCurrency: string;
+    let exchangeRate: number;
+    let subtotal: number;
+    let discount: number;
+    let total: number;
+
+    if (isMixed) {
+      let subtotalUSD: number = 0;
+      for (const item of cart) {
+        const c: string = item.product.currency ?? "USD";
+        subtotalUSD += item.product.price * item.quantity * rates[c];
+      }
+      subtotalUSD = Number(subtotalUSD.toFixed(2));
+      const discountUSD: number = appliedCoupon ? Number((subtotalUSD * (appliedCoupon.discountValue / 100)).toFixed(2)) : 0;
+      const totalUSD: number = Number(Math.max(0, subtotalUSD - discountUSD).toFixed(2));
+
+      orderCurrency = "USD";
+      exchangeRate = 1;
+      subtotal = subtotalUSD;
+      discount = discountUSD;
+      total = totalUSD;
+    } else {
+      const [singleCurrency] = currencies;
+      orderCurrency = singleCurrency;
+      exchangeRate = rates[singleCurrency];
+      subtotal = rawTotal;
+      discount = appliedCoupon ? rawTotal - discountedTotal : 0;
+      total = discountedTotal;
+    }
+
+    const totalInBase: number = Number((total * exchangeRate).toFixed(2));
 
     const orderId: string | undefined = await withToast(
       () =>
@@ -55,17 +93,17 @@ const CheckoutContainer: React.FC = () => {
             price: item.product.price,
             quantity: item.quantity,
             subtotal: item.product.price * item.quantity,
-            currency: orderCurrency,
+            currency: item.product.currency ?? "USD",
           })),
           currency: orderCurrency,
           exchangeRate,
           baseCurrency: "USD",
           totalInBase,
-          subtotal: rawTotal,
-          discount: appliedCoupon ? rawTotal - discountedTotal : 0,
+          subtotal,
+          discount,
           discountCode: appliedCoupon?.code ?? null,
           couponId: appliedCoupon?.id ?? null,
-          total: discountedTotal,
+          total,
           status: OrderStatus.Completado,
           shippingInfo: result.data!,
         }),
@@ -79,6 +117,7 @@ const CheckoutContainer: React.FC = () => {
     }
     } finally {
       isSubmittingRef.current = false;
+      setIsSubmitting(false);
     }
   }, [user, cart, checkout, clearCart, navigate, setNotification, rawTotal, appliedCoupon, discountedTotal]);
 
@@ -95,7 +134,7 @@ const CheckoutContainer: React.FC = () => {
     return null;
   }
 
-  return <CheckoutView error={error} isLoading={isLoading || isSubmittingRef.current} onBack={handleBack} onConfirm={handleConfirm} shippingRef={shippingRef} />;
+  return <CheckoutView error={error} isLoading={isLoading || isSubmitting} onBack={handleBack} onConfirm={handleConfirm} shippingRef={shippingRef} />;
 };
 
 export default CheckoutContainer;

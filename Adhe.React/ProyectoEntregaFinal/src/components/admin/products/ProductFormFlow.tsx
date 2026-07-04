@@ -204,14 +204,7 @@ const ProductFormFlow: React.FC = () => {
             tags={tags}
           />
         ) : (
-          <ProductForm
-            categories={categories}
-            loading={loading}
-            onCreateCategory={createCategory}
-            onCreateTag={createTag}
-            onSubmit={onSubmit}
-            tags={tags}
-          />
+          <ProductForm categories={categories} loading={loading} onCreateCategory={createCategory} onCreateTag={createTag} onSubmit={onSubmit} tags={tags} />
         )}
       </div>
     </>

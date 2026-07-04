@@ -2,6 +2,7 @@ import React from "react";
 import { FaArrowLeft, FaBox, FaClipboardList, FaPlus, FaTachometerAlt, FaTicketAlt } from "react-icons/fa";
 import { NavLink, Outlet } from "react-router-dom";
 
+import ExchangeRatesBanner from "../common/ExchangeRatesBanner";
 import styles from "./AdminLayout.module.css";
 
 const AdminLayout: React.FC = () => {
@@ -14,6 +15,7 @@ const AdminLayout: React.FC = () => {
           Volver a tienda
         </NavLink>
       </header>
+      <ExchangeRatesBanner />
       <div className={styles.adminBody}>
         <nav aria-label="Panel de administración" className={styles.sidebar}>
           <NavLink aria-label="Dashboard" className={(props) => `${styles.sidebarLink}${props.isActive ? " " + styles.active : ""}`} end to="/admin">

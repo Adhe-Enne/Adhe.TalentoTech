@@ -1,10 +1,11 @@
 import React from "react";
 import { Button, ListGroup } from "react-bootstrap";
-import { FaMinus, FaPlus, FaTrash } from "react-icons/fa";
+import { FaTrash } from "react-icons/fa";
 
 import type { CartItem } from "../../models";
 
 import { formatPrice } from "../../utils/format";
+import QuantityStepper from "../ui/QuantityStepper";
 import styles from "./CartItemRow.module.css";
 
 interface CartItemRowProps {
@@ -24,15 +25,7 @@ const CartItemRow: React.FC<CartItemRowProps> = (props) => {
         <strong>{item.product.name}</strong>
         <div className="text-muted">{formatPrice(item.product.price, item.product.currency)}</div>
       </div>
-      <div className="d-flex align-items-center gap-2">
-        <Button aria-label="Reducir cantidad" onClick={onDecrement} size="sm" variant="outline-secondary">
-          <FaMinus />
-        </Button>
-        <span>{item.quantity}</span>
-        <Button aria-label="Aumentar cantidad" onClick={onIncrement} size="sm" variant="outline-secondary">
-          <FaPlus />
-        </Button>
-      </div>
+      <QuantityStepper max={item.product.stock} min={1} onDecrement={onDecrement} onIncrement={onIncrement} size="sm" value={item.quantity} />
       <div className={styles.totalPrice}>{formatPrice(item.product.price * item.quantity, item.product.currency)}</div>
       <div>
         <Button aria-label={`Eliminar ${item.product.name}`} onClick={onRemove} size="sm" variant="danger">

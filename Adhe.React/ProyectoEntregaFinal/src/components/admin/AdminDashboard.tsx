@@ -1,10 +1,9 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { FaBox, FaChartLine, FaCheckCircle, FaClipboardList, FaClock, FaDollarSign, FaExclamationTriangle, FaMoneyBillWave, FaBoxOpen, FaPercentage, FaTag, FaTimesCircle, FaUsers } from "react-icons/fa";
+import { FaBox, FaChartLine, FaClipboardList, FaDollarSign, FaExclamationTriangle, FaMoneyBillWave, FaBoxOpen, FaPercentage, FaTag, FaUsers } from "react-icons/fa";
 
 import type { Coupon, Order, Product } from "../../models";
 import type { ComputedMetrics } from "../../types";
 
-import useCategories from "../../hooks/selectors/useCategories";
 import useCoupons from "../../hooks/selectors/useCoupons";
 import useProducts from "../../hooks/selectors/useProducts";
 import { useAllExchangeRates } from "../../hooks/useAllExchangeRates";
@@ -28,7 +27,6 @@ interface MetricItem {
 const AdminDashboard: React.FC = () => {
   const { products, loading: productsLoading, reload } = useProducts();
   const { coupons, loading: couponsLoading, fetchCoupons } = useCoupons();
-  const { categories } = useCategories();
   const { error, fetchAllOrders } = useOrders();
   const [orders, setOrders] = useState<Order[]>([]);
   const [ordersLoading, setOrdersLoading] = useState<boolean>(true);
@@ -84,11 +82,12 @@ const AdminDashboard: React.FC = () => {
     const inventoryCurrencies: Set<string> = new Set(products?.map((p: Product) => p.currency ?? "USD") ?? []);
     const hasMixedInventoryCurrencies: boolean = inventoryCurrencies.size > 1;
     const inventoryValue: number = products?.reduce((s: number, p: Product) => s + p.price * p.stock, 0) ?? 0;
-    const inventoryValueUSD: number = products?.reduce((s: number, p: Product) => {
-      const currency: string = p.currency ?? "USD";
-      const rate: number = rates[currency] ?? 1;
-      return s + (p.price * p.stock) / rate;
-    }, 0) ?? 0;
+    const inventoryValueUSD: number =
+      products?.reduce((s: number, p: Product) => {
+        const currency: string = p.currency ?? "USD";
+        const rate: number = rates[currency] ?? 1;
+        return s + (p.price * p.stock) / rate;
+      }, 0) ?? 0;
 
     const aovUSD: number = completedOrdersList.length > 0 ? totalRevenueUSD / completedOrdersList.length : 0;
 
@@ -142,14 +141,27 @@ const AdminDashboard: React.FC = () => {
     } = computed;
 
     return [
-      { label: "Total Productos", value: String(totalProducts), icon: <FaBox />, link: "/admin/productos" },
-      { label: "Productos Activos", value: String(activeProducts), icon: <FaCheckCircle /> },
-      { label: "Total Cupones", value: String(totalCoupons), icon: <FaTag />, link: "/admin/cupones" },
-      { label: "Cupones Activos", value: String(activeCoupons), icon: <FaCheckCircle /> },
-      { label: "Total Pedidos", value: String(totalOrders), icon: <FaClipboardList />, link: "/admin/ordenes" },
-      { label: "Pedidos Pendientes", value: String(pendingOrders), icon: <FaClock /> },
-      { label: "Pedidos Completados", value: String(completedOrders), icon: <FaCheckCircle /> },
-      { label: "Pedidos Cancelados", value: String(cancelledOrders), icon: <FaTimesCircle /> },
+      {
+        label: "Productos",
+        value: String(totalProducts),
+        icon: <FaBox />,
+        link: "/admin/productos",
+        subtitle: `${activeProducts} activos · ${totalProducts - activeProducts} inactivos`,
+      },
+      {
+        label: "Cupones",
+        value: String(totalCoupons),
+        icon: <FaTag />,
+        link: "/admin/cupones",
+        subtitle: `${activeCoupons} activos · ${totalCoupons - activeCoupons} inactivos`,
+      },
+      {
+        label: "Pedidos",
+        value: String(totalOrders),
+        icon: <FaClipboardList />,
+        link: "/admin/ordenes",
+        subtitle: `✅ ${completedOrders} completados · ⏳ ${pendingOrders} pendientes · ❌ ${cancelledOrders} cancelados — ${completionRate.toFixed(1)}% tasa`,
+      },
       { label: "Ingresos Totales (USD)", value: `${formatPrice(totalRevenueUSD, "USD")}`, icon: <FaDollarSign />, subtitle: "Todo convertido a USD" },
       { label: "Ticket Promedio (USD)", value: `${formatPrice(aovUSD, "USD")}`, icon: <FaChartLine />, subtitle: `${completedOrdersList.length} pedidos completados` },
       { label: "Descuentos Aplicados (USD)", value: `${formatPrice(totalDiscountsUSD, "USD")}`, icon: <FaMoneyBillWave />, variant: "success", subtitle: `En ${totalOrders} pedidos` },
@@ -160,11 +172,7 @@ const AdminDashboard: React.FC = () => {
     ];
   }, [computed]);
 
-  const ordersProp: Order[] = orders;
-  const productsProp: Product[] = products ?? [];
-  const couponsProp: Coupon[] = coupons;
-
-  return <AdminDashboardView categories={categories} coupons={couponsProp} loading={loading} metrics={metrics} onRefresh={handleRefresh} orders={ordersProp} products={productsProp} rates={rates} />;
+  return <AdminDashboardView loading={loading} metrics={metrics} onRefresh={handleRefresh} orders={orders} />;
 };
 
 export default AdminDashboard;

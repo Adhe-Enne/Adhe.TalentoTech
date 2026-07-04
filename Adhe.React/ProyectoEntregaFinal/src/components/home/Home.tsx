@@ -8,6 +8,7 @@ import useCart from "../../hooks/selectors/useCart";
 import useFavorites from "../../hooks/selectors/useFavorites";
 import useNotification from "../../hooks/selectors/useNotification";
 import useAsyncCollection from "../../hooks/useAsyncCollection";
+import useCartActions from "../../hooks/useCartActions";
 import { productService } from "../../services/productService";
 import { extractErrorMessage } from "../../utils/errorUtils";
 import HomeView from "./HomeView";
@@ -47,8 +48,9 @@ const Home: React.FC = () => {
     }
   }, [hasMore, loadingMore, setData, setError]);
   const { favorites, toggleFavorite } = useFavorites();
-  const { addToCart, getCantidadActual, removeFromCart, updateQuantity } = useCart();
+  const { addToCart, getCantidadActual } = useCart();
   const { setNotification } = useNotification();
+  const { increment, decrement } = useCartActions();
   const navigate: NavigateFunction = useNavigate();
 
   const location: ReturnType<typeof useLocation> = useLocation();
@@ -96,46 +98,32 @@ const Home: React.FC = () => {
 
   const handleIncrement: (product: Product) => void = useCallback(
     (product: Product): void => {
-      const current: number = getCantidadActual(product.id);
-      if (current >= product.stock) {
-        setNotification(`Stock maximo alcanzado para ${product.name}`, 3000, "warning");
-        return;
-      }
-      updateQuantity(product.id, current + 1);
-      setNotification(`${product.name}: +1 unidad`, 2000, "info");
+      increment(product);
     },
-    [getCantidadActual, updateQuantity, setNotification],
+    [increment],
   );
 
   const handleDecrement: (product: Product) => void = useCallback(
     (product: Product): void => {
-      const current: number = getCantidadActual(product.id);
-      if (current <= 1) {
-        removeFromCart(product.id);
-        setNotification(`${product.name} eliminado del carrito`, 2000, "info");
-        return;
-      }
-      updateQuantity(product.id, current - 1);
-      setNotification(`${product.name}: -1 unidad`, 2000, "info");
+      decrement(product);
     },
-    [getCantidadActual, removeFromCart, updateQuantity, setNotification],
+    [decrement],
   );
 
-  const cardData: { currentQuantity: number; isFavorite: boolean; product: Product; onAddToCart: () => void; onDecrement: () => void; onIncrement: () => void; onNavigate: () => void; onToggleFavorite: () => void }[] =
-    useMemo(
-      () =>
-        filteredProducts.map((p) => ({
-          currentQuantity: getCantidadActual(p.id),
-          isFavorite: Boolean(favorites?.[p.id]),
-          product: p,
-          onAddToCart: () => handleAddToCart(p),
-          onDecrement: () => handleDecrement(p),
-          onIncrement: () => handleIncrement(p),
-          onNavigate: () => navigate(`/producto/${p.id}`),
-          onToggleFavorite: () => toggleFavorite(p.id),
-        })),
-      [filteredProducts, favorites, getCantidadActual, handleAddToCart, handleDecrement, handleIncrement, navigate, toggleFavorite],
-    );
+  const cardData: { currentQuantity: number; isFavorite: boolean; product: Product; onAddToCart: () => void; onDecrement: () => void; onIncrement: () => void; onNavigate: () => void; onToggleFavorite: () => void }[] = useMemo(
+    () =>
+      filteredProducts.map((p) => ({
+        currentQuantity: getCantidadActual(p.id),
+        isFavorite: Boolean(favorites?.[p.id]),
+        product: p,
+        onAddToCart: () => handleAddToCart(p),
+        onDecrement: () => handleDecrement(p),
+        onIncrement: () => handleIncrement(p),
+        onNavigate: () => navigate(`/producto/${p.id}`),
+        onToggleFavorite: () => toggleFavorite(p.id),
+      })),
+    [filteredProducts, favorites, getCantidadActual, handleAddToCart, handleDecrement, handleIncrement, navigate, toggleFavorite],
+  );
 
   const showReset: boolean = filteredProducts.length > ITEMS_PER_PAGE;
   const showLoadMore: boolean = hasMore && filteredProducts.length > 0 && !loadingMore;

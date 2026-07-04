@@ -2,7 +2,7 @@ import React from "react";
 import { Col, Row } from "react-bootstrap";
 import { Link } from "react-router-dom";
 
-import type { Category, Coupon, Order, Product } from "../../models";
+import type { Order } from "../../models";
 
 import HelmetMeta from "../ui/HelmetMeta";
 import LoadingSpinner from "../ui/LoadingSpinner";
@@ -10,15 +10,15 @@ import PageHeader from "../ui/PageHeader";
 import RefreshButton from "../ui/RefreshButton";
 import AverageTicketByCurrency from "./dashboard/AverageTicketByCurrency";
 import CouponInsights from "./dashboard/CouponInsights";
-import MonthlyTrends from "./dashboard/MonthlyTrends";
-import TopProducts from "./dashboard/TopProducts";
 import DiscountsByCurrency from "./dashboard/DiscountsByCurrency";
 import InventoryByCurrency from "./dashboard/InventoryByCurrency";
+import MonthlyTrends from "./dashboard/MonthlyTrends";
 import OrderStatusBreakdown from "./dashboard/OrderStatusBreakdown";
 import ProductsByCategory from "./dashboard/ProductsByCategory";
 import RecentOrders from "./dashboard/RecentOrders";
 import RevenueByCurrency from "./dashboard/RevenueByCurrency";
 import StockAlerts from "./dashboard/StockAlerts";
+import TopProducts from "./dashboard/TopProducts";
 
 interface Metric {
   icon: React.ReactNode;
@@ -30,13 +30,9 @@ interface Metric {
 }
 
 interface AdminDashboardViewProps {
-  categories: Category[];
-  coupons: Coupon[];
   loading: boolean;
   metrics: Metric[];
   orders: Order[];
-  products: Product[];
-  rates: Record<string, number>;
   onRefresh: () => void;
 }
 
@@ -49,7 +45,7 @@ const VARIANT_MAP: Record<string, { bg: string; text: string; border: string }> 
 };
 
 const AdminDashboardView: React.FC<AdminDashboardViewProps> = (props) => {
-  const { categories, coupons, loading, metrics, onRefresh, orders, products, rates } = props;
+  const { loading, metrics, onRefresh, orders } = props;
 
   if (loading) {
     return <LoadingSpinner message="Cargando dashboard..." />;
@@ -68,10 +64,7 @@ const AdminDashboardView: React.FC<AdminDashboardViewProps> = (props) => {
             <Col key={m.label} lg={3} sm={6} xs={12}>
               <div className={`card h-100 shadow-sm rounded-3${vs ? " " + vs.border : ""} position-relative`}>
                 <div className="card-body d-flex align-items-center gap-3 p-3">
-                  <div
-                    className={`d-flex align-items-center justify-content-center rounded-circle flex-shrink-0 ${vs?.bg ?? "bg-info bg-opacity-10"} ${vs?.text ?? "text-info"}`}
-                    style={{ width: 48, height: 48, fontSize: "1.25rem" }}
-                  >
+                  <div className={`d-flex align-items-center justify-content-center rounded-circle flex-shrink-0 ${vs?.bg ?? "bg-info bg-opacity-10"} ${vs?.text ?? "text-info"}`} style={{ width: 48, height: 48, fontSize: "1.25rem" }}>
                     {m.icon}
                   </div>
                   <div>
@@ -96,7 +89,7 @@ const AdminDashboardView: React.FC<AdminDashboardViewProps> = (props) => {
       </Row>
       <Row className="g-3 mt-3">
         <Col lg={6} xs={12}>
-          <ProductsByCategory categories={categories} products={products} />
+          <ProductsByCategory />
         </Col>
         <Col lg={6} xs={12}>
           <RecentOrders orders={orders} />
@@ -104,15 +97,15 @@ const AdminDashboardView: React.FC<AdminDashboardViewProps> = (props) => {
       </Row>
       <Row className="g-3 mt-3">
         <Col lg={6} xs={12}>
-          <StockAlerts products={products} />
+          <StockAlerts />
         </Col>
         <Col lg={6} xs={12}>
-          <CouponInsights coupons={coupons} />
+          <CouponInsights />
         </Col>
       </Row>
       <Row className="g-3 mt-3">
         <Col lg={6} xs={12}>
-          <InventoryByCurrency products={products} rates={rates} />
+          <InventoryByCurrency />
         </Col>
         <Col lg={6} xs={12}>
           <DiscountsByCurrency orders={orders} />

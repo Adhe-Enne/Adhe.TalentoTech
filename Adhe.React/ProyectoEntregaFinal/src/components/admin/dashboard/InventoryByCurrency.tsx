@@ -1,8 +1,8 @@
 import React, { useMemo } from "react";
 import { FaBoxes, FaDollarSign, FaEuroSign, FaMoneyBillWave } from "react-icons/fa";
 
-import type { Product } from "../../../models";
-
+import useProducts from "../../../hooks/selectors/useProducts";
+import { useAllExchangeRates } from "../../../hooks/useAllExchangeRates";
 import { formatPrice } from "../../../utils/format";
 
 const CURRENCY_META: Record<string, { icon: React.ReactNode; color: string; label: string }> = {
@@ -19,13 +19,9 @@ interface CurrencyRow {
   totalUSD: number;
 }
 
-interface InventoryByCurrencyProps {
-  products: Product[];
-  rates: Record<string, number>;
-}
-
-const InventoryByCurrency: React.FC<InventoryByCurrencyProps> = (props) => {
-  const { products, rates } = props;
+const InventoryByCurrency: React.FC = () => {
+  const { products } = useProducts();
+  const { rates } = useAllExchangeRates();
 
   const currencyData: CurrencyRow[] = useMemo(() => {
     const originalTotals: Record<string, number> = {};
@@ -53,10 +49,7 @@ const InventoryByCurrency: React.FC<InventoryByCurrencyProps> = (props) => {
       .sort((a: CurrencyRow, b: CurrencyRow) => b.totalUSD - a.totalUSD);
   }, [products, rates]);
 
-  const grandTotalUSD: number = useMemo(
-    () => currencyData.reduce((s: number, c: CurrencyRow) => s + c.totalUSD, 0),
-    [currencyData],
-  );
+  const grandTotalUSD: number = useMemo(() => currencyData.reduce((s: number, c: CurrencyRow) => s + c.totalUSD, 0), [currencyData]);
 
   if (currencyData.length === 0) {
     return (
@@ -65,9 +58,7 @@ const InventoryByCurrency: React.FC<InventoryByCurrencyProps> = (props) => {
           <FaBoxes className="text-success" />
           <h5 className="mb-0">Inventario por Moneda</h5>
         </div>
-        <div className="card-body text-center text-muted py-4">
-          No hay productos registrados
-        </div>
+        <div className="card-body text-center text-muted py-4">No hay productos registrados</div>
       </div>
     );
   }
@@ -79,7 +70,8 @@ const InventoryByCurrency: React.FC<InventoryByCurrencyProps> = (props) => {
         <h5 className="mb-0">Inventario por Moneda</h5>
       </div>
       <div className="card-body">
-        {currencyData.map(({ currency, totalOriginal, percentage }: CurrencyRow) => {
+        {currencyData.map((data: CurrencyRow) => {
+          const { currency, totalOriginal, percentage } = data;
           const meta: { icon: React.ReactNode; color: string; label: string } = CURRENCY_META[currency] ?? {
             icon: <FaDollarSign />,
             color: "secondary",
@@ -94,21 +86,12 @@ const InventoryByCurrency: React.FC<InventoryByCurrencyProps> = (props) => {
                 </span>
                 <span className="text-muted small">{formatPrice(totalOriginal, currency)}</span>
               </div>
-              <div
-                aria-valuemax={100}
-                aria-valuemin={0}
-                aria-valuenow={Math.round(percentage)}
-                className="progress"
-                role="progressbar"
-                style={{ height: 20 }}
-              >
-                <div
-                  className={`progress-bar bg-${meta.color}`}
-                  style={{ width: `${percentage}%` }}
-                >
+              <div className="progress" style={{ height: 20 }}>
+                <div className={`progress-bar bg-${meta.color}`} style={{ width: `${percentage}%` }}>
                   {percentage > 8 && `${percentage.toFixed(1)}%`}
                 </div>
               </div>
+              <progress aria-label={`${meta.label}: ${percentage.toFixed(1)}%`} className="visually-hidden" max={100} value={Math.round(percentage)} />
             </div>
           );
         })}

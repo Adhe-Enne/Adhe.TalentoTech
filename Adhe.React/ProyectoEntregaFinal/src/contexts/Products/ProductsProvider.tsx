@@ -62,16 +62,9 @@ export const ProductsProvider: React.FC<ProviderProps> = (props) => {
     }, {});
   }, [products]);
 
-  const findByIdMemoized: (id: string) => Product | undefined = useCallback(
-    (id: string): Product | undefined => {
-      return productById[id];
-    },
-    [productById],
-  );
-
   const value: ProductsContextType = useMemo(
-    () => ({ products, enabledProducts, loading, productById, createProduct, deleteProduct, updateProduct, findById: findByIdMemoized, reload }),
-    [products, enabledProducts, loading, productById, createProduct, deleteProduct, updateProduct, findByIdMemoized, reload],
+    () => ({ products, enabledProducts, loading, productById, createProduct, deleteProduct, updateProduct, findById: (id: string) => productById[id], reload }),
+    [products, enabledProducts, loading, productById, createProduct, deleteProduct, updateProduct, reload],
   );
 
   return <ProductsContext.Provider value={value}>{children}</ProductsContext.Provider>;

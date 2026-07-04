@@ -32,7 +32,9 @@ const RevenueByCurrency: React.FC<RevenueByCurrencyProps> = (props) => {
     const usdTotals: Record<string, number> = {};
 
     for (const order of orders) {
-      if (order.status !== OrderStatus.Completado) {continue;}
+      if (order.status !== OrderStatus.Completado) {
+        continue;
+      }
       const currency: string = order.currency ?? "USD";
       originalTotals[currency] = (originalTotals[currency] ?? 0) + (order.total ?? 0);
       usdTotals[currency] = (usdTotals[currency] ?? 0) + (order.totalInBase ?? order.total);
@@ -53,10 +55,7 @@ const RevenueByCurrency: React.FC<RevenueByCurrencyProps> = (props) => {
       .sort((a: CurrencyRow, b: CurrencyRow) => b.totalUSD - a.totalUSD);
   }, [orders]);
 
-  const grandTotalUSD: number = useMemo(
-    () => currencyData.reduce((s: number, c: CurrencyRow) => s + c.totalUSD, 0),
-    [currencyData],
-  );
+  const grandTotalUSD: number = useMemo(() => currencyData.reduce((s: number, c: CurrencyRow) => s + c.totalUSD, 0), [currencyData]);
 
   if (currencyData.length === 0) {
     return (
@@ -65,9 +64,7 @@ const RevenueByCurrency: React.FC<RevenueByCurrencyProps> = (props) => {
           <FaDollarSign className="text-success" />
           <h5 className="mb-0">Ingresos por Moneda</h5>
         </div>
-        <div className="card-body text-center text-muted py-4">
-          No hay ingresos registrados
-        </div>
+        <div className="card-body text-center text-muted py-4">No hay ingresos registrados</div>
       </div>
     );
   }
@@ -79,7 +76,8 @@ const RevenueByCurrency: React.FC<RevenueByCurrencyProps> = (props) => {
         <h5 className="mb-0">Ingresos por Moneda</h5>
       </div>
       <div className="card-body">
-        {currencyData.map(({ currency, totalOriginal, percentage }: CurrencyRow) => {
+        {currencyData.map((row: CurrencyRow) => {
+          const { currency, totalOriginal, percentage } = row;
           const meta: { icon: React.ReactNode; color: string; label: string } = CURRENCY_META[currency] ?? {
             icon: <FaDollarSign />,
             color: "secondary",
@@ -94,26 +92,17 @@ const RevenueByCurrency: React.FC<RevenueByCurrencyProps> = (props) => {
                 </span>
                 <span className="text-muted small">{formatPrice(totalOriginal, currency)}</span>
               </div>
-              <div
-                aria-valuemax={100}
-                aria-valuemin={0}
-                aria-valuenow={Math.round(percentage)}
-                className="progress"
-                role="progressbar"
-                style={{ height: 20 }}
-              >
-                <div
-                  className={`progress-bar bg-${meta.color}`}
-                  style={{ width: `${percentage}%` }}
-                >
+              <div className="progress" style={{ height: 20 }}>
+                <div className={`progress-bar bg-${meta.color}`} style={{ width: `${percentage}%` }}>
                   {percentage > 8 && `${percentage.toFixed(1)}%`}
                 </div>
               </div>
+              <progress aria-label={`${meta.label}: ${percentage.toFixed(1)}%`} className="visually-hidden" max={100} value={Math.round(percentage)} />
             </div>
           );
         })}
         <div className="d-flex justify-content-between pt-2 border-top">
-          <strong>Total (USD)</strong>
+          <strong>Total (Conversion a USD)</strong>
           <strong>{formatPrice(grandTotalUSD, "USD")}</strong>
         </div>
       </div>

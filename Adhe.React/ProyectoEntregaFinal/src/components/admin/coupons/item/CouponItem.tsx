@@ -2,12 +2,12 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Badge } from "react-bootstrap";
 import { toast } from "react-toastify";
 
-import type { Coupon, CouponUpdatePayload } from "../../../models";
+import type { Coupon, CouponUpdatePayload } from "../../../../models";
 
-import { getTodayString } from "../../../utils/dateUtils";
-import { withToast } from "../../../utils/withToast";
-import DeleteButton from "../../ui/DeleteButton";
-import ToggleSwitch from "../../ui/ToggleSwitch";
+import { getTodayString } from "../../../../utils/dateUtils";
+import { withToast } from "../../../../utils/withToast";
+import DeleteButton from "../../../ui/DeleteButton";
+import ToggleSwitch from "../../../ui/ToggleSwitch";
 import styles from "./CouponItem.module.css";
 
 const today: string = getTodayString();
@@ -47,12 +47,7 @@ const CouponItem: React.FC<CouponItemProps> = (props) => {
 
   const handleToggle: () => Promise<void> = useCallback(async (): Promise<void> => {
     setToggling(true);
-    await withToast(
-      () => onUpdateCoupon(coupon.id, { isEnabled: !coupon.isEnabled }),
-      "Procesando...",
-      coupon.isEnabled ? "Cupon desactivado" : "Cupon activado",
-      "Error al cambiar estado del cupon",
-    );
+    await withToast(() => onUpdateCoupon(coupon.id, { isEnabled: !coupon.isEnabled }), "Procesando...", coupon.isEnabled ? "Cupon desactivado" : "Cupon activado", "Error al cambiar estado del cupon");
     setToggling(false);
   }, [coupon.id, coupon.isEnabled, onUpdateCoupon]);
 
@@ -71,12 +66,7 @@ const CouponItem: React.FC<CouponItemProps> = (props) => {
       toast.error("La fecha debe ser hoy o futura", { autoClose: 3000 });
       return;
     }
-    await withToast(
-      () => onUpdateCoupon(coupon.id, { expiresAt: newDate }),
-      "Actualizando fecha...",
-      newDate ? "Fecha de vencimiento actualizada" : "Vencimiento eliminado",
-      "Error al actualizar fecha",
-    );
+    await withToast(() => onUpdateCoupon(coupon.id, { expiresAt: newDate }), "Actualizando fecha...", newDate ? "Fecha de vencimiento actualizada" : "Vencimiento eliminado", "Error al actualizar fecha");
   }, [editDate, coupon.id, coupon.expiresAt, onUpdateCoupon]);
 
   const handleDateCancel: () => void = useCallback((): void => {

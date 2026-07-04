@@ -5,7 +5,7 @@ import useExpandable from "../../../hooks/useExpandable";
 import useOrders from "../../../hooks/useOrders";
 import { type Order, type OrderStatusValue, OrderStatus } from "../../../models/Order";
 import { withDelay, withToast } from "../../../utils/withToast";
-import AdminOrderList from "./AdminOrderList";
+import AdminOrderListView from "./AdminOrderListView";
 
 const AdminOrderListContainer: React.FC = () => {
   const { deleteOrder, error, fetchAllOrders, updateOrderStatus, isLoading } = useOrders();
@@ -71,7 +71,7 @@ const AdminOrderListContainer: React.FC = () => {
   }, [deleteTarget, deleteOrder]);
 
   return (
-    <AdminOrderList
+    <AdminOrderListView
       actionLoading={actionLoading}
       deleteTarget={deleteTarget}
       deleting={deleting}

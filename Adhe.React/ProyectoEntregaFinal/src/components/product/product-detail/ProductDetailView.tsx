@@ -11,7 +11,7 @@ import QuantityStepper from "../../ui/QuantityStepper";
 import RefreshButton from "../../ui/RefreshButton";
 import ProductImageCarousel from "./ProductImageCarousel";
 
-interface ProductDetailProps {
+interface ProductDetailViewProps {
   loading: boolean;
   product: Product;
   categoryName?: string;
@@ -21,7 +21,7 @@ interface ProductDetailProps {
   onRefresh: () => void;
 }
 
-const ProductDetail: React.FC<ProductDetailProps> = (props) => {
+const ProductDetailView: React.FC<ProductDetailViewProps> = (props) => {
   const { categoryName, loading, onAddToCart, onBack, onRefresh, product, tags } = props;
   const [cantidad, setCantidad] = useState<number>(1);
   const { images, stock } = product;
@@ -104,4 +104,4 @@ const ProductDetail: React.FC<ProductDetailProps> = (props) => {
   );
 };
 
-export default ProductDetail;
+export default ProductDetailView;

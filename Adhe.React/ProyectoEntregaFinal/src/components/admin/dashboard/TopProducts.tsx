@@ -23,14 +23,16 @@ const TopProducts: React.FC<TopProductsProps> = (props) => {
     const map: Record<string, ProductAgg> = {};
 
     for (const order of orders) {
-      if (order.status !== OrderStatus.Completado) {continue;}
+      if (order.status !== OrderStatus.Completado) {
+        continue;
+      }
       for (const item of order.items) {
         const id: string = item.productId;
         if (!map[id]) {
           map[id] = { name: item.productName, quantity: 0, revenue: 0 };
         }
         map[id].quantity += item.quantity;
-        map[id].revenue += item.price * item.quantity;
+        map[id].revenue += item.price * item.quantity * (order.exchangeRate ?? 1);
       }
     }
 
@@ -52,9 +54,7 @@ const TopProducts: React.FC<TopProductsProps> = (props) => {
           <FaTrophy className="text-warning" />
           <h5 className="mb-0">Top Productos</h5>
         </div>
-        <div className="card-body text-center text-muted py-4">
-          No hay datos de ventas
-        </div>
+        <div className="card-body text-center text-muted py-4">No hay datos de ventas</div>
       </div>
     );
   }
@@ -78,7 +78,7 @@ const TopProducts: React.FC<TopProductsProps> = (props) => {
         {byRevenue && (
           <div className="d-flex justify-content-between align-items-center mb-3">
             <strong>{byRevenue.name}</strong>
-            <span className="text-success fw-bold">{formatPrice(byRevenue.revenue, "USD")}</span>
+            <span className="text-success fw-bold">{formatPrice(byRevenue.revenue, "USD")} (Conversion)</span>
           </div>
         )}
       </div>

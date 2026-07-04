@@ -4,8 +4,8 @@ import type { Tag } from "../../models/Tag";
 import type { ProviderProps } from "../../types/ProviderProps";
 import type { TagsContextType } from "./TagsContext";
 
-import { useCollectionCrud } from "../../hooks/useCollectionCrud";
 import useNotification from "../../hooks/selectors/useNotification";
+import { useCollectionCrud } from "../../hooks/useCollectionCrud";
 import { tagService } from "../../services/tagService";
 import TagsContext from "./TagsContext";
 
@@ -30,10 +30,7 @@ export const TagsProvider: React.FC<ProviderProps> = (props) => {
     [addOptimistic, setNotification],
   );
 
-  const value: TagsContextType = useMemo(
-    () => ({ tags, loading, findById, reload, createTag }),
-    [tags, loading, findById, reload, createTag],
-  );
+  const value: TagsContextType = useMemo(() => ({ tags, loading, findById, reload, createTag }), [tags, loading, findById, reload, createTag]);
 
   return <TagsContext.Provider value={value}>{children}</TagsContext.Provider>;
 };

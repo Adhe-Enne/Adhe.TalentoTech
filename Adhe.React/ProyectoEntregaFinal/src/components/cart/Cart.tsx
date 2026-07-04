@@ -4,11 +4,13 @@ import { useNavigate, type NavigateFunction } from "react-router-dom";
 import type { CartItem } from "../../models";
 
 import useCart from "../../hooks/selectors/useCart";
+import useCartActions from "../../hooks/useCartActions";
 import CartView from "./CartView";
 
 const Cart: React.FC = () => {
   const navigate: NavigateFunction = useNavigate();
-  const { appliedCoupon, cart, discountedTotal, rawTotal, updateQuantity, removeFromCart } = useCart();
+  const { appliedCoupon, cart, discountedByCurrency, totalsByCurrency, removeFromCart } = useCart();
+  const { increment, decrement } = useCartActions();
 
   const handleBack: () => void = useCallback(() => {
     navigate("/");
@@ -20,23 +22,16 @@ const Cart: React.FC = () => {
 
   const handleItemIncrement: (item: CartItem) => void = useCallback(
     (item: CartItem): void => {
-      if (item.quantity >= item.product.stock) {
-        return;
-      }
-      updateQuantity(item.product.id, item.quantity + 1);
+      increment(item.product);
     },
-    [updateQuantity],
+    [increment],
   );
 
   const handleItemDecrement: (item: CartItem) => void = useCallback(
     (item: CartItem): void => {
-      if (item.quantity <= 1) {
-        removeFromCart(item.product.id);
-        return;
-      }
-      updateQuantity(item.product.id, item.quantity - 1);
+      decrement(item.product);
     },
-    [updateQuantity, removeFromCart],
+    [decrement],
   );
 
   const handleItemRemove: (item: CartItem) => void = useCallback(
@@ -50,13 +45,13 @@ const Cart: React.FC = () => {
     <CartView
       appliedCoupon={appliedCoupon}
       cart={cart}
-      discountedTotal={discountedTotal}
+      discountedByCurrency={discountedByCurrency}
       onBack={handleBack}
       onItemDecrement={handleItemDecrement}
       onItemIncrement={handleItemIncrement}
       onItemRemove={handleItemRemove}
       onPurchase={handlePurchase}
-      rawTotal={rawTotal}
+      totalsByCurrency={totalsByCurrency}
     />
   );
 };

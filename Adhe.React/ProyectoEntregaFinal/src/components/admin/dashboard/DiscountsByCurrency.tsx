@@ -79,7 +79,8 @@ const DiscountsByCurrency: React.FC<DiscountsByCurrencyProps> = (props) => {
         <h5 className="mb-0">Descuentos por Moneda</h5>
       </div>
       <div className="card-body">
-        {currencyData.map(({ currency, count, discountOriginal, percentage }: CurrencyRow) => {
+        {currencyData.map((row: CurrencyRow) => {
+          const { currency, count, discountOriginal, percentage } = row;
           const meta: { icon: React.ReactNode; color: string; label: string } = CURRENCY_META[currency] ?? {
             icon: <FaDollarSign />,
             color: "secondary",
@@ -95,13 +96,14 @@ const DiscountsByCurrency: React.FC<DiscountsByCurrencyProps> = (props) => {
                 <span className="text-muted small">{formatPrice(discountOriginal, currency)}</span>
               </div>
               <div className="small text-muted mb-1">
-                {count} pedido{count !== 1 ? "s" : ""} con descuento
+                {count} pedido{count === 1 ? "" : "s"} con descuento
               </div>
-              <div aria-valuemax={100} aria-valuemin={0} aria-valuenow={Math.round(percentage)} className="progress" role="progressbar" style={{ height: 20 }}>
+              <div className="progress" style={{ height: 20 }}>
                 <div className={`progress-bar bg-${meta.color}`} style={{ width: `${percentage}%` }}>
                   {percentage > 8 && `${percentage.toFixed(1)}%`}
                 </div>
               </div>
+              <progress aria-label={`${meta.label}: ${percentage.toFixed(1)}%`} className="visually-hidden" max={100} value={Math.round(percentage)} />
             </div>
           );
         })}

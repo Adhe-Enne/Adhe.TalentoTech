@@ -1,10 +1,10 @@
 import React from "react";
 import { Alert, Table } from "react-bootstrap";
 
-import type { Coupon, CouponUpdatePayload } from "../../../models";
+import type { Coupon, CouponUpdatePayload } from "../../../../models";
 
-import useCouponsSelective from "../../../hooks/selectors/useCouponsSelective";
-import ListStateDisplay from "../../ui/ListStateDisplay";
+import useCouponsSelective from "../../../../hooks/selectors/useCouponsSelective";
+import ListStateDisplay from "../../../ui/ListStateDisplay";
 import CouponItem from "./CouponItem";
 
 interface CouponListProps {

@@ -1,0 +1,31 @@
+.banner {
+  background-color: #e9ecef;
+  border-bottom: 1px solid #dee2e6;
+  padding: 6px 16px;
+  font-size: 0.8rem;
+  text-align: center;
+  color: #495057;
+}
+
+.rates {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px 8px;
+  justify-content: center;
+}
+
+.separator {
+  color: #adb5bd;
+}
+
+.updated {
+  color: #868e96;
+  font-size: 0.75rem;
+  white-space: nowrap;
+}
+
+.loading {
+  opacity: 0.6;
+  font-style: italic;
+}

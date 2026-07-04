@@ -18,10 +18,10 @@ const OrderItemRow: React.FC<OrderItemRowProps> = (props) => {
       <div className="flex-grow-1 small">
         <strong>{item.productName}</strong>
         <div className="text-muted">
-          {item.quantity} x {formatPrice(item.price)}
+          {item.quantity} x {formatPrice(item.price, item.currency)}
         </div>
       </div>
-      <div className="small">{formatPrice(item.subtotal)}</div>
+      <div className="small">{formatPrice(item.subtotal, item.currency)}</div>
     </div>
   );
 };

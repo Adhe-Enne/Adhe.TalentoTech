@@ -22,17 +22,24 @@ export const FALLBACK_RATES: ExchangeRates = {
 
 async function fetchRates(base: string = "USD"): Promise<ExchangeRates> {
   const cached: RateCache | null = loadFromStorage<RateCache | null>(CACHE_KEY, null);
-  if (cached && cached.base === base && Date.now() - cached.timestamp < CACHE_TTL) {
+  if (cached?.base === base && Date.now() - cached.timestamp < CACHE_TTL) {
     return cached.rates;
   }
 
   try {
-    const response: Response = await fetch(`https://cdn.jsdelivr.net/npm/@irfanokr/currency-api@latest/v1/rates/${base}.json`);
+    const response: Response = await fetch(`https://cdn.jsdelivr.net/gh/irfanokr/currency-api@main/v1/currencies/${base.toLocaleLowerCase()}.json`);
     if (!response.ok) {
       return { ...FALLBACK_RATES };
     }
-    const data: { date: string; rates: ExchangeRates } = await response.json();
-    const rates: ExchangeRates = data.rates;
+    const data: Record<string, unknown> = await response.json();
+    const rawRates: ExchangeRates | undefined = data[base.toLowerCase()] as ExchangeRates | undefined;
+    if (rawRates == null) {
+      return { ...FALLBACK_RATES };
+    }
+    const rates: ExchangeRates = {};
+    for (const key of Object.keys(rawRates)) {
+      rates[key.toUpperCase()] = rawRates[key];
+    }
     saveToStorage(CACHE_KEY, { base, rates, timestamp: Date.now() });
     return rates;
   } catch {
@@ -41,7 +48,6 @@ async function fetchRates(base: string = "USD"): Promise<ExchangeRates> {
 }
 
 export const exchangeRateService: {
-  clearCache: () => void;
   getAllRates: (base?: string) => Promise<ExchangeRates>;
   getRate: (from: string, to?: string) => Promise<number>;
 } = {
@@ -59,13 +65,5 @@ export const exchangeRateService: {
 
   getAllRates: async (base: string = "USD"): Promise<ExchangeRates> => {
     return fetchRates(base);
-  },
-
-  clearCache: (): void => {
-    try {
-      localStorage.removeItem(CACHE_KEY);
-    } catch {
-      /* ignore */
-    }
   },
 };

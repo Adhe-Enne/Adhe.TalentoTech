@@ -14,10 +14,10 @@ const CURRENCY_META: Record<string, { icon: React.ReactNode; color: string; labe
 };
 
 interface CurrencyRow {
-  currency: string;
   averageOriginal: number;
   averageUSD: number;
   count: number;
+  currency: string;
   percentage: number;
 }
 
@@ -34,7 +34,9 @@ const AverageTicketByCurrency: React.FC<AverageTicketByCurrencyProps> = (props) 
     const counts: Record<string, number> = {};
 
     for (const order of orders) {
-      if (order.status !== OrderStatus.Completado) {continue;}
+      if (order.status !== OrderStatus.Completado) {
+        continue;
+      }
       const currency: string = order.currency ?? "USD";
       sums[currency] = (sums[currency] ?? 0) + (order.total ?? 0);
       usdSums[currency] = (usdSums[currency] ?? 0) + (order.totalInBase ?? order.total);
@@ -71,9 +73,7 @@ const AverageTicketByCurrency: React.FC<AverageTicketByCurrencyProps> = (props) 
           <FaChartLine className="text-success" />
           <h5 className="mb-0">Ticket Promedio por Moneda</h5>
         </div>
-        <div className="card-body text-center text-muted py-4">
-          No hay pedidos completados
-        </div>
+        <div className="card-body text-center text-muted py-4">No hay pedidos completados</div>
       </div>
     );
   }
@@ -85,7 +85,8 @@ const AverageTicketByCurrency: React.FC<AverageTicketByCurrencyProps> = (props) 
         <h5 className="mb-0">Ticket Promedio por Moneda</h5>
       </div>
       <div className="card-body">
-        {currencyData.map(({ currency, averageOriginal, count, percentage }: CurrencyRow) => {
+        {currencyData.map((data: CurrencyRow) => {
+          const { averageOriginal, count, currency, percentage } = data;
           const meta: { icon: React.ReactNode; color: string; label: string } = CURRENCY_META[currency] ?? {
             icon: <FaDollarSign />,
             color: "secondary",
@@ -100,22 +101,15 @@ const AverageTicketByCurrency: React.FC<AverageTicketByCurrencyProps> = (props) 
                 </span>
                 <span className="text-muted small">{formatPrice(averageOriginal, currency)}</span>
               </div>
-              <div className="small text-muted mb-1">{count} pedido{count !== 1 ? "s" : ""}</div>
-              <div
-                aria-valuemax={100}
-                aria-valuemin={0}
-                aria-valuenow={Math.round(percentage)}
-                className="progress"
-                role="progressbar"
-                style={{ height: 20 }}
-              >
-                <div
-                  className={`progress-bar bg-${meta.color}`}
-                  style={{ width: `${percentage}%` }}
-                >
+              <div className="small text-muted mb-1">
+                {count} pedido{count === 1 ? "" : "s"}
+              </div>
+              <div className="progress" style={{ height: 20 }}>
+                <div className={`progress-bar bg-${meta.color}`} style={{ width: `${percentage}%` }}>
                   {percentage > 8 && `${percentage.toFixed(1)}%`}
                 </div>
               </div>
+              <progress aria-label={`${meta.label}: ${percentage.toFixed(1)}%`} className="visually-hidden" max={100} value={Math.round(percentage)} />
             </div>
           );
         })}

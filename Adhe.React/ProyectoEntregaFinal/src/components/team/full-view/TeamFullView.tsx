@@ -4,7 +4,7 @@ import type { Person } from "../../../models";
 
 import useTeam from "../../../hooks/selectors/useTeam";
 import { useDialog } from "../../../hooks/useDialog";
-import TeamFullViewView from "./TeamFullViewView";
+import TeamFullViewContent from "./TeamFullViewContent";
 
 const TeamFullView: React.FC = () => {
   const { error, loading, team } = useTeam();
@@ -36,7 +36,7 @@ const TeamFullView: React.FC = () => {
     return (): void => dialog.removeEventListener("keydown", onKey);
   }, [dialogRef, handleClose]);
 
-  return <TeamFullViewView dialogRef={dialogRef} error={error} loading={loading} onClose={handleClose} onShowMore={handleShowMore} selected={selected} showModal={showModal} team={team} />;
+  return <TeamFullViewContent dialogRef={dialogRef} error={error} loading={loading} onClose={handleClose} onShowMore={handleShowMore} selected={selected} showModal={showModal} team={team} />;
 };
 
 export default TeamFullView;
