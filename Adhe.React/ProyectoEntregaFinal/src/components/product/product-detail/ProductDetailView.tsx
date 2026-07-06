@@ -58,10 +58,7 @@ const ProductDetailView: React.FC<ProductDetailViewProps> = (props) => {
             <div className="mb-3 text-muted">{product.description ?? "Sin descripción"}</div>
 
             <div className="mb-3">
-              <span className="badge-price">
-                {" "}
-                {formatPrice(product.price, product.currency)}
-              </span>
+              <span className="badge-price"> {formatPrice(product.price, product.currency)}</span>
             </div>
 
             <div className="mb-2">{stock > 0 ? <Badge bg="success">{stock} en stock</Badge> : <Badge bg="danger">Sin stock</Badge>}</div>

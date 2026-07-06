@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { FaBox, FaChartLine, FaClipboardList, FaDollarSign, FaExclamationTriangle, FaMoneyBillWave, FaBoxOpen, FaPercentage, FaTag, FaUsers } from "react-icons/fa";
+import { FaBox, FaBoxOpen, FaChartLine, FaClipboardList, FaDollarSign, FaExclamationTriangle, FaMoneyBillWave, FaPercentage, FaTag, FaUsers } from "react-icons/fa";
 
 import type { Coupon, Order, Product } from "../../models";
 import type { ComputedMetrics } from "../../types";
@@ -53,7 +53,7 @@ const AdminDashboard: React.FC = () => {
     fetchAllOrders()
       .then(setOrders)
       .catch((): void => {
-        /* error handled by useErrorNotification */
+        /* error contemplado con useErrorNotification */
       })
       .finally((): void => {
         setRefreshing(false);
@@ -72,16 +72,10 @@ const AdminDashboard: React.FC = () => {
     const completedOrders: number = orders.filter((o: Order) => o.status === OrderStatus.Completado).length;
     const cancelledOrders: number = orders.filter((o: Order) => o.status === OrderStatus.Cancelado).length;
     const completedOrdersList: Order[] = orders.filter((o: Order) => o.status === OrderStatus.Completado);
-    const totalRevenue: number = completedOrdersList.reduce((s: number, o: Order) => s + o.total, 0);
     const totalRevenueUSD: number = completedOrdersList.reduce((s: number, o: Order) => s + (o.totalInBase ?? o.total), 0);
-    const aov: number = completedOrdersList.length > 0 ? totalRevenue / completedOrdersList.length : 0;
-    const totalDiscounts: number = orders.reduce((s: number, o: Order) => s + (o.discount ?? 0), 0);
     const completionRate: number = totalOrders > 0 ? (completedOrders / totalOrders) * 100 : 0;
     const uniqueCustomers: number = new Set(orders.map((o: Order) => o.userEmail)).size;
     const lowStockProducts: number = products?.filter((p: Product) => p.stock < 5).length ?? 0;
-    const inventoryCurrencies: Set<string> = new Set(products?.map((p: Product) => p.currency ?? "USD") ?? []);
-    const hasMixedInventoryCurrencies: boolean = inventoryCurrencies.size > 1;
-    const inventoryValue: number = products?.reduce((s: number, p: Product) => s + p.price * p.stock, 0) ?? 0;
     const inventoryValueUSD: number =
       products?.reduce((s: number, p: Product) => {
         const currency: string = p.currency ?? "USD";
@@ -105,18 +99,13 @@ const AdminDashboard: React.FC = () => {
       completedOrders,
       cancelledOrders,
       completedOrdersList,
-      totalRevenue,
       totalRevenueUSD,
-      aov,
       aovUSD,
-      totalDiscounts,
       totalDiscountsUSD,
       completionRate,
       uniqueCustomers,
       lowStockProducts,
-      inventoryValue,
       inventoryValueUSD,
-      hasMixedInventoryCurrencies,
     };
   }, [products, coupons, orders, rates]);
 

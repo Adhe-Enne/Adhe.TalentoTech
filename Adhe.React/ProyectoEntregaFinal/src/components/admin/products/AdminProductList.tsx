@@ -40,7 +40,9 @@ const AdminProductList: React.FC = () => {
       async () => {
         const success: boolean = await baseDeleteConfirm(
           (id: string) => productService.deleteProduct(id),
-          () => { reload(); },
+          () => {
+            reload();
+          },
         );
         if (!success) {
           throw new Error("Error al eliminar producto");

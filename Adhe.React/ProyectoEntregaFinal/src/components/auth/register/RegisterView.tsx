@@ -33,7 +33,17 @@ const RegisterView: React.FC<RegisterViewProps> = (props) => {
           <label className="form-label" htmlFor="reg-password">
             Contraseña
           </label>
-          <input autoComplete="new-password" className="form-control" id="reg-password" minLength={6} onChange={(e) => onPasswordChange(e.target.value)} placeholder="Mínimo 6 caracteres" required type="password" value={password} />
+          <input
+            autoComplete="new-password"
+            className="form-control"
+            id="reg-password"
+            minLength={6}
+            onChange={(e) => onPasswordChange(e.target.value)}
+            placeholder="Mínimo 6 caracteres"
+            required
+            type="password"
+            value={password}
+          />
         </div>
         <div className="mb-3">
           <label className="form-label" htmlFor="reg-confirm">

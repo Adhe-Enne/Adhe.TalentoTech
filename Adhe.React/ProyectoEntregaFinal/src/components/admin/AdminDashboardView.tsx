@@ -64,7 +64,10 @@ const AdminDashboardView: React.FC<AdminDashboardViewProps> = (props) => {
             <Col key={m.label} lg={3} sm={6} xs={12}>
               <div className={`card h-100 shadow-sm rounded-3${vs ? " " + vs.border : ""} position-relative`}>
                 <div className="card-body d-flex align-items-center gap-3 p-3">
-                  <div className={`d-flex align-items-center justify-content-center rounded-circle flex-shrink-0 ${vs?.bg ?? "bg-info bg-opacity-10"} ${vs?.text ?? "text-info"}`} style={{ width: 48, height: 48, fontSize: "1.25rem" }}>
+                  <div
+                    className={`d-flex align-items-center justify-content-center rounded-circle flex-shrink-0 ${vs?.bg ?? "bg-info bg-opacity-10"} ${vs?.text ?? "text-info"}`}
+                    style={{ width: 48, height: 48, fontSize: "1.25rem" }}
+                  >
                     {m.icon}
                   </div>
                   <div>

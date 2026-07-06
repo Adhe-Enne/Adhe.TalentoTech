@@ -25,13 +25,7 @@ const Footer: React.FC = () => {
                 <a aria-label="GitHub" className="btn btn-outline-primary btn-lg rounded-circle" href="https://github.com/Adhe-enne" rel="noopener noreferrer" target="_blank">
                   <FaGithub aria-hidden="true" />
                 </a>
-                <a
-                  aria-label="Linkedin"
-                  className="btn btn-outline-primary btn-lg rounded-circle"
-                  href="https://www.linkedin.com/in/daniel-nina-dev/"
-                  rel="noopener noreferrer"
-                  target="_blank"
-                >
+                <a aria-label="Linkedin" className="btn btn-outline-primary btn-lg rounded-circle" href="https://www.linkedin.com/in/daniel-nina-dev/" rel="noopener noreferrer" target="_blank">
                   <FaLinkedin aria-hidden="true" />
                 </a>
               </div>

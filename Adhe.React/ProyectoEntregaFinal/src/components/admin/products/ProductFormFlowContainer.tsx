@@ -15,7 +15,7 @@ import ProductForm from "../../product/product-form/ProductForm";
 import HelmetMeta from "../../ui/HelmetMeta";
 import LoadingSpinner from "../../ui/LoadingSpinner";
 
-const ProductFormFlow: React.FC = () => {
+const ProductFormFlowContainer: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate: NavigateFunction = useNavigate();
   const { createProduct, findById, updateProduct } = useProducts();
@@ -211,4 +211,4 @@ const ProductFormFlow: React.FC = () => {
   );
 };
 
-export default ProductFormFlow;
+export default ProductFormFlowContainer;

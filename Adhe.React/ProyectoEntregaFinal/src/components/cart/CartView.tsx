@@ -33,7 +33,11 @@ const CartView: React.FC<CartListViewProps> = (props) => {
       <h2>Carrito</h2>
       {cart.length === 0 ? (
         <EmptyState
-          action={<Link className="btn btn-primary" to="/productos">Ver Productos</Link>}
+          action={
+            <Link className="btn btn-primary" to="/productos">
+              Ver Productos
+            </Link>
+          }
           message="Agregá productos para continuar la compra."
           title="Tu carrito está vacío"
         />
@@ -41,13 +45,7 @@ const CartView: React.FC<CartListViewProps> = (props) => {
         <div className="cart-list">
           <ListGroup>
             {cart.map((it) => (
-              <CartItemRow
-                item={it}
-                key={it.product.id}
-                onDecrement={() => onItemDecrement(it)}
-                onIncrement={() => onItemIncrement(it)}
-                onRemove={() => onItemRemove(it)}
-              />
+              <CartItemRow item={it} key={it.product.id} onDecrement={() => onItemDecrement(it)} onIncrement={() => onItemIncrement(it)} onRemove={() => onItemRemove(it)} />
             ))}
           </ListGroup>
 
@@ -57,7 +55,9 @@ const CartView: React.FC<CartListViewProps> = (props) => {
             </div>
             <div className="text-end">
               {Object.entries(totalsByCurrency).map(([c, total]) => (
-                <span className="d-block" key={c}>{formatPrice(total, c)}</span>
+                <span className="d-block" key={c}>
+                  {formatPrice(total, c)}
+                </span>
               ))}
             </div>
           </div>
@@ -71,11 +71,16 @@ const CartView: React.FC<CartListViewProps> = (props) => {
           <strong>Total{appliedCoupon ? " final" : ""}:</strong>
         </div>
         <div className="text-end">
-          {appliedCoupon && Object.entries(totalsByCurrency).map(([c, total]) => (
-            <small className="text-muted text-decoration-line-through d-block" key={c}>{formatPrice(total, c)}</small>
-          ))}
+          {appliedCoupon &&
+            Object.entries(totalsByCurrency).map(([c, total]) => (
+              <small className="text-muted text-decoration-line-through d-block" key={c}>
+                {formatPrice(total, c)}
+              </small>
+            ))}
           {Object.entries(discountedByCurrency).map(([c, total]) => (
-            <strong className="fs-5 d-block" key={c}>{formatPrice(total, c)}</strong>
+            <strong className="fs-5 d-block" key={c}>
+              {formatPrice(total, c)}
+            </strong>
           ))}
         </div>
       </div>

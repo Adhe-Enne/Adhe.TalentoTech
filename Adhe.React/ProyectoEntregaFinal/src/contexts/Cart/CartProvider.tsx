@@ -136,10 +136,7 @@ export const CartProvider: React.FC<ProviderProps> = (props) => {
   }, [persistSetCart, removeCoupon]);
 
   const getCartQuantity: () => number = useCallback((): number => cart.reduce((s, it) => s + it.quantity, 0), [cart]);
-  const getCantidadActual: (productId: string) => number = useCallback(
-    (productId: string): number => cart.find((it) => it.product.id === productId)?.quantity ?? 0,
-    [cart],
-  );
+  const getCantidadActual: (productId: string) => number = useCallback((productId: string): number => cart.find((it) => it.product.id === productId)?.quantity ?? 0, [cart]);
 
   const removeFromCart: (productId: string) => void = useCallback(
     (productId: string) => {

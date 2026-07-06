@@ -37,7 +37,11 @@ const OrderHistoryView: React.FC<OrderHistoryViewProps> = (props) => {
       <ListStateDisplay error={null} loading={loading} loadingMessage="Cargando pedidos...">
         {orders.length === 0 ? (
           <EmptyState
-            action={<Link className="btn btn-primary" to="/productos">Ver productos</Link>}
+            action={
+              <Link className="btn btn-primary" to="/productos">
+                Ver productos
+              </Link>
+            }
             icon={<FaBox className="text-muted mb-3" size={48} />}
             message="Tus compras aparecerán aquí."
             title="No tenés pedidos aún"

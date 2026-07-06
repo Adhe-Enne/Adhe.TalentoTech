@@ -4,6 +4,7 @@ import { toast } from "react-toastify";
 
 import type { Coupon, CouponUpdatePayload } from "../../../../models";
 
+import { getStatusBadge } from "../../../../utils/couponUtils";
 import { getTodayString } from "../../../../utils/dateUtils";
 import { withToast } from "../../../../utils/withToast";
 import DeleteButton from "../../../ui/DeleteButton";
@@ -17,19 +18,6 @@ interface CouponItemProps {
   onDeleteRequest: (id: string, label: string) => void;
   onUpdateCoupon: (id: string, data: CouponUpdatePayload) => Promise<void>;
 }
-
-const getStatusBadge: (coupon: Coupon) => { label: string; variant: string } = (coupon: Coupon) => {
-  if (!coupon.isEnabled) {
-    return { label: "Deshabilitado", variant: "secondary" };
-  }
-  if (coupon.expiresAt && new Date(coupon.expiresAt) < new Date()) {
-    return { label: "Expirado", variant: "danger" };
-  }
-  if (coupon.usageLimit != null && coupon.usedCount >= coupon.usageLimit) {
-    return { label: "Agotado", variant: "warning" };
-  }
-  return { label: "Activo", variant: "success" };
-};
 
 const CouponItem: React.FC<CouponItemProps> = (props) => {
   const { coupon, onDeleteRequest, onUpdateCoupon } = props;

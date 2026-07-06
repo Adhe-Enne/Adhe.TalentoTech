@@ -54,15 +54,25 @@ const TeamFullViewContent: React.FC<TeamFullViewContentProps> = (props) => {
                         {position && <div className={expandedStyles.meta}>{position}</div>}
                       </div>
                       <div className={expandedStyles.links}>
-                        {email && <a aria-label={`Email de ${name}`} className="btn btn-ghost btn-sm" href={`mailto:${email}`}>Email</a>}
-                        {linkedin && <a aria-label={`LinkedIn de ${name}`} className="btn btn-outline-primary btn-sm" href={linkedin} rel="noopener noreferrer" target="_blank">LinkedIn</a>}
+                        {email && (
+                          <a aria-label={`Email de ${name}`} className="btn btn-ghost btn-sm" href={`mailto:${email}`}>
+                            Email
+                          </a>
+                        )}
+                        {linkedin && (
+                          <a aria-label={`LinkedIn de ${name}`} className="btn btn-outline-primary btn-sm" href={linkedin} rel="noopener noreferrer" target="_blank">
+                            LinkedIn
+                          </a>
+                        )}
                       </div>
                     </div>
                     {bio && (
                       <>
                         <div className={expandedStyles.bio}>{bio}</div>
                         <div>
-                          <button aria-label={`Ver más bio de ${name}`} className="btn btn-ghost btn-sm" onClick={() => onShowMore(p)} type="button">Ver más</button>
+                          <button aria-label={`Ver más bio de ${name}`} className="btn btn-ghost btn-sm" onClick={() => onShowMore(p)} type="button">
+                            Ver más
+                          </button>
                         </div>
                       </>
                     )}
@@ -78,14 +88,24 @@ const TeamFullViewContent: React.FC<TeamFullViewContentProps> = (props) => {
             <div className={modalStyles.modalDialog}>
               <div className={modalStyles.modalHeader}>
                 <h4 className={modalStyles.modalTitle}>{selected.name}</h4>
-                <button aria-label="Cerrar modal" className="btn btn-ghost btn-sm" onClick={onClose}>Cerrar</button>
+                <button aria-label="Cerrar modal" className="btn btn-ghost btn-sm" onClick={onClose}>
+                  Cerrar
+                </button>
               </div>
               <div className={modalStyles.modalBody}>
                 {selected.position && <div className={modalStyles.modalMeta}>{selected.position}</div>}
                 {selected.bio ? <p>{selected.bio}</p> : <p className={modalStyles.smallMeta}>Sin biografía disponible.</p>}
                 <div className={modalStyles.modalLinks}>
-                  {selected.email && <a aria-label={`Email de ${selected.name}`} className="btn btn-ghost btn-sm" href={`mailto:${selected.email}`}>Email</a>}
-                  {selected.linkedin && <a aria-label={`LinkedIn de ${selected.name}`} className="btn btn-outline-primary btn-sm" href={selected.linkedin} rel="noopener noreferrer" target="_blank">LinkedIn</a>}
+                  {selected.email && (
+                    <a aria-label={`Email de ${selected.name}`} className="btn btn-ghost btn-sm" href={`mailto:${selected.email}`}>
+                      Email
+                    </a>
+                  )}
+                  {selected.linkedin && (
+                    <a aria-label={`LinkedIn de ${selected.name}`} className="btn btn-outline-primary btn-sm" href={selected.linkedin} rel="noopener noreferrer" target="_blank">
+                      LinkedIn
+                    </a>
+                  )}
                 </div>
               </div>
             </div>

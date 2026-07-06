@@ -1,7 +1,7 @@
 import React from "react";
 import { Col, Container, Row } from "react-bootstrap";
 
-import TeamList from "../team/TeamList";
+import TeamListContainer from "../team/TeamListContainer";
 import HelmetMeta from "../ui/HelmetMeta";
 
 interface ContactPageViewProps {
@@ -52,7 +52,7 @@ const ContactPageView: React.FC<ContactPageViewProps> = (props) => {
         </Col>
 
         <Col md={6} xs={12}>
-          <TeamList />
+          <TeamListContainer />
         </Col>
       </Row>
     </Container>

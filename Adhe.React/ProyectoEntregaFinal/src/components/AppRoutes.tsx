@@ -19,7 +19,7 @@ const Login: React.LazyExoticComponent<React.ComponentType> = lazy(() => import(
 const OrderConfirmationContainer: React.LazyExoticComponent<React.ComponentType> = lazy(() => import("./orders/OrderConfirmationContainer"));
 const OrderHistoryContainer: React.LazyExoticComponent<React.ComponentType> = lazy(() => import("./orders/OrderHistoryContainer"));
 const ProductDetailContainer: React.LazyExoticComponent<React.ComponentType> = lazy(() => import("./product/product-detail/ProductDetailContainer"));
-const ProductFormFlow: React.LazyExoticComponent<React.ComponentType> = lazy(() => import("./admin/products/ProductFormFlow"));
+const ProductFormFlowContainer: React.LazyExoticComponent<React.ComponentType> = lazy(() => import("./admin/products/ProductFormFlowContainer"));
 const Profile: React.LazyExoticComponent<React.ComponentType> = lazy(() => import("./auth/profile/Profile"));
 const Register: React.LazyExoticComponent<React.ComponentType> = lazy(() => import("./auth/register/Register"));
 const TeamFullView: React.LazyExoticComponent<React.ComponentType> = lazy(() => import("./team/full-view/TeamFullView"));
@@ -93,10 +93,10 @@ const AppRoutes: React.FC = (): JSX.Element => {
         >
           <Route element={<AdminDashboard />} index />
           <Route element={<AdminProductList />} path="productos" />
-          <Route element={<LazyRoute component={ProductFormFlow} />} path="productos/nuevo" />
+          <Route element={<LazyRoute component={ProductFormFlowContainer} />} path="productos/nuevo" />
           <Route element={<CouponManager />} path="cupones" />
           <Route element={<AdminOrderList />} path="ordenes" />
-          <Route element={<LazyRoute component={ProductFormFlow} />} path="productos/:id/editar" />
+          <Route element={<LazyRoute component={ProductFormFlowContainer} />} path="productos/:id/editar" />
         </Route>
 
         <Route element={<Navigate replace to="/" />} path="*" />

@@ -27,35 +27,61 @@ const emptyErrors: Record<keyof ShippingInfo, boolean> = { fullName: false, addr
 const emptyMessages: Record<keyof ShippingInfo, string> = { fullName: "", address: "", city: "", postalCode: "", phone: "" };
 
 const validateFullName: (v: string) => string = (v: string): string => {
-  if (!v) { return "El nombre completo es obligatorio"; }
-  if (!minLength(v, 2)) { return "Debe tener al menos 2 caracteres"; }
-  if (!maxLength(v, 100)) { return "No debe exceder los 100 caracteres"; }
+  if (!v) {
+    return "El nombre completo es obligatorio";
+  }
+  if (!minLength(v, 2)) {
+    return "Debe tener al menos 2 caracteres";
+  }
+  if (!maxLength(v, 100)) {
+    return "No debe exceder los 100 caracteres";
+  }
   return "";
 };
 
 const validateAddress: (v: string) => string = (v: string): string => {
-  if (!v) { return "La dirección es obligatoria"; }
-  if (!minLength(v, 3)) { return "Debe tener al menos 3 caracteres"; }
-  if (!maxLength(v, 200)) { return "No debe exceder los 200 caracteres"; }
+  if (!v) {
+    return "La dirección es obligatoria";
+  }
+  if (!minLength(v, 3)) {
+    return "Debe tener al menos 3 caracteres";
+  }
+  if (!maxLength(v, 200)) {
+    return "No debe exceder los 200 caracteres";
+  }
   return "";
 };
 
 const validateCity: (v: string) => string = (v: string): string => {
-  if (!v) { return "La ciudad es obligatoria"; }
-  if (!minLength(v, 2)) { return "Debe tener al menos 2 caracteres"; }
-  if (!maxLength(v, 100)) { return "No debe exceder los 100 caracteres"; }
+  if (!v) {
+    return "La ciudad es obligatoria";
+  }
+  if (!minLength(v, 2)) {
+    return "Debe tener al menos 2 caracteres";
+  }
+  if (!maxLength(v, 100)) {
+    return "No debe exceder los 100 caracteres";
+  }
   return "";
 };
 
 const validatePostalCode: (v: string) => string = (v: string): string => {
-  if (!v) { return "El código postal es obligatorio"; }
-  if (!isValidPostalCodeAR(v)) { return "Debe ser un código postal argentino válido (4 dígitos)"; }
+  if (!v) {
+    return "El código postal es obligatorio";
+  }
+  if (!isValidPostalCodeAR(v)) {
+    return "Debe ser un código postal argentino válido (4 dígitos)";
+  }
   return "";
 };
 
 const validatePhone: (v: string) => string = (v: string): string => {
-  if (!v) { return "El teléfono es obligatorio"; }
-  if (!isValidPhoneAR(v)) { return "Debe ser un teléfono válido (8 a 15 dígitos)"; }
+  if (!v) {
+    return "El teléfono es obligatorio";
+  }
+  if (!isValidPhoneAR(v)) {
+    return "Debe ser un teléfono válido (8 a 15 dígitos)";
+  }
   return "";
 };
 
@@ -72,41 +98,37 @@ const ShippingForm: React.ForwardRefRenderFunction<ShippingFormHandle, object> =
   const [touched, setTouched] = useState<Record<keyof ShippingInfo, boolean>>(emptyErrors);
   const [fieldErrors, setFieldErrors] = useState<Record<keyof ShippingInfo, string>>(emptyMessages);
 
-  const validateField: (key: keyof ShippingInfo, value: string) => string = useCallback(
-    (key: keyof ShippingInfo, value: string): string => {
-      const validator: (v: string) => string = VALIDATORS[key];
-      return validator ? validator(value.trim()) : "";
-    },
-    [],
-  );
+  const validateField: (key: keyof ShippingInfo, value: string) => string = useCallback((key: keyof ShippingInfo, value: string): string => {
+    const validator: (v: string) => string = VALIDATORS[key];
+    return validator ? validator(value.trim()) : "";
+  }, []);
 
-  const getData: () => { valid: boolean; data?: ShippingInfo; error?: string } =
-    useCallback((): { valid: boolean; data?: ShippingInfo; error?: string } => {
-      const newFieldErrors: Record<keyof ShippingInfo, string> = { ...emptyMessages };
-      let firstError: string | null = null;
+  const getData: () => { valid: boolean; data?: ShippingInfo; error?: string } = useCallback((): { valid: boolean; data?: ShippingInfo; error?: string } => {
+    const newFieldErrors: Record<keyof ShippingInfo, string> = { ...emptyMessages };
+    let firstError: string | null = null;
 
+    for (const field of fields) {
+      const error: string = validateField(field.key, values[field.key]);
+      newFieldErrors[field.key] = error;
+      if (error && !firstError) {
+        firstError = error;
+      }
+    }
+
+    setFieldErrors(newFieldErrors);
+    setTouched((prev: Record<keyof ShippingInfo, boolean>) => {
+      const next: Record<keyof ShippingInfo, boolean> = { ...prev };
       for (const field of fields) {
-        const error: string = validateField(field.key, values[field.key]);
-        newFieldErrors[field.key] = error;
-        if (error && !firstError) {
-          firstError = error;
-        }
+        next[field.key] = true;
       }
+      return next;
+    });
 
-      setFieldErrors(newFieldErrors);
-      setTouched((prev: Record<keyof ShippingInfo, boolean>) => {
-        const next: Record<keyof ShippingInfo, boolean> = { ...prev };
-        for (const field of fields) {
-          next[field.key] = true;
-        }
-        return next;
-      });
-
-      if (firstError) {
-        return { valid: false, error: firstError };
-      }
-      return { valid: true, data: { ...values } };
-    }, [values, validateField]);
+    if (firstError) {
+      return { valid: false, error: firstError };
+    }
+    return { valid: true, data: { ...values } };
+  }, [values, validateField]);
 
   useImperativeHandle<ShippingFormHandle, ShippingFormHandle>(
     ref,

@@ -38,15 +38,7 @@ const Layout: React.FC<LayoutProps> = (props) => {
             <NavLink className={(navData) => (navData.isActive ? "navbar-brand active" : "navbar-brand")} end to="/">
               Adhe.E-commerce
             </NavLink>
-            <button
-              aria-controls="navbarNav"
-              aria-expanded="false"
-              aria-label="Toggle navigation"
-              className="navbar-toggler"
-              data-bs-target="#navbarNav"
-              data-bs-toggle="collapse"
-              type="button"
-            >
+            <button aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation" className="navbar-toggler" data-bs-target="#navbarNav" data-bs-toggle="collapse" type="button">
               <span className="navbar-toggler-icon" />
             </button>
             <div className="collapse navbar-collapse" id="navbarNav">

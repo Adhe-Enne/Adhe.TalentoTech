@@ -1,31 +1,35 @@
 import { useCallback } from "react";
 
-import { exchangeRateService, FALLBACK_RATES } from "../services/exchangeRateService";
+import type { ExchangeRateDocument } from "../types/ExchangeRateTypes";
+
+import { exchangeRateService } from "../services/exchangeRateService";
 import useAsyncCollection from "./useAsyncCollection";
 
-interface RateEntry {
-  lastUpdated: number;
-  rates: Record<string, number>;
-}
-
 interface UseAllExchangeRatesReturn {
-  error: string | null;
   lastUpdated: number | null;
   loading: boolean;
   rates: Record<string, number>;
+  sources: Record<string, string>;
+  refresh: () => Promise<void>;
 }
 
 export function useAllExchangeRates(): UseAllExchangeRatesReturn {
-  const fetchRates: () => Promise<RateEntry[]> = useCallback(async (): Promise<RateEntry[]> => {
-    const rates: Record<string, number> = await exchangeRateService.getAllRates();
-    return [{ rates, lastUpdated: Date.now() }];
+  const fetchRates: () => Promise<ExchangeRateDocument[]> = useCallback(async (): Promise<ExchangeRateDocument[]> => {
+    const doc: ExchangeRateDocument = await exchangeRateService.getExchangeRates();
+    return [doc];
   }, []);
 
-  const { data, error, loading } = useAsyncCollection(fetchRates);
+  const { data, loading, reload } = useAsyncCollection(fetchRates);
 
-  const [entry]: RateEntry[] = data;
-  const rates: Record<string, number> = entry?.rates ?? FALLBACK_RATES;
-  const lastUpdated: number | null = entry?.lastUpdated ?? null;
+  const refresh: () => Promise<void> = useCallback(async (): Promise<void> => {
+    await exchangeRateService.forceRefreshExchangeRates();
+    await reload();
+  }, [reload]);
 
-  return { error, loading, rates, lastUpdated };
+  const [entry]: ExchangeRateDocument[] = data;
+  const rates: Record<string, number> = entry?.rates ?? {};
+  const sources: Record<string, string> = entry?.sources ?? {};
+  const lastUpdated: number | null = entry?.updatedAt ? new Date(entry.updatedAt).getTime() : null;
+
+  return { loading, rates, refresh, sources, lastUpdated };
 }

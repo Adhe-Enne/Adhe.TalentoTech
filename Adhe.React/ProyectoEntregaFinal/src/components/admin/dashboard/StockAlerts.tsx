@@ -6,6 +6,7 @@ import type { Product } from "../../../models";
 
 import useProducts from "../../../hooks/selectors/useProducts";
 import { formatPrice } from "../../../utils/format";
+import DashboardCard from "./DashboardCard";
 
 const StockAlerts: React.FC = () => {
   const { products } = useProducts();
@@ -14,64 +15,56 @@ const StockAlerts: React.FC = () => {
 
   const criticalCount: number = useMemo(() => lowStockItems.filter((p: Product) => p.stock === 0).length, [lowStockItems]);
 
+  const title: React.ReactNode = (
+    <span className="d-flex align-items-center gap-2">
+      Alertas de Stock
+      {lowStockItems.length > 0 && <Badge bg="danger">{lowStockItems.length}</Badge>}
+    </span>
+  );
+
   if (lowStockItems.length === 0) {
     return (
-      <div className="card shadow-sm h-100">
-        <div className="card-header bg-white d-flex align-items-center gap-2">
-          <FaExclamationTriangle className="text-warning" />
-          <h5 className="mb-0">Alertas de Stock</h5>
-        </div>
-        <div className="card-body text-center text-success py-4">
+      <DashboardCard icon={<FaExclamationTriangle />} iconColor="warning" title={title}>
+        <div className="text-center text-success py-4">
           <FaExclamationTriangle className="me-2" />
           Todo en stock suficiente
         </div>
-      </div>
+      </DashboardCard>
     );
   }
 
-  const renderLowStockItems: () => React.ReactNode = () => {
-    return lowStockItems.map((product: Product) => {
-      const variant: string = ((): string => {
-        if (product.stock === 0) {
-          return "danger";
-        }
-        if (product.stock < 3) {
-          return "warning";
-        }
-        return "secondary";
-      })();
-
-      return (
-        <div className="list-group-item d-flex justify-content-between align-items-center py-2" key={product.id}>
-          <div className="d-flex flex-column">
-            <span className="small fw-semibold">{product.name}</span>
-            <span className="text-muted small">{formatPrice(product.price, product.currency)}</span>
-          </div>
-          <Badge bg={variant}>{product.stock}</Badge>
-        </div>
-      );
-    });
-  };
-
   return (
-    <div className="card shadow-sm h-100">
-      <div className="card-header bg-white d-flex align-items-center gap-2">
-        <FaExclamationTriangle className="text-warning" />
-        <h5 className="mb-0 d-flex align-items-center gap-2">
-          Alertas de Stock
-          <Badge bg="danger">{lowStockItems.length}</Badge>
-        </h5>
+    <DashboardCard icon={<FaExclamationTriangle />} iconColor="warning" title={title}>
+      {criticalCount > 0 && (
+        <div className="alert alert-danger d-flex align-items-center gap-2 m-0 mb-3 py-2 small" role="alert">
+          <FaExclamationTriangle />
+          {criticalCount} producto{criticalCount === 1 ? "" : "s"} sin stock
+        </div>
+      )}
+      <div className="list-group list-group-flush">
+        {lowStockItems.map((product: Product) => {
+          const variant: string = ((): string => {
+            if (product.stock === 0) {
+              return "danger";
+            }
+            if (product.stock < 3) {
+              return "warning";
+            }
+            return "secondary";
+          })();
+
+          return (
+            <div className="list-group-item d-flex justify-content-between align-items-center py-2" key={product.id}>
+              <div className="d-flex flex-column">
+                <span className="small fw-semibold">{product.name}</span>
+                <span className="text-muted small">{formatPrice(product.price, product.currency)}</span>
+              </div>
+              <Badge bg={variant}>{product.stock}</Badge>
+            </div>
+          );
+        })}
       </div>
-      <div className="card-body p-0">
-        {criticalCount > 0 && (
-          <div className="alert alert-danger d-flex align-items-center gap-2 m-3 mb-0 py-2 small" role="alert">
-            <FaExclamationTriangle />
-            {criticalCount} producto{criticalCount === 1 ? "" : "s"} sin stock
-          </div>
-        )}
-        <div className="list-group list-group-flush">{renderLowStockItems()}</div>
-      </div>
-    </div>
+    </DashboardCard>
   );
 };
 

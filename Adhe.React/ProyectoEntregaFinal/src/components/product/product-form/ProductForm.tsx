@@ -32,13 +32,7 @@ const ProductForm: React.FC<ProductFormProps> = (props) => {
   const { categories, loading, onSubmit, mode = "create", initialData, existingImageUrl, onCancel, onCreateCategory, onCreateTag, tags } = props;
   const { fields, setField, setFile, reset, previewUrl, handleSubmit, errors } = useProductForm(initialData);
   const navigate: NavigateFunction = useNavigate();
-  const {
-    isCreating: isCreatingCategory,
-    show: showCategoryModal,
-    handleClose: handleCloseCategory,
-    handleOpen: handleOpenCategory,
-    handleCreate: handleCreateCategory,
-  } = useCategoryCreate(onCreateCategory, setField);
+  const { isCreating: isCreatingCategory, show: showCategoryModal, handleClose: handleCloseCategory, handleOpen: handleOpenCategory, handleCreate: handleCreateCategory } = useCategoryCreate(onCreateCategory, setField);
   const addInputId: string = React.useId();
   const displayUrl: string | undefined = previewUrl ?? existingImageUrl;
 
@@ -93,9 +87,7 @@ const ProductForm: React.FC<ProductFormProps> = (props) => {
               <small className="text-muted">Imagen actual:</small>
             </div>
           )}
-          <div className="mb-2">
-            {errors.file && <div className="invalid-feedback d-block">{errors.file}</div>}
-          </div>
+          <div className="mb-2">{errors.file && <div className="invalid-feedback d-block">{errors.file}</div>}</div>
           <ProductImagePreview name={fields.file?.name} onClear={() => setFile(null)} onFileChange={setFile} url={displayUrl} />
           {isEdit && existingImageUrl && !fields.file && (
             <div className="mt-1">
@@ -156,16 +148,7 @@ const ProductForm: React.FC<ProductFormProps> = (props) => {
             <label className="form-label" htmlFor="precio">
               Precio
             </label>
-            <input
-              className={`form-control${errors.precio ? " is-invalid" : ""}`}
-              id="precio"
-              min="0.01"
-              onChange={(e) => setField("precio", e.target.value)}
-              required
-              step="0.01"
-              type="number"
-              value={fields.precio}
-            />
+            <input className={`form-control${errors.precio ? " is-invalid" : ""}`} id="precio" min="0.01" onChange={(e) => setField("precio", e.target.value)} required step="0.01" type="number" value={fields.precio} />
             {errors.precio && <div className="invalid-feedback">{errors.precio}</div>}
           </div>
           <div className={styles.stockField}>

@@ -34,17 +34,8 @@ const AdminOrderListContainer: React.FC = () => {
     async (id: string, status: OrderStatusValue, actionLabel: string, pastLabel: string): Promise<void> => {
       const action: string = status === OrderStatus.Completado ? "approve" : "reject";
       setActionLoading((prev: Map<string, string>) => new Map(prev).set(id, action));
-      await withToast(
-        () => withDelay(updateOrderStatus(id, status)),
-        `${actionLabel} pedido...`,
-        `Pedido ${pastLabel}`,
-        `Error al ${actionLabel.toLowerCase()} pedido`,
-      );
-      setOrders((prev: Order[]) =>
-        prev.map((o: Order) =>
-          o.id === id ? { ...o, status, updatedAt: new Date().toISOString() } : o,
-        ),
-      );
+      await withToast(() => withDelay(updateOrderStatus(id, status)), `${actionLabel} pedido...`, `Pedido ${pastLabel}`, `Error al ${actionLabel.toLowerCase()} pedido`);
+      setOrders((prev: Order[]) => prev.map((o: Order) => (o.id === id ? { ...o, status, updatedAt: new Date().toISOString() } : o)));
       setActionLoading((prev: Map<string, string>) => {
         const next: Map<string, string> = new Map(prev);
         next.delete(id);
@@ -59,12 +50,7 @@ const AdminOrderListContainer: React.FC = () => {
       return;
     }
     setDeleting(true);
-    await withToast(
-      () => deleteOrder(deleteTarget),
-      "Eliminando pedido...",
-      "Pedido eliminado",
-      "Error al eliminar pedido",
-    );
+    await withToast(() => deleteOrder(deleteTarget), "Eliminando pedido...", "Pedido eliminado", "Error al eliminar pedido");
     setOrders((prev: Order[]) => prev.filter((o: Order) => o.id !== deleteTarget));
     setDeleting(false);
     setDeleteTarget(null);

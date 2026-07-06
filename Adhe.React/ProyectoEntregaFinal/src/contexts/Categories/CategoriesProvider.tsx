@@ -18,7 +18,6 @@ export const CategoriesProvider: React.FC<ProviderProps> = (props) => {
   const createCategory: (name: string, slug?: string) => Promise<Category | undefined> = useCallback(
     async (name: string, slug?: string): Promise<Category | undefined> => {
       try {
-
         const created: Category = await categoryService.createCategory(name, slug);
         addOptimistic(created);
         return created;

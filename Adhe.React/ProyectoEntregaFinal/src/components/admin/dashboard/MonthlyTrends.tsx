@@ -5,6 +5,7 @@ import type { Order } from "../../../models";
 
 import { OrderStatus } from "../../../models/Order";
 import { formatPrice } from "../../../utils/format";
+import DashboardCard from "./DashboardCard";
 
 const MONTH_NAMES: string[] = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
 
@@ -114,79 +115,67 @@ const MonthlyTrends: React.FC<MonthlyTrendsProps> = (props) => {
 
   const maxTotal: number = useMemo(() => Math.max(...monthlyData.map((m: MonthData) => m.total), 0), [monthlyData]);
 
-  if (monthlyData.length === 0) {
-    return (
-      <div className="card shadow-sm h-100">
-        <div className="card-header bg-white d-flex align-items-center gap-2">
-          <FaChartLine className="text-info" />
-          <h5 className="mb-0">Tendencias Mensuales</h5>
-        </div>
-        <div className="card-body text-center text-muted py-4">No hay datos de ventas</div>
-      </div>
-    );
-  }
-
   const growthClass: string = growth !== null && growth >= 0 ? "text-success" : "text-danger";
   const growthSign: string = growth !== null && growth >= 0 ? "+" : "";
   const growthLabel: string = growth === null ? "-" : `${growthSign}${growth.toFixed(1)}%`;
 
   return (
-    <div className="card shadow-sm h-100">
-      <div className="card-header bg-white d-flex align-items-center gap-2">
-        <FaChartLine className="text-info" />
-        <h5 className="mb-0">Tendencias Mensuales</h5>
-      </div>
-      <div className="card-body">
-        <div className="row g-2 mb-3">
-          <div className="col-6">
-            <div className="small text-muted">Mejor mes</div>
-            <div className="fw-bold">{bestMonth?.label ?? "-"}</div>
-            <div className="small">{bestMonth ? `${formatPrice(bestMonth.total, "USD")} · ${bestMonth.orderCount} pedidos` : ""}</div>
-          </div>
-          <div className="col-6">
-            <div className="small text-muted">Crecimiento mensual</div>
-            <div className={`fw-bold ${growthClass}`}>{growthLabel}</div>
-          </div>
-          <div className="col-6 mt-2">
-            <div className="small text-muted">Promedio mensual</div>
-            <div className="fw-bold">{formatPrice(avgMonthly, "USD")}</div>
-          </div>
-          {multiYearData &&
-            ((): React.ReactNode => {
-              const yoyClass: string = yoyGrowth !== null && yoyGrowth >= 0 ? "text-success" : "text-danger";
-              const yoySign: string = yoyGrowth !== null && yoyGrowth >= 0 ? "+" : "";
-              const yoyText: string = yoyGrowth === null ? "-" : `${yoySign}${yoyGrowth.toFixed(1)}%`;
-              return (
-                <div className="col-6 mt-2">
-                  <div className="small text-muted">vs año anterior</div>
-                  <div className={`fw-bold ${yoyClass}`}>{yoyText}</div>
-                  {yoyLabel && <div className="small">{yoyLabel}</div>}
-                </div>
-              );
-            })()}
-        </div>
-
-        {monthlyData.map((m: MonthData) => {
-          const pct: number = maxTotal > 0 ? (m.total / maxTotal) * 100 : 0;
-          return (
-            <div className="mb-2" key={m.isoKey}>
-              <div className="d-flex justify-content-between small">
-                <span>{m.label}</span>
-                <span className="fw-semibold">
-                  {formatPrice(m.total, "USD")} · {m.orderCount} ped.
-                </span>
-              </div>
-              <div className="progress" style={{ height: 14 }}>
-                <div className="progress-bar bg-info" style={{ width: `${pct}%` }} />
-              </div>
-              <progress aria-label={`${m.label}: ${pct.toFixed(1)}%`} className="visually-hidden" max={100} value={Math.round(pct)} />
+    <DashboardCard icon={<FaChartLine />} iconColor="info" title="Tendencias Mensuales">
+      {monthlyData.length === 0 ? (
+        <div className="text-center text-muted py-4">No hay datos de ventas</div>
+      ) : (
+        <>
+          <div className="row g-2 mb-3">
+            <div className="col-6">
+              <div className="small text-muted">Mejor mes</div>
+              <div className="fw-bold">{bestMonth?.label ?? "-"}</div>
+              <div className="small">{bestMonth ? `${formatPrice(bestMonth.total, "USD")} · ${bestMonth.orderCount} pedidos` : ""}</div>
             </div>
-          );
-        })}
+            <div className="col-6">
+              <div className="small text-muted">Crecimiento mensual</div>
+              <div className={`fw-bold ${growthClass}`}>{growthLabel}</div>
+            </div>
+            <div className="col-6 mt-2">
+              <div className="small text-muted">Promedio mensual</div>
+              <div className="fw-bold">{formatPrice(avgMonthly, "USD")}</div>
+            </div>
+            {multiYearData &&
+              ((): React.ReactNode => {
+                const yoyClass: string = yoyGrowth !== null && yoyGrowth >= 0 ? "text-success" : "text-danger";
+                const yoySign: string = yoyGrowth !== null && yoyGrowth >= 0 ? "+" : "";
+                const yoyText: string = yoyGrowth === null ? "-" : `${yoySign}${yoyGrowth.toFixed(1)}%`;
+                return (
+                  <div className="col-6 mt-2">
+                    <div className="small text-muted">vs a\u00f1o anterior</div>
+                    <div className={`fw-bold ${yoyClass}`}>{yoyText}</div>
+                    {yoyLabel && <div className="small">{yoyLabel}</div>}
+                  </div>
+                );
+              })()}
+          </div>
 
-        {yoyCoverageNote && <div className="mt-3 small text-muted">{yoyCoverageNote}</div>}
-      </div>
-    </div>
+          {monthlyData.map((m: MonthData) => {
+            const pct: number = maxTotal > 0 ? (m.total / maxTotal) * 100 : 0;
+            return (
+              <div className="mb-2" key={m.isoKey}>
+                <div className="d-flex justify-content-between small">
+                  <span>{m.label}</span>
+                  <span className="fw-semibold">
+                    {formatPrice(m.total, "USD")} · {m.orderCount} ped.
+                  </span>
+                </div>
+                <div className="progress" style={{ height: 14 }}>
+                  <div className="progress-bar bg-info" style={{ width: `${pct}%` }} />
+                </div>
+                <progress aria-label={`${m.label}: ${pct.toFixed(1)}%`} className="visually-hidden" max={100} value={Math.round(pct)} />
+              </div>
+            );
+          })}
+
+          {yoyCoverageNote && <div className="mt-3 small text-muted">{yoyCoverageNote}</div>}
+        </>
+      )}
+    </DashboardCard>
   );
 };
 

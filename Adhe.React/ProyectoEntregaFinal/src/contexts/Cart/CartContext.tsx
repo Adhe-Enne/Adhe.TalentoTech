@@ -9,22 +9,22 @@ export interface AppliedCoupon {
   expiresAt?: string | null;
 }
 
-export type CartContextType = {
-  cart: CartItem[];
+export interface CartContextType {
   appliedCoupon: AppliedCoupon | null;
+  cart: CartItem[];
   discountedByCurrency: Record<string, number>;
   discountedTotal: number;
+  isApplyingCoupon: boolean;
   rawTotal: number;
   totalsByCurrency: Record<string, number>;
-  isApplyingCoupon: boolean;
   addToCart: (product: Product, cantidad?: number) => void;
+  applyCoupon: (code: string) => Promise<{ success: boolean; error?: string }>;
+  clearCart: () => void;
+  getCantidadActual: (productId: string) => number;
+  getCartQuantity: () => number;
+  removeCoupon: () => void;
   removeFromCart: (productId: string) => void;
   updateQuantity: (productId: string, cantidad: number) => void;
-  clearCart: () => void;
-  getCartQuantity: () => number;
-  getCantidadActual: (productId: string) => number;
-  applyCoupon: (code: string) => Promise<{ success: boolean; error?: string }>;
-  removeCoupon: () => void;
-};
+}
 
 export default createTypedContext<CartContextType>();

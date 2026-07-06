@@ -6,14 +6,7 @@ import styles from "./Product.module.css";
 interface Props {
   files: File[];
   existingUrls?: string[];
-  /**
-   * When true, the internal upload label is hidden (so parent may render it).
-   */
   hideUploadButton?: boolean;
-  /**
-   * If provided, the input element will use this id so the parent can render
-   * an external label (e.g. to place the upload button beside the heading).
-   */
   inputId?: string;
   onChange: (files: File[]) => void;
   onExistingChange?: (urls: string[]) => void;

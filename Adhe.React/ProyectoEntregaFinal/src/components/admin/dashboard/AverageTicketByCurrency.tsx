@@ -1,25 +1,13 @@
 import React, { useMemo } from "react";
-import { FaChartLine, FaDollarSign, FaEuroSign, FaMoneyBillWave } from "react-icons/fa";
+import { FaChartLine, FaDollarSign } from "react-icons/fa";
 
 import type { Order } from "../../../models";
 
 import { OrderStatus } from "../../../models/Order";
 import { formatPrice } from "../../../utils/format";
-
-const CURRENCY_META: Record<string, { icon: React.ReactNode; color: string; label: string }> = {
-  USD: { icon: <FaDollarSign />, color: "success", label: "USD" },
-  ARS: { icon: <FaMoneyBillWave />, color: "info", label: "ARS" },
-  EUR: { icon: <FaEuroSign />, color: "primary", label: "EUR" },
-  BRL: { icon: <FaMoneyBillWave />, color: "warning", label: "BRL" },
-};
-
-interface CurrencyRow {
-  averageOriginal: number;
-  averageUSD: number;
-  count: number;
-  currency: string;
-  percentage: number;
-}
+import { CURRENCY_META, type AverageTicketCurrencyRow } from "./currencyMeta";
+import DashboardCard from "./DashboardCard";
+import ProgressBarRow from "./ProgressBarRow";
 
 interface AverageTicketByCurrencyProps {
   orders: Order[];
@@ -28,7 +16,7 @@ interface AverageTicketByCurrencyProps {
 const AverageTicketByCurrency: React.FC<AverageTicketByCurrencyProps> = (props) => {
   const { orders } = props;
 
-  const currencyData: CurrencyRow[] = useMemo(() => {
+  const currencyData: AverageTicketCurrencyRow[] = useMemo(() => {
     const sums: Record<string, number> = {};
     const usdSums: Record<string, number> = {};
     const counts: Record<string, number> = {};
@@ -57,35 +45,31 @@ const AverageTicketByCurrency: React.FC<AverageTicketByCurrencyProps> = (props) 
           percentage: grandTotalUSD > 0 ? (usdSum / grandTotalUSD) * 100 : 0,
         };
       })
-      .sort((a: CurrencyRow, b: CurrencyRow) => b.averageUSD - a.averageUSD);
+      .sort((a: AverageTicketCurrencyRow, b: AverageTicketCurrencyRow) => b.averageUSD - a.averageUSD);
   }, [orders]);
 
   const grandAverageUSD: number = useMemo(() => {
-    const totalCompleted: number = currencyData.reduce((s: number, c: CurrencyRow) => s + c.count, 0);
-    const totalUSD: number = currencyData.reduce((s: number, c: CurrencyRow) => s + c.averageUSD * c.count, 0);
+    const totalCompleted: number = currencyData.reduce((s: number, c: AverageTicketCurrencyRow) => s + c.count, 0);
+    const totalUSD: number = currencyData.reduce((s: number, c: AverageTicketCurrencyRow) => s + c.averageUSD * c.count, 0);
     return totalCompleted > 0 ? totalUSD / totalCompleted : 0;
   }, [currencyData]);
 
-  if (currencyData.length === 0) {
-    return (
-      <div className="card shadow-sm h-100">
-        <div className="card-header bg-white d-flex align-items-center gap-2">
-          <FaChartLine className="text-success" />
-          <h5 className="mb-0">Ticket Promedio por Moneda</h5>
-        </div>
-        <div className="card-body text-center text-muted py-4">No hay pedidos completados</div>
-      </div>
-    );
-  }
-
   return (
-    <div className="card shadow-sm h-100">
-      <div className="card-header bg-white d-flex align-items-center gap-2">
-        <FaChartLine className="text-success" />
-        <h5 className="mb-0">Ticket Promedio por Moneda</h5>
-      </div>
-      <div className="card-body">
-        {currencyData.map((data: CurrencyRow) => {
+    <DashboardCard
+      footer={
+        <>
+          <strong>Promedio General (USD)</strong>
+          <strong>{formatPrice(grandAverageUSD, "USD")}</strong>
+        </>
+      }
+      icon={<FaChartLine />}
+      iconColor="success"
+      title="Ticket Promedio por Moneda"
+    >
+      {currencyData.length === 0 ? (
+        <div className="text-center text-muted py-4">No hay pedidos completados</div>
+      ) : (
+        currencyData.map((data: AverageTicketCurrencyRow) => {
           const { averageOriginal, count, currency, percentage } = data;
           const meta: { icon: React.ReactNode; color: string; label: string } = CURRENCY_META[currency] ?? {
             icon: <FaDollarSign />,
@@ -93,32 +77,28 @@ const AverageTicketByCurrency: React.FC<AverageTicketByCurrencyProps> = (props) 
             label: currency,
           };
           return (
-            <div className="mb-3" key={currency}>
-              <div className="d-flex justify-content-between align-items-center mb-1">
+            <ProgressBarRow
+              ariaLabel={`${meta.label}: ${percentage.toFixed(1)}%`}
+              color={meta.color}
+              extra={
+                <div className="small text-muted mb-1">
+                  {count} pedido{count === 1 ? "" : "s"}
+                </div>
+              }
+              key={currency}
+              label={
                 <span className="d-flex align-items-center gap-2">
                   {meta.icon}
                   <strong>{meta.label}</strong>
                 </span>
-                <span className="text-muted small">{formatPrice(averageOriginal, currency)}</span>
-              </div>
-              <div className="small text-muted mb-1">
-                {count} pedido{count === 1 ? "" : "s"}
-              </div>
-              <div className="progress" style={{ height: 20 }}>
-                <div className={`progress-bar bg-${meta.color}`} style={{ width: `${percentage}%` }}>
-                  {percentage > 8 && `${percentage.toFixed(1)}%`}
-                </div>
-              </div>
-              <progress aria-label={`${meta.label}: ${percentage.toFixed(1)}%`} className="visually-hidden" max={100} value={Math.round(percentage)} />
-            </div>
+              }
+              percent={percentage}
+              rightText={formatPrice(averageOriginal, currency)}
+            />
           );
-        })}
-        <div className="d-flex justify-content-between pt-2 border-top">
-          <strong>Promedio General (USD)</strong>
-          <strong>{formatPrice(grandAverageUSD, "USD")}</strong>
-        </div>
-      </div>
-    </div>
+        })
+      )}
+    </DashboardCard>
   );
 };
 

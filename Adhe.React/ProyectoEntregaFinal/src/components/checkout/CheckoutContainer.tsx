@@ -35,86 +35,86 @@ const CheckoutContainer: React.FC = () => {
         return;
       }
 
-    const result: { valid: boolean; data?: ShippingInfo; error?: string } = shippingRef.current?.getData() ?? { valid: false, error: "Error inesperado" };
-    if (!result.valid || !result.data) {
-      setNotification(result.error ?? "Completá todos los campos de envío", 3000, "warning");
-      return;
-    }
-
-    const currencies: string[] = [...new Set(cart.map((it) => it.product.currency ?? "USD"))];
-    const isMixed: boolean = currencies.length > 1;
-
-    const rates: Record<string, number> = {};
-    for (const c of currencies) {
-      rates[c] = await exchangeRateService.getRate(c);
-    }
-
-    let orderCurrency: string;
-    let exchangeRate: number;
-    let subtotal: number;
-    let discount: number;
-    let total: number;
-
-    if (isMixed) {
-      let subtotalUSD: number = 0;
-      for (const item of cart) {
-        const c: string = item.product.currency ?? "USD";
-        subtotalUSD += item.product.price * item.quantity * rates[c];
+      const result: { valid: boolean; data?: ShippingInfo; error?: string } = shippingRef.current?.getData() ?? { valid: false, error: "Error inesperado" };
+      if (!result.valid || !result.data) {
+        setNotification(result.error ?? "Completá todos los campos de envío", 3000, "warning");
+        return;
       }
-      subtotalUSD = Number(subtotalUSD.toFixed(2));
-      const discountUSD: number = appliedCoupon ? Number((subtotalUSD * (appliedCoupon.discountValue / 100)).toFixed(2)) : 0;
-      const totalUSD: number = Number(Math.max(0, subtotalUSD - discountUSD).toFixed(2));
 
-      orderCurrency = "USD";
-      exchangeRate = 1;
-      subtotal = subtotalUSD;
-      discount = discountUSD;
-      total = totalUSD;
-    } else {
-      const [singleCurrency] = currencies;
-      orderCurrency = singleCurrency;
-      exchangeRate = rates[singleCurrency];
-      subtotal = rawTotal;
-      discount = appliedCoupon ? rawTotal - discountedTotal : 0;
-      total = discountedTotal;
-    }
+      const currencies: string[] = [...new Set(cart.map((it) => it.product.currency ?? "USD"))];
+      const isMixed: boolean = currencies.length > 1;
 
-    const totalInBase: number = Number((total * exchangeRate).toFixed(2));
+      const rates: Record<string, number> = {};
+      for (const c of currencies) {
+        rates[c] = await exchangeRateService.getRate(c);
+      }
 
-    const orderId: string | undefined = await withToast(
-      () =>
-        checkout({
-          userId: user.uid,
-          userEmail: user.email,
-          items: cart.map((item) => ({
-            productId: item.product.id,
-            productName: item.product.name,
-            productImage: item.product.image,
-            price: item.product.price,
-            quantity: item.quantity,
-            subtotal: item.product.price * item.quantity,
-            currency: item.product.currency ?? "USD",
-          })),
-          currency: orderCurrency,
-          exchangeRate,
-          baseCurrency: "USD",
-          totalInBase,
-          subtotal,
-          discount,
-          discountCode: appliedCoupon?.code ?? null,
-          couponId: appliedCoupon?.id ?? null,
-          total,
-          status: OrderStatus.Completado,
-          shippingInfo: result.data!,
-        }),
-      "Procesando compra...",
-      "Compra realizada con éxito",
-      "Error al procesar la compra",
-    );
-    if (orderId) {
-      clearCart();
-      navigate(`/orden/${orderId}`);
-    }
+      let orderCurrency: string;
+      let exchangeRate: number;
+      let subtotal: number;
+      let discount: number;
+      let total: number;
+
+      if (isMixed) {
+        let subtotalUSD: number = 0;
+        for (const item of cart) {
+          const c: string = item.product.currency ?? "USD";
+          subtotalUSD += item.product.price * item.quantity * rates[c];
+        }
+        subtotalUSD = Number(subtotalUSD.toFixed(2));
+        const discountUSD: number = appliedCoupon ? Number((subtotalUSD * (appliedCoupon.discountValue / 100)).toFixed(2)) : 0;
+        const totalUSD: number = Number(Math.max(0, subtotalUSD - discountUSD).toFixed(2));
+
+        orderCurrency = "USD";
+        exchangeRate = 1;
+        subtotal = subtotalUSD;
+        discount = discountUSD;
+        total = totalUSD;
+      } else {
+        const [singleCurrency] = currencies;
+        orderCurrency = singleCurrency;
+        exchangeRate = rates[singleCurrency];
+        subtotal = rawTotal;
+        discount = appliedCoupon ? rawTotal - discountedTotal : 0;
+        total = discountedTotal;
+      }
+
+      const totalInBase: number = Number((total * exchangeRate).toFixed(2));
+
+      const orderId: string | undefined = await withToast(
+        () =>
+          checkout({
+            userId: user.uid,
+            userEmail: user.email,
+            items: cart.map((item) => ({
+              productId: item.product.id,
+              productName: item.product.name,
+              productImage: item.product.image,
+              price: item.product.price,
+              quantity: item.quantity,
+              subtotal: item.product.price * item.quantity,
+              currency: item.product.currency ?? "USD",
+            })),
+            currency: orderCurrency,
+            exchangeRate,
+            baseCurrency: "USD",
+            totalInBase,
+            subtotal,
+            discount,
+            discountCode: appliedCoupon?.code ?? null,
+            couponId: appliedCoupon?.id ?? null,
+            total,
+            status: OrderStatus.Completado,
+            shippingInfo: result.data!,
+          }),
+        "Procesando compra...",
+        "Compra realizada con éxito",
+        "Error al procesar la compra",
+      );
+      if (orderId) {
+        clearCart();
+        navigate(`/orden/${orderId}`);
+      }
     } finally {
       isSubmittingRef.current = false;
       setIsSubmitting(false);

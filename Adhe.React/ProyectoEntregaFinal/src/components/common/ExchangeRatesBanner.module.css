@@ -29,3 +29,41 @@
   opacity: 0.6;
   font-style: italic;
 }
+
+.sourceLink {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-style: dotted;
+}
+
+.sourceLink:hover {
+  color: #0d6efd;
+}
+
+.refreshBtn {
+  align-items: center;
+  background: none;
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+  color: #868e96;
+  cursor: pointer;
+  display: inline-flex;
+  font-size: 0.75rem;
+  gap: 4px;
+  line-height: 1;
+  padding: 2px 8px;
+}
+
+.refreshBtn:hover {
+  border-color: #ffc107;
+  color: #e67700;
+}
+
+.refreshBtn:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.refreshLabel {
+  white-space: nowrap;
+}

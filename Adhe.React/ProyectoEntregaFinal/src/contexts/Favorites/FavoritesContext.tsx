@@ -1,10 +1,10 @@
 import { createTypedContext } from "../../utils/context";
 
-export type FavoritesContextType = {
+export interface FavoritesContextType {
+  favCount: number;
   favorites: Record<string, boolean>;
   isFavorite: (id: string) => boolean;
   toggleFavorite: (id: string) => void;
-  favCount: number;
-};
+}
 
 export default createTypedContext<FavoritesContextType>();

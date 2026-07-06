@@ -2,12 +2,12 @@ import type { Tag } from "../../models/Tag";
 
 import { createTypedContext } from "../../utils/context";
 
-export type TagsContextType = {
-  tags: Tag[];
+export interface TagsContextType {
   loading: boolean;
+  tags: Tag[];
+  createTag: (name: string, categoryId: string) => Promise<Tag | undefined>;
   findById: (id: string) => Tag | undefined;
   reload: () => void;
-  createTag: (name: string, categoryId: string) => Promise<Tag | undefined>;
 };
 
 export default createTypedContext<TagsContextType>();

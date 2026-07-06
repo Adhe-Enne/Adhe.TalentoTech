@@ -5,6 +5,8 @@ import type { Category } from "../../../models";
 
 import useCategories from "../../../hooks/selectors/useCategories";
 import useProducts from "../../../hooks/selectors/useProducts";
+import DashboardCard from "./DashboardCard";
+import ProgressBarRow from "./ProgressBarRow";
 
 interface CategoryRow {
   categoryName: string;
@@ -52,49 +54,27 @@ const ProductsByCategory: React.FC = () => {
     return rows;
   }, [products, categories]);
 
-  if (categoryData.length === 0) {
-    return (
-      <div className="card shadow-sm h-100">
-        <div className="card-header bg-white d-flex align-items-center gap-2">
-          <FaFolder className="text-primary" />
-          <h5 className="mb-0">Productos por Categoría</h5>
-        </div>
-        <div className="card-body text-center text-muted py-4">No hay productos o categorías registrados</div>
-      </div>
-    );
-  }
-
   return (
-    <div className="card shadow-sm h-100">
-      <div className="card-header bg-white d-flex align-items-center gap-2">
-        <FaFolder className="text-primary" />
-        <h5 className="mb-0">Productos por Categoría</h5>
-      </div>
-      <div className="card-body">
-        {categoryData.map((row: CategoryRow, index: number) => {
+    <DashboardCard icon={<FaFolder />} iconColor="primary" title="Productos por Categoría">
+      {categoryData.length === 0 ? (
+        <div className="text-center text-muted py-4">No hay productos o categorías registrados</div>
+      ) : (
+        categoryData.map((row: CategoryRow, index: number) => {
           const { categoryName, count, percentage } = row;
           const color: string = CATEGORY_COLORS[index % CATEGORY_COLORS.length];
           return (
-            <div className="mb-3" key={categoryName}>
-              <div className="d-flex justify-content-between align-items-center mb-1">
-                <span>
-                  <strong>{categoryName}</strong>
-                </span>
-                <span className="text-muted small">
-                  {count} ({percentage.toFixed(1)}%)
-                </span>
-              </div>
-              <div className="progress" style={{ height: 20 }}>
-                <div className={`progress-bar bg-${color}`} style={{ width: `${percentage}%` }}>
-                  {percentage > 8 && `${percentage.toFixed(1)}%`}
-                </div>
-              </div>
-              <progress aria-label={`${categoryName}: ${percentage.toFixed(1)}%`} className="visually-hidden" max={100} value={Math.round(percentage)} />
-            </div>
+            <ProgressBarRow
+              ariaLabel={`${categoryName}: ${percentage.toFixed(1)}%`}
+              color={color}
+              key={categoryName}
+              label={<strong>{categoryName}</strong>}
+              percent={percentage}
+              rightText={`${count} (${percentage.toFixed(1)}%)`}
+            />
           );
-        })}
-      </div>
-    </div>
+        })
+      )}
+    </DashboardCard>
   );
 };
 

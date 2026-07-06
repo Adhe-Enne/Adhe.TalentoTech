@@ -1,24 +1,13 @@
 import React, { useMemo } from "react";
-import { FaDollarSign, FaEuroSign, FaMoneyBillWave } from "react-icons/fa";
+import { FaDollarSign } from "react-icons/fa";
 
 import type { Order } from "../../../models";
 
 import { OrderStatus } from "../../../models/Order";
 import { formatPrice } from "../../../utils/format";
-
-const CURRENCY_META: Record<string, { icon: React.ReactNode; color: string; label: string }> = {
-  USD: { icon: <FaDollarSign />, color: "success", label: "USD" },
-  ARS: { icon: <FaMoneyBillWave />, color: "info", label: "ARS" },
-  EUR: { icon: <FaEuroSign />, color: "primary", label: "EUR" },
-  BRL: { icon: <FaMoneyBillWave />, color: "warning", label: "BRL" },
-};
-
-interface CurrencyRow {
-  currency: string;
-  percentage: number;
-  totalOriginal: number;
-  totalUSD: number;
-}
+import { CURRENCY_META, type RevenueCurrencyRow } from "./currencyMeta";
+import DashboardCard from "./DashboardCard";
+import ProgressBarRow from "./ProgressBarRow";
 
 interface RevenueByCurrencyProps {
   orders: Order[];
@@ -27,7 +16,7 @@ interface RevenueByCurrencyProps {
 const RevenueByCurrency: React.FC<RevenueByCurrencyProps> = (props) => {
   const { orders } = props;
 
-  const currencyData: CurrencyRow[] = useMemo(() => {
+  const currencyData: RevenueCurrencyRow[] = useMemo(() => {
     const originalTotals: Record<string, number> = {};
     const usdTotals: Record<string, number> = {};
 
@@ -52,31 +41,17 @@ const RevenueByCurrency: React.FC<RevenueByCurrencyProps> = (props) => {
           totalUSD,
         };
       })
-      .sort((a: CurrencyRow, b: CurrencyRow) => b.totalUSD - a.totalUSD);
+      .sort((a: RevenueCurrencyRow, b: RevenueCurrencyRow) => b.totalUSD - a.totalUSD);
   }, [orders]);
 
-  const grandTotalUSD: number = useMemo(() => currencyData.reduce((s: number, c: CurrencyRow) => s + c.totalUSD, 0), [currencyData]);
-
-  if (currencyData.length === 0) {
-    return (
-      <div className="card shadow-sm h-100">
-        <div className="card-header bg-white d-flex align-items-center gap-2">
-          <FaDollarSign className="text-success" />
-          <h5 className="mb-0">Ingresos por Moneda</h5>
-        </div>
-        <div className="card-body text-center text-muted py-4">No hay ingresos registrados</div>
-      </div>
-    );
-  }
+  const grandTotalUSD: number = useMemo(() => currencyData.reduce((s: number, c: RevenueCurrencyRow) => s + c.totalUSD, 0), [currencyData]);
 
   return (
-    <div className="card shadow-sm h-100">
-      <div className="card-header bg-white d-flex align-items-center gap-2">
-        <FaDollarSign className="text-success" />
-        <h5 className="mb-0">Ingresos por Moneda</h5>
-      </div>
-      <div className="card-body">
-        {currencyData.map((row: CurrencyRow) => {
+    <DashboardCard footer={<><strong>Total (Conversion a USD)</strong><strong>{formatPrice(grandTotalUSD, "USD")}</strong></>} icon={<FaDollarSign />} iconColor="success" title="Ingresos por Moneda">
+      {currencyData.length === 0 ? (
+        <div className="text-center text-muted py-4">No hay ingresos registrados</div>
+      ) : (
+        currencyData.map((row: RevenueCurrencyRow) => {
           const { currency, totalOriginal, percentage } = row;
           const meta: { icon: React.ReactNode; color: string; label: string } = CURRENCY_META[currency] ?? {
             icon: <FaDollarSign />,
@@ -84,29 +59,18 @@ const RevenueByCurrency: React.FC<RevenueByCurrencyProps> = (props) => {
             label: currency,
           };
           return (
-            <div className="mb-3" key={currency}>
-              <div className="d-flex justify-content-between align-items-center mb-1">
-                <span className="d-flex align-items-center gap-2">
-                  {meta.icon}
-                  <strong>{meta.label}</strong>
-                </span>
-                <span className="text-muted small">{formatPrice(totalOriginal, currency)}</span>
-              </div>
-              <div className="progress" style={{ height: 20 }}>
-                <div className={`progress-bar bg-${meta.color}`} style={{ width: `${percentage}%` }}>
-                  {percentage > 8 && `${percentage.toFixed(1)}%`}
-                </div>
-              </div>
-              <progress aria-label={`${meta.label}: ${percentage.toFixed(1)}%`} className="visually-hidden" max={100} value={Math.round(percentage)} />
-            </div>
+            <ProgressBarRow
+              ariaLabel={`${meta.label}: ${percentage.toFixed(1)}%`}
+              color={meta.color}
+              key={currency}
+              label={<span className="d-flex align-items-center gap-2">{meta.icon}<strong>{meta.label}</strong></span>}
+              percent={percentage}
+              rightText={formatPrice(totalOriginal, currency)}
+            />
           );
-        })}
-        <div className="d-flex justify-content-between pt-2 border-top">
-          <strong>Total (Conversion a USD)</strong>
-          <strong>{formatPrice(grandTotalUSD, "USD")}</strong>
-        </div>
-      </div>
-    </div>
+        })
+      )}
+    </DashboardCard>
   );
 };
 

@@ -110,20 +110,21 @@ const Home: React.FC = () => {
     [decrement],
   );
 
-  const cardData: { currentQuantity: number; isFavorite: boolean; product: Product; onAddToCart: () => void; onDecrement: () => void; onIncrement: () => void; onNavigate: () => void; onToggleFavorite: () => void }[] = useMemo(
-    () =>
-      filteredProducts.map((p) => ({
-        currentQuantity: getCantidadActual(p.id),
-        isFavorite: Boolean(favorites?.[p.id]),
-        product: p,
-        onAddToCart: () => handleAddToCart(p),
-        onDecrement: () => handleDecrement(p),
-        onIncrement: () => handleIncrement(p),
-        onNavigate: () => navigate(`/producto/${p.id}`),
-        onToggleFavorite: () => toggleFavorite(p.id),
-      })),
-    [filteredProducts, favorites, getCantidadActual, handleAddToCart, handleDecrement, handleIncrement, navigate, toggleFavorite],
-  );
+  const cardData: { currentQuantity: number; isFavorite: boolean; product: Product; onAddToCart: () => void; onDecrement: () => void; onIncrement: () => void; onNavigate: () => void; onToggleFavorite: () => void }[] =
+    useMemo(
+      () =>
+        filteredProducts.map((p) => ({
+          currentQuantity: getCantidadActual(p.id),
+          isFavorite: Boolean(favorites?.[p.id]),
+          product: p,
+          onAddToCart: () => handleAddToCart(p),
+          onDecrement: () => handleDecrement(p),
+          onIncrement: () => handleIncrement(p),
+          onNavigate: () => navigate(`/producto/${p.id}`),
+          onToggleFavorite: () => toggleFavorite(p.id),
+        })),
+      [filteredProducts, favorites, getCantidadActual, handleAddToCart, handleDecrement, handleIncrement, navigate, toggleFavorite],
+    );
 
   const showReset: boolean = filteredProducts.length > ITEMS_PER_PAGE;
   const showLoadMore: boolean = hasMore && filteredProducts.length > 0 && !loadingMore;

@@ -5,6 +5,8 @@ import type { Order } from "../../../models";
 
 import { OrderStatus, type OrderStatusValue } from "../../../models/Order";
 import { ORDER_STATUS_VARIANT } from "../../../utils/orderUtils";
+import DashboardCard from "./DashboardCard";
+import ProgressBarRow from "./ProgressBarRow";
 
 interface StatusMeta {
   icon: React.ReactNode;
@@ -45,51 +47,28 @@ const OrderStatusBreakdown: React.FC<OrderStatusBreakdownProps> = (props) => {
     }));
   }, [orders]);
 
-  if (statusData.length === 0) {
-    return (
-      <div className="card shadow-sm h-100">
-        <div className="card-header bg-white d-flex align-items-center gap-2">
-          <FaCheckCircle className="text-success" />
-          <h5 className="mb-0">Estado de Pedidos</h5>
-        </div>
-        <div className="card-body text-center text-muted py-4">No hay pedidos registrados</div>
-      </div>
-    );
-  }
-
   return (
-    <div className="card shadow-sm h-100">
-      <div className="card-header bg-white d-flex align-items-center gap-2">
-        <FaCheckCircle className="text-success" />
-        <h5 className="mb-0">Estado de Pedidos</h5>
-      </div>
-      <div className="card-body">
-        {statusData.map((statusRow: StatusRow) => {
+    <DashboardCard icon={<FaCheckCircle />} iconColor="success" title="Estado de Pedidos">
+      {statusData.length === 0 ? (
+        <div className="text-center text-muted py-4">No hay pedidos registrados</div>
+      ) : (
+        statusData.map((statusRow: StatusRow) => {
           const { status, count, percentage } = statusRow;
           const variant: string = ORDER_STATUS_VARIANT[status] ?? "secondary";
           const meta: StatusMeta = STATUS_META[status] ?? { icon: null, label: status };
           return (
-            <div className="mb-3" key={status}>
-              <div className="d-flex justify-content-between align-items-center mb-1">
-                <span className="d-flex align-items-center gap-2">
-                  {meta.icon}
-                  <strong>{meta.label}</strong>
-                </span>
-                <span className="text-muted small">
-                  {count} ({percentage.toFixed(1)}%)
-                </span>
-              </div>
-              <div className="progress" style={{ height: 20 }}>
-                <div className={`progress-bar bg-${variant}`} style={{ width: `${percentage}%` }}>
-                  {percentage > 8 && `${percentage.toFixed(1)}%`}
-                </div>
-              </div>
-              <progress aria-label={`${meta.label}: ${percentage.toFixed(1)}%`} className="visually-hidden" max={100} value={Math.round(percentage)} />
-            </div>
+            <ProgressBarRow
+              ariaLabel={`${meta.label}: ${percentage.toFixed(1)}%`}
+              color={variant}
+              key={status}
+              label={<span className="d-flex align-items-center gap-2">{meta.icon}<strong>{meta.label}</strong></span>}
+              percent={percentage}
+              rightText={`${count} (${percentage.toFixed(1)}%)`}
+            />
           );
-        })}
-      </div>
-    </div>
+        })
+      )}
+    </DashboardCard>
   );
 };
 

@@ -15,7 +15,7 @@ const AdminLayout: React.FC = () => {
           Volver a tienda
         </NavLink>
       </header>
-      <ExchangeRatesBanner />
+      <ExchangeRatesBanner showRefresh />
       <div className={styles.adminBody}>
         <nav aria-label="Panel de administración" className={styles.sidebar}>
           <NavLink aria-label="Dashboard" className={(props) => `${styles.sidebarLink}${props.isActive ? " " + styles.active : ""}`} end to="/admin">

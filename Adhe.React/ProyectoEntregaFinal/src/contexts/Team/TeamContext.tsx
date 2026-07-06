@@ -2,10 +2,10 @@ import type { Person } from "../../models";
 
 import { createTypedContext } from "../../utils/context";
 
-export type TeamContextType = {
-  team: Person[];
-  loading: boolean;
+export interface TeamContextType  {
   error: string | null;
+  loading: boolean;
+  team: Person[];
   reload: () => void;
 };
 
