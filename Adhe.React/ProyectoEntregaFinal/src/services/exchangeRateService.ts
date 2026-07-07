@@ -8,7 +8,24 @@ const SETTINGS_COLLECTION: string = "settings";
 const EXCHANGE_RATES_DOC: string = "exchangeRates";
 const TRACKED_CURRENCIES: readonly string[] = ["ARS", "EUR", "BRL"] as const;
 
-const REFRESH_INTERVAL_MS: number = 24 * 60 * 60 * 1000;
+const SCHEDULED_HOUR_UTC: number = 21; // 18:00 Argentina = 21:00 UTC
+
+function shouldRefresh(lastAutoRefreshISO: string): boolean {
+  const now: Date = new Date();
+  const lastRefresh: Date = new Date(lastAutoRefreshISO);
+  const todayScheduled: Date = new Date(now);
+  todayScheduled.setUTCHours(SCHEDULED_HOUR_UTC, 0, 0, 0);
+
+  if (now < todayScheduled) {
+    return false;
+  }
+
+  if (lastRefresh >= todayScheduled) {
+    return false;
+  }
+
+  return true;
+}
 
 function buildVisualUrl(currency: string): string {
   return `https://currencyapi.net/currency-converter/usd-${currency.toLowerCase()}?amount=1`;
@@ -48,9 +65,12 @@ async function getExchangeRates(): Promise<ExchangeRateDocument> {
   if (docSnap.exists()) {
     const data: ExchangeRateDocument = docSnap.data() as ExchangeRateDocument;
 
-    const lastRefresh: number = new Date(data.lastAutoRefresh).getTime();
-    if (Date.now() - lastRefresh > REFRESH_INTERVAL_MS) {
-      refreshFromAPI(docRef);
+    if (shouldRefresh(data.lastAutoRefresh)) {
+      try {
+        return await refreshFromAPI(docRef);
+      } catch {
+        return data;
+      }
     }
 
     return data;
@@ -61,13 +81,10 @@ async function getExchangeRates(): Promise<ExchangeRateDocument> {
   return fresh;
 }
 
-async function refreshFromAPI(docRef: DocumentReference): Promise<void> {
-  try {
-    const fresh: ExchangeRateDocument = await fetchFromAPI();
-    await updateDoc(docRef, { ...fresh });
-  } catch {
-    /* Firestore data remains valid — fail silently */
-  }
+async function refreshFromAPI(docRef: DocumentReference): Promise<ExchangeRateDocument> {
+  const fresh: ExchangeRateDocument = await fetchFromAPI();
+  await updateDoc(docRef, { ...fresh });
+  return fresh;
 }
 
 async function forceRefreshExchangeRates(): Promise<void> {

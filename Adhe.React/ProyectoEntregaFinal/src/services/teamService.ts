@@ -4,7 +4,7 @@ import type { Person } from "../models";
 
 import { TEAM_COLLECTION } from "../App.Constants";
 import { db } from "../firebase";
-import { tsToIso } from "../utils/parseDataUtils";
+import { mapTimestamps } from "../utils/parseDataUtils";
 
 function mapDocToPerson(docData: DocumentData, id: string): Person {
   const data: DocumentData = docData;
@@ -17,8 +17,7 @@ function mapDocToPerson(docData: DocumentData, id: string): Person {
     linkedin: data.linkedinURL ?? data.linkedin ?? data.linkedinUrl,
     bio: data.bio ?? data.biography ?? data.descripcion,
     order: data.order,
-    createdAt: tsToIso(data.createdAt) ?? "",
-    updatedAt: tsToIso(data.updatedAt) ?? undefined,
+    ...mapTimestamps(data),
   };
 }
 

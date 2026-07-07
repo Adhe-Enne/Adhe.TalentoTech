@@ -5,7 +5,16 @@ import type { Category } from "../models/Category";
 import { CATEGORIES_COLLECTION } from "../App.Constants";
 import { db } from "../firebase";
 import { timestamps } from "../utils/firestore";
-import { tsToIso } from "../utils/parseDataUtils";
+import { mapTimestamps } from "../utils/parseDataUtils";
+
+function mapDocToCategory(data: DocumentData, id: string): Category {
+  return {
+    id,
+    name: data.name,
+    categorySlug: data.categorySlug,
+    ...mapTimestamps(data),
+  };
+}
 
 export const categoryService: {
   fetchCategories: () => Promise<Category[]>;
@@ -14,16 +23,7 @@ export const categoryService: {
   fetchCategories: async (): Promise<Category[]> => {
     const q: Query<DocumentData> = query(collection(db, CATEGORIES_COLLECTION), orderBy("name"));
     const snap: QuerySnapshot<DocumentData> = await getDocs(q);
-    return snap.docs.map((d) => {
-      const data: DocumentData = d.data();
-      return {
-        id: d.id,
-        name: data.name,
-        categorySlug: data.categorySlug,
-        createdAt: tsToIso(data.createdAt) ?? "",
-        updatedAt: tsToIso(data.updatedAt) ?? undefined,
-      };
-    });
+    return snap.docs.map((d) => mapDocToCategory(d.data(), d.id));
   },
 
   createCategory: async (name: string, slug?: string): Promise<Category> => {
@@ -35,14 +35,7 @@ export const categoryService: {
     if (!snap.empty) {
       const { docs } = snap;
       const [d] = docs;
-      const data: DocumentData = d.data();
-      return {
-        id: d.id,
-        name: data.name,
-        categorySlug: data.categorySlug,
-        createdAt: tsToIso(data.createdAt) ?? "",
-        updatedAt: tsToIso(data.updatedAt) ?? undefined,
-      };
+      return mapDocToCategory(d.data(), d.id);
     }
 
     const payload: Partial<Category> = {
@@ -56,7 +49,8 @@ export const categoryService: {
       id: ref.id,
       name: payload.name ?? "",
       categorySlug: payload.categorySlug,
-      ...timestamps.onCreate(),
+      createdAt: payload.createdAt ?? "",
+      updatedAt: payload.updatedAt ?? undefined,
     };
   },
 };

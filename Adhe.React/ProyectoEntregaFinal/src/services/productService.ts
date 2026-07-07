@@ -20,10 +20,10 @@ import type { Product } from "../models";
 import type { Category } from "../models/Category";
 import type { PaginatedResult } from "../types";
 
-import { PRODUCTS_COLLECTION } from "../App.Constants";
+import { DEFAULT_AVATAR_URL, PRODUCTS_COLLECTION } from "../App.Constants";
 import { db } from "../firebase";
 import { timestamps, stripUndefined } from "../utils/firestore";
-import { tsToIso } from "../utils/parseDataUtils";
+import { mapTimestamps, tsToIso } from "../utils/parseDataUtils";
 
 interface ProductCreatePayload extends Omit<Partial<Product>, "id" | "createdAt" | "updatedAt"> {
   createdAt?: string;
@@ -32,6 +32,10 @@ interface ProductCreatePayload extends Omit<Partial<Product>, "id" | "createdAt"
 
 interface ProductUpdatePayload extends Omit<Partial<Product>, "id" | "createdAt" | "updatedAt"> {
   updatedAt?: string;
+}
+
+function resolveImageUrl(image?: string | null, images?: string[] | null): string {
+  return image ?? (Array.isArray(images) && images.length > 0 ? images[0] : null) ?? DEFAULT_AVATAR_URL;
 }
 
 function buildProductPayload(data: ProductCreatePayload | ProductUpdatePayload): Record<string, unknown> {
@@ -57,15 +61,14 @@ function mapDocToProduct(d: QueryDocumentSnapshot<DocumentData>): Product {
     description: data.description,
     price: Number(data.price ?? 0),
     stock: data.stock ?? data.quantity ?? 0,
-    image: data.image ?? (Array.isArray(data.images) ? data.images[0] : undefined) ?? "/images/avatar1.svg",
+    image: resolveImageUrl(data.image, data.images),
     images: Array.isArray(data.images) ? data.images : undefined,
     currency: data.currency,
     categoryId: data.categoryId ?? data.category?.id,
     category: data.category as Category,
     tagIds: Array.isArray(data.tagIds) ? data.tagIds : undefined,
     isEnabled: data.isEnabled,
-    createdAt: tsToIso(data.createdAt) ?? "",
-    updatedAt: tsToIso(data.updatedAt) ?? undefined,
+    ...mapTimestamps(data),
   };
 }
 
@@ -104,7 +107,7 @@ export const productService: {
     const payload: ProductCreatePayload = {
       ...(buildProductPayload(productData) as ProductCreatePayload),
       price: Number(productData.price ?? 0),
-      image: productData.image ?? (Array.isArray(productData.images) ? productData.images[0] : null) ?? "/images/avatar1.svg",
+      image: resolveImageUrl(productData.image, productData.images),
       images: productData.images ?? [],
       tagIds: productData.tagIds ?? [],
       isEnabled: productData.isEnabled ?? true,
@@ -118,7 +121,7 @@ export const productService: {
       description: payload.description ?? "",
       price: payload.price ?? 0,
       stock: payload.stock ?? 0,
-      image: payload.image ?? "/images/avatar1.svg",
+      image: resolveImageUrl(payload.image, payload.images),
       images: payload.images,
       currency: payload.currency ?? "USD",
       categoryId: payload.categoryId ? String(payload.categoryId) : "",

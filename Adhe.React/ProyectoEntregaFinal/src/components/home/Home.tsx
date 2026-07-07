@@ -15,6 +15,8 @@ import HomeView from "./HomeView";
 
 const ITEMS_PER_PAGE: number = 8;
 
+const filterEnabled: (products: Product[]) => Product[] = (products: Product[]): Product[] => products.filter((p: Product) => p.isEnabled !== false);
+
 const Home: React.FC = () => {
   const [loadingMore, setLoadingMore] = useState<boolean>(false);
   const [hasMore, setHasMore] = useState<boolean>(true);
@@ -22,7 +24,7 @@ const Home: React.FC = () => {
 
   const fetcher: () => Promise<Product[]> = useCallback(async (): Promise<Product[]> => {
     const result: PaginatedResult<Product> = await productService.fetchProductsPage(ITEMS_PER_PAGE);
-    const enabled: Product[] = result.items.filter((p: Product) => p.isEnabled !== false);
+    const enabled: Product[] = filterEnabled(result.items);
     lastKeyRef.current = result.lastKey;
     setHasMore(result.hasMore);
     return enabled;
@@ -37,7 +39,7 @@ const Home: React.FC = () => {
     setLoadingMore(true);
     try {
       const result: PaginatedResult<Product> = await productService.fetchProductsPage(ITEMS_PER_PAGE, lastKeyRef.current ?? undefined);
-      const enabled: Product[] = result.items.filter((p: Product) => p.isEnabled !== false);
+      const enabled: Product[] = filterEnabled(result.items);
       setData((prev: Product[]) => [...prev, ...enabled]);
       lastKeyRef.current = result.lastKey;
       setHasMore(result.hasMore);

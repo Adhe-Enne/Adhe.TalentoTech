@@ -77,14 +77,7 @@ const CategoryCreateModal: React.FC<CategoryCreateModalProps> = (props) => {
 
   const handleCreate: () => Promise<void> = async (): Promise<void> => {
     if (!validateAll()) {
-      if (!name.trim()) {
-        setNotification("El nombre es obligatorio", 3000, "danger");
-      }
-      if (!slug) {
-        setNotification("El slug es obligatorio", 3000, "danger");
-      } else if (!isValidSlug(slug)) {
-        setNotification("Slug inválido: solo mayúsculas, números y guión medio", 3000, "danger");
-      }
+      setNotification("Corregí los errores en el formulario", 3000, "danger");
       return;
     }
     await onCreate(name, slug);

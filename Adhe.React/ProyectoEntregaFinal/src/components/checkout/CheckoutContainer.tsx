@@ -112,8 +112,8 @@ const CheckoutContainer: React.FC = () => {
         "Error al procesar la compra",
       );
       if (orderId) {
-        clearCart();
         navigate(`/orden/${orderId}`);
+        clearCart();
       }
     } finally {
       isSubmittingRef.current = false;
@@ -130,11 +130,22 @@ const CheckoutContainer: React.FC = () => {
   }
 
   if (cart.length === 0) {
-    navigate("/carrito", { replace: true });
     return null;
   }
 
-  return <CheckoutView error={error} isLoading={isLoading || isSubmitting} onBack={handleBack} onConfirm={handleConfirm} shippingRef={shippingRef} />;
+  return (
+    <CheckoutView
+      appliedCoupon={appliedCoupon}
+      cart={cart}
+      discountedTotal={discountedTotal}
+      error={error}
+      isLoading={isLoading || isSubmitting}
+      onBack={handleBack}
+      onConfirm={handleConfirm}
+      rawTotal={rawTotal}
+      shippingRef={shippingRef}
+    />
+  );
 };
 
 export default CheckoutContainer;

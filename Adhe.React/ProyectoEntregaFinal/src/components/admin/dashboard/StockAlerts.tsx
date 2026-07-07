@@ -4,12 +4,15 @@ import { FaExclamationTriangle } from "react-icons/fa";
 
 import type { Product } from "../../../models";
 
-import useProducts from "../../../hooks/selectors/useProducts";
 import { formatPrice } from "../../../utils/format";
 import DashboardCard from "./DashboardCard";
 
-const StockAlerts: React.FC = () => {
-  const { products } = useProducts();
+interface StockAlertsProps {
+  products: Product[];
+}
+
+const StockAlerts: React.FC<StockAlertsProps> = (props) => {
+  const { products } = props;
 
   const lowStockItems: Product[] = useMemo(() => products.filter((p: Product) => p.stock < 5).sort((a: Product, b: Product) => a.stock - b.stock), [products]);
 

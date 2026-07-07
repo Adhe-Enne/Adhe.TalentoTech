@@ -9,7 +9,7 @@ import useNotification from "../../../hooks/selectors/useNotification";
 import { useProduct } from "../../../hooks/selectors/useProduct";
 import useProducts from "../../../hooks/selectors/useProducts";
 import useTags from "../../../hooks/selectors/useTags";
-import styles from "./ProductDetail.module.css";
+import ProductDetailSkeleton from "./ProductDetailSkeleton";
 import ProductDetailView from "./ProductDetailView";
 
 const ProductDetailContainer: React.FC = () => {
@@ -46,44 +46,13 @@ const ProductDetailContainer: React.FC = () => {
   }, [reload]);
 
   if (loading) {
-    return (
-      <div aria-busy="true" className="container py-4">
-        <div aria-hidden="true" className="card">
-          <div className="card-body p-4">
-            <div className="row gx-4 gy-3">
-              <div className="col-12 col-md-5">
-                <div className="placeholder-glow">
-                  <span className={`placeholder col-12 ${styles.skeletonImg}`} />
-                </div>
-              </div>
-              <div className="col-12 col-md-5">
-                <div className="placeholder-glow mb-3">
-                  <span className={`placeholder col-8 ${styles.skeletonTitle}`} />
-                </div>
-                <div className="placeholder-glow mb-2">
-                  <span className={`placeholder col-4 ${styles.skeletonText}`} />
-                </div>
-                <div className="placeholder-glow mb-3">
-                  <span className={`placeholder col-12 ${styles.skeletonDesc}`} />
-                </div>
-                <div className="placeholder-glow mb-3">
-                  <span className={`placeholder col-3 ${styles.skeletonBadge}`} />
-                </div>
-                <div className="placeholder-glow">
-                  <span className={`placeholder col-5 ${styles.skeletonBtn}`} />
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
+    return <ProductDetailSkeleton />;
   }
 
   if (!product) {
     return (
       <div className="container py-4">
-        <div className="alert alert-warning">Producto no encontrado.</div>
+        <div className="alert alert-warning" role="alert">Producto no encontrado.</div>
       </div>
     );
   }

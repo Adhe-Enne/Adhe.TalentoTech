@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 
 import type { Person } from "../../models";
 
+import { DEFAULT_AVATAR_URL } from "../../App.Constants";
 import LoadingSpinner from "../ui/LoadingSpinner";
 import styles from "./TeamList.module.css";
 
@@ -39,7 +40,7 @@ const TeamListView: React.FC<TeamListViewProps> = (props) => {
           return (
             <div className="card p-2" key={p.id}>
               <div className="d-flex align-items-center">
-                <img alt={nombre} className="me-3" src={photo ?? "/images/avatar1.svg"} style={{ borderRadius: "50%", height: 64, objectFit: "cover", width: 64 }} />
+                <img alt={nombre} className="me-3" src={photo ?? DEFAULT_AVATAR_URL} style={{ borderRadius: "50%", height: 64, objectFit: "cover", width: 64 }} />
                 <div>
                   <h5 className="mb-1">{nombre}</h5>
                   <p className="mb-1 text-muted small">{puesto}</p>

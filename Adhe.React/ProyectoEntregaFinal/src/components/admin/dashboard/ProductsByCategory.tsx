@@ -1,12 +1,15 @@
 import React, { useMemo } from "react";
 import { FaFolder } from "react-icons/fa";
 
-import type { Category } from "../../../models";
+import type { Category, Product } from "../../../models";
 
-import useCategories from "../../../hooks/selectors/useCategories";
-import useProducts from "../../../hooks/selectors/useProducts";
 import DashboardCard from "./DashboardCard";
 import ProgressBarRow from "./ProgressBarRow";
+
+interface ProductsByCategoryProps {
+  categories: Category[];
+  products: Product[];
+}
 
 interface CategoryRow {
   categoryName: string;
@@ -16,9 +19,8 @@ interface CategoryRow {
 
 const CATEGORY_COLORS: string[] = ["primary", "success", "info", "warning", "danger", "secondary", "dark"];
 
-const ProductsByCategory: React.FC = () => {
-  const { products } = useProducts();
-  const { categories } = useCategories();
+const ProductsByCategory: React.FC<ProductsByCategoryProps> = (props) => {
+  const { categories, products } = props;
 
   const categoryData: CategoryRow[] = useMemo(() => {
     const categoryMap: Map<string, string> = new Map(categories.map((c: Category) => [c.id, c.name]));

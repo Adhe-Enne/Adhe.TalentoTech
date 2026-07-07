@@ -6,3 +6,5 @@ export const COUPONS_COLLECTION: string = "products_coupons";
 
 export const USERS_COLLECTION: string = "ecommerce_users";
 export const ORDERS_COLLECTION: string = "orders_purchases";
+
+export const DEFAULT_AVATAR_URL: string = "/images/avatar1.svg";

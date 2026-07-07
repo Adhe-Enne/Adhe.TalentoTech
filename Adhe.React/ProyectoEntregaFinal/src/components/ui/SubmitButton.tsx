@@ -2,10 +2,10 @@ import React from "react";
 import { Button, Spinner } from "react-bootstrap";
 
 interface SubmitButtonProps {
-  children?: React.ReactNode;
-  disabled?: boolean;
   loading: boolean;
   loadingLabel: string;
+  children?: React.ReactNode;
+  disabled?: boolean;
 }
 
 const SubmitButton: React.FC<SubmitButtonProps> = (props) => {

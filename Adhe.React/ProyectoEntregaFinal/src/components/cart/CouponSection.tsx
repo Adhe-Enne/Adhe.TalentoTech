@@ -60,21 +60,22 @@ const CouponSection: React.FC = () => {
           </div>
         ) : (
           <div className="d-flex gap-2">
-            <input
-              className="form-control text-uppercase"
-              disabled={isApplyingCoupon}
-              maxLength={20}
-              onChange={(e: ChangeEvent<HTMLInputElement>) => setCouponCode(e.target.value)}
-              placeholder="INGRESA TU CODIGO"
-              type="text"
-              value={couponCode}
-            />
+              <input
+                aria-label="Código de cupón"
+                className="form-control text-uppercase"
+                disabled={isApplyingCoupon}
+                maxLength={20}
+                onChange={(e: ChangeEvent<HTMLInputElement>) => setCouponCode(e.target.value)}
+                placeholder="INGRESA TU CODIGO"
+                type="text"
+                value={couponCode}
+              />
             <Button aria-label="Aplicar cupón" disabled={isApplyingCoupon || !couponCode.trim()} onClick={() => void handleApplyCoupon()} variant="primary">
               {isApplyingCoupon ? "Aplicando..." : "Aplicar"}
             </Button>
           </div>
         )}
-        {couponError && <div className="text-danger small mt-1">{couponError}</div>}
+        {couponError && <div className="text-danger small mt-1" role="alert">{couponError}</div>}
       </div>
     </div>
   );

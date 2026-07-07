@@ -19,3 +19,8 @@ export const tsToIso: (val: unknown) => string | undefined = (val: unknown): str
   }
   return undefined;
 };
+
+export const mapTimestamps: (data: Record<string, unknown> | undefined) => { createdAt: string; updatedAt: string | undefined } = (data) => ({
+  createdAt: tsToIso(data?.createdAt) ?? "",
+  updatedAt: tsToIso(data?.updatedAt) ?? undefined,
+});

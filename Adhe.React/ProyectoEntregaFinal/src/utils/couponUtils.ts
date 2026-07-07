@@ -1,5 +1,9 @@
 import type { Coupon } from "../models";
 
+export const isCouponExpired: (expiresAt: string | null | undefined) => boolean = (expiresAt) => {
+  return expiresAt ? new Date(expiresAt) < new Date() : false;
+};
+
 export const getStatusBadge: (coupon: Coupon) => { label: string; variant: string } = (coupon: Coupon) => {
   if (!coupon.isEnabled) {
     return { label: "Deshabilitado", variant: "secondary" };

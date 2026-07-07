@@ -3,6 +3,7 @@ import {
   onAuthStateChanged as firebaseOnAuthStateChanged,
   signInWithEmailAndPassword,
   signOut,
+  type Auth,
   type User as FirebaseUser,
   type UserCredential,
 } from "firebase/auth";
@@ -88,55 +89,49 @@ function syncUserFromFirestore(firebaseUser: FirebaseUser): void {
     });
 }
 
+async function authenticateUser(
+  email: string,
+  password: string,
+  authMethod: (authInstance: Auth, email: string, password: string) => Promise<UserCredential>,
+  buildInfo: (firebaseUser: FirebaseUser, emailLower: string) => Promise<UserInfo>,
+): Promise<UserInfo> {
+  const emailLower: string = email.toLowerCase();
+  let result: UserCredential;
+
+  try {
+    result = await authMethod(auth, emailLower, password);
+  } catch (error: unknown) {
+    throw new Error(translateAuthError(error));
+  }
+
+  const userInfo: UserInfo = await buildInfo(result.user, emailLower);
+  setSession(userInfo);
+  return userInfo;
+}
+
 export const authService: {
   login: (email: string, password: string) => Promise<UserInfo>;
   signup: (email: string, password: string) => Promise<UserInfo>;
   logout: () => Promise<void>;
   onAuthStateChanged: (cb: AuthStateListener) => () => void;
 } = {
-  login: async (email: string, password: string): Promise<UserInfo> => {
-    const emailLower: string = email.toLowerCase();
-    let result: UserCredential;
-
-    try {
-      result = await signInWithEmailAndPassword(auth, emailLower, password);
-    } catch (error: unknown) {
-      throw new Error(translateAuthError(error));
-    }
-
-    const firebaseUser: FirebaseUser = result.user;
-    const docRef: DocumentReference = doc(db, USERS_COLLECTION, firebaseUser.uid);
-    const docSnap: DocumentSnapshot = await getDoc(docRef);
-    const userInfo: UserInfo = buildUserInfoFromDoc(firebaseUser, docSnap, emailLower);
-    setSession(userInfo);
-
-    return userInfo;
-  },
-  signup: async (email: string, password: string): Promise<UserInfo> => {
-    const emailLower: string = email.toLowerCase();
-    let result: UserCredential;
-
-    try {
-      result = await createUserWithEmailAndPassword(auth, emailLower, password);
-    } catch (error: unknown) {
-      throw new Error(translateAuthError(error));
-    }
-
-    const firebaseUser: FirebaseUser = result.user;
-    const { uid } = firebaseUser;
-
-    await setDoc(doc(db, USERS_COLLECTION, uid), {
-      email: emailLower,
-      rol: "user",
-      createdAt: new Date().toISOString(),
-      updatedAt: null,
-    });
-
-    const userInfo: UserInfo = { uid, email: emailLower, rol: "user" };
-    setSession(userInfo);
-
-    return userInfo;
-  },
+  login: async (email: string, password: string): Promise<UserInfo> =>
+    authenticateUser(email, password, signInWithEmailAndPassword, async (firebaseUser, emailLower) => {
+      const docRef: DocumentReference = doc(db, USERS_COLLECTION, firebaseUser.uid);
+      const docSnap: DocumentSnapshot = await getDoc(docRef);
+      return buildUserInfoFromDoc(firebaseUser, docSnap, emailLower);
+    }),
+  signup: async (email: string, password: string): Promise<UserInfo> =>
+    authenticateUser(email, password, createUserWithEmailAndPassword, async (firebaseUser, emailLower) => {
+      const { uid } = firebaseUser;
+      await setDoc(doc(db, USERS_COLLECTION, uid), {
+        email: emailLower,
+        rol: "user",
+        createdAt: new Date().toISOString(),
+        updatedAt: null,
+      });
+      return { uid, email: emailLower, rol: "user" };
+    }),
 
   logout: async (): Promise<void> => {
     await signOut(auth);

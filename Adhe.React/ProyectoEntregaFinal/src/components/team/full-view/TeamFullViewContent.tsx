@@ -2,6 +2,7 @@ import React, { type RefObject } from "react";
 
 import type { Person } from "../../../models";
 
+import { DEFAULT_AVATAR_URL } from "../../../App.Constants";
 import HelmetMeta from "../../ui/HelmetMeta";
 import LoadingSpinner from "../../ui/LoadingSpinner";
 import modalStyles from "./bio-modal/ContactBioModal.module.css";
@@ -45,7 +46,7 @@ const TeamFullViewContent: React.FC<TeamFullViewContentProps> = (props) => {
               <div className={styles.item} key={p.id}>
                 <div className={expandedStyles.cardFull}>
                   <div className={expandedStyles.photoWrap}>
-                    <img alt={name} className={expandedStyles.photoFull} src={photo ?? "/images/avatar1.svg"} />
+                    <img alt={name} className={expandedStyles.photoFull} src={photo ?? DEFAULT_AVATAR_URL} />
                   </div>
                   <div className={expandedStyles.content}>
                     <div className={expandedStyles.header}>

@@ -104,7 +104,7 @@ export const CartProvider: React.FC<ProviderProps> = (props) => {
     saveToStorage(getCouponKey(userId), null);
   }, [userId]);
 
-  const discountedTotal: number = appliedCoupon ? Math.max(0, rawTotal - rawTotal * (appliedCoupon.discountValue / 100)) : rawTotal;
+  const discountedTotal: number = useMemo(() => (appliedCoupon ? Math.max(0, rawTotal - rawTotal * (appliedCoupon.discountValue / 100)) : rawTotal), [appliedCoupon, rawTotal]);
 
   const persistSetCart: (fn: (prev: CartItem[]) => CartItem[]) => void = useCallback(
     (fn: (prev: CartItem[]) => CartItem[]): void => {

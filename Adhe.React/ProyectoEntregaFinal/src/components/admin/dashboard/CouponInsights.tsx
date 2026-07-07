@@ -4,10 +4,12 @@ import { FaTicketAlt } from "react-icons/fa";
 
 import type { Coupon } from "../../../models";
 
-import useCoupons from "../../../hooks/selectors/useCoupons";
+interface CouponInsightsProps {
+  coupons: Coupon[];
+}
 
-const CouponInsights: React.FC = () => {
-  const { coupons } = useCoupons();
+const CouponInsights: React.FC<CouponInsightsProps> = (props) => {
+  const { coupons } = props;
 
   const insights: {
     total: number;

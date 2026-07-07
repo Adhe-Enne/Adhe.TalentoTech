@@ -5,8 +5,8 @@ import { FaTrash } from "react-icons/fa";
 interface DeleteButtonProps {
   "aria-label": string;
   disabled?: boolean;
-  onClick: () => void;
   size?: "sm" | "lg";
+  onClick: () => void;
 }
 
 const DeleteButton: React.FC<DeleteButtonProps> = (props) => {

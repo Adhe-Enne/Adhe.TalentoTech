@@ -23,7 +23,7 @@ import { COUPONS_COLLECTION, ORDERS_COLLECTION, PRODUCTS_COLLECTION } from "../A
 import { db } from "../firebase";
 import { type OrderStatusValue, OrderStatus } from "../models/Order";
 import { timestamps } from "../utils/firestore";
-import { tsToIso } from "../utils/parseDataUtils";
+import { mapTimestamps } from "../utils/parseDataUtils";
 
 function mapDocToOrder(d: DocumentSnapshot<DocumentData>): Order {
   const data: DocumentData | undefined = d.data();
@@ -43,8 +43,7 @@ function mapDocToOrder(d: DocumentSnapshot<DocumentData>): Order {
     exchangeRate: Number(data?.exchangeRate ?? 1),
     baseCurrency: data?.baseCurrency ?? "USD",
     totalInBase: Number(data?.totalInBase ?? data?.total ?? 0),
-    createdAt: tsToIso(data?.createdAt) ?? "",
-    updatedAt: tsToIso(data?.updatedAt) ?? undefined,
+    ...mapTimestamps(data),
   };
 }
 

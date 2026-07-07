@@ -5,7 +5,16 @@ import type { Tag } from "../models/Tag";
 import { TAGS_COLLECTION } from "../App.Constants";
 import { db } from "../firebase";
 import { timestamps } from "../utils/firestore";
-import { tsToIso } from "../utils/parseDataUtils";
+import { mapTimestamps } from "../utils/parseDataUtils";
+
+function mapDocToTag(data: DocumentData, id: string): Tag {
+  return {
+    id,
+    name: data.name,
+    categoryId: data.categoryId,
+    ...mapTimestamps(data),
+  };
+}
 
 export const tagService: {
   fetchTags: () => Promise<Tag[]>;
@@ -14,16 +23,7 @@ export const tagService: {
   fetchTags: async (): Promise<Tag[]> => {
     const q: Query<DocumentData> = query(collection(db, TAGS_COLLECTION), orderBy("name"));
     const snap: QuerySnapshot<DocumentData> = await getDocs(q);
-    return snap.docs.map((d) => {
-      const data: DocumentData = d.data();
-      return {
-        id: d.id,
-        name: data.name,
-        categoryId: data.categoryId,
-        createdAt: tsToIso(data.createdAt) ?? "",
-        updatedAt: tsToIso(data.updatedAt) ?? undefined,
-      };
-    });
+    return snap.docs.map((d) => mapDocToTag(d.data(), d.id));
   },
 
   createTag: async (name: string, categoryId: string): Promise<Tag> => {
@@ -35,14 +35,7 @@ export const tagService: {
     if (!snap.empty) {
       const { docs } = snap;
       const [d] = docs;
-      const data: DocumentData = d.data();
-      return {
-        id: d.id,
-        name: data.name,
-        categoryId: data.categoryId,
-        createdAt: tsToIso(data.createdAt) ?? "",
-        updatedAt: tsToIso(data.updatedAt) ?? undefined,
-      };
+      return mapDocToTag(d.data(), d.id);
     }
 
     const payload: Partial<Tag> = {

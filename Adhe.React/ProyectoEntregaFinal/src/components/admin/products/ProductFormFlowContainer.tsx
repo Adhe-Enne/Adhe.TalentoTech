@@ -5,6 +5,7 @@ import { toast } from "react-toastify";
 import type { Product, Tag } from "../../../models";
 import type { Fields, ProductFormPayload } from "../../product/product-form/ProductFormTypes";
 
+import { DEFAULT_AVATAR_URL } from "../../../App.Constants";
 import useCategories from "../../../hooks/selectors/useCategories";
 import useProducts from "../../../hooks/selectors/useProducts";
 import useTags from "../../../hooks/selectors/useTags";
@@ -132,7 +133,7 @@ const ProductFormFlowContainer: React.FC = () => {
       const toastId: string | number = toast.loading(isEdit ? "Actualizando producto..." : "Subiendo producto...");
       try {
         await safeSubmit(async () => {
-          const imageUrl: string = p.file ? await uploadMainImage(p.file) : (product?.image ?? "/images/avatar1.svg");
+          const imageUrl: string = p.file ? await uploadMainImage(p.file) : (product?.image ?? DEFAULT_AVATAR_URL);
           const newImages: string[] = await uploadAdditionalImages(p.images ?? []);
           const images: string[] = isEdit ? [...(p.existingImageUrls ?? []), ...newImages] : newImages;
           const tagIds: string[] = await resolveTagIds(p.tags, p.categoriaId, p.tagIds);

@@ -1,10 +1,10 @@
 import React, { type ReactNode } from "react";
 
 interface PageHeaderProps {
+  title: ReactNode;
   children?: ReactNode;
   className?: string;
   headingTag?: "h1" | "h2" | "h3" | "h4";
-  title: ReactNode;
 }
 
 const PageHeader: React.FC<PageHeaderProps> = (props) => {

@@ -17,8 +17,33 @@ import type { Coupon, CouponCreatePayload, CouponUpdatePayload, CouponValidation
 
 import { COUPONS_COLLECTION } from "../App.Constants";
 import { db } from "../firebase";
+import { isCouponExpired } from "../utils/couponUtils";
 import { timestamps, stripUndefined } from "../utils/firestore";
-import { tsToIso } from "../utils/parseDataUtils";
+import { mapTimestamps } from "../utils/parseDataUtils";
+
+function mapDocToCoupon(data: DocumentData, id: string): Coupon {
+  return {
+    id,
+    code: data.code ?? "",
+    discountValue: Number(data.discountValue ?? 0),
+    isEnabled: data.isEnabled ?? true,
+    expiresAt: data.expiresAt ?? null,
+    usageLimit: data.usageLimit ?? null,
+    usedCount: Number(data.usedCount ?? 0),
+    minPurchaseAmount: data.minPurchaseAmount ?? null,
+    description: data.description ?? null,
+    ...mapTimestamps(data),
+  };
+}
+
+async function findCouponByCode(code: string): Promise<QuerySnapshot<DocumentData> | null> {
+  const normalized: string = code.trim().toUpperCase();
+  if (normalized.length < 3) {
+    return null;
+  }
+  const q: Query<DocumentData> = query(collection(db, COUPONS_COLLECTION), where("code", "==", normalized));
+  return await getDocs(q);
+}
 
 export const couponService: {
   fetchCoupons: () => Promise<Coupon[]>;
@@ -30,22 +55,7 @@ export const couponService: {
 } = {
   fetchCoupons: async (): Promise<Coupon[]> => {
     const snap: QuerySnapshot<DocumentData> = await getDocs(collection(db, COUPONS_COLLECTION));
-    return snap.docs.map((d) => {
-      const data: DocumentData = d.data();
-      return {
-        id: d.id,
-        code: data.code ?? "",
-        discountValue: Number(data.discountValue ?? 0),
-        isEnabled: data.isEnabled ?? true,
-        expiresAt: data.expiresAt ?? null,
-        usageLimit: data.usageLimit ?? null,
-        usedCount: Number(data.usedCount ?? 0),
-        minPurchaseAmount: data.minPurchaseAmount ?? null,
-        description: data.description ?? null,
-        createdAt: tsToIso(data.createdAt) ?? "",
-        updatedAt: tsToIso(data.updatedAt) ?? undefined,
-      };
-    });
+    return snap.docs.map((d) => mapDocToCoupon(d.data(), d.id));
   },
 
   createCoupon: async (payload: CouponCreatePayload): Promise<Coupon> => {
@@ -75,16 +85,9 @@ export const couponService: {
   },
 
   validateCoupon: async (code: string): Promise<CouponValidationResult> => {
-    const normalized: string = code.trim().toUpperCase();
-    if (normalized.length < 3) {
-      return { valid: false, error: "El código debe tener al menos 3 caracteres" };
-    }
-
-    const q: Query<DocumentData> = query(collection(db, COUPONS_COLLECTION), where("code", "==", normalized));
-    const snap: QuerySnapshot<DocumentData> = await getDocs(q);
-
-    if (snap.empty) {
-      return { valid: false, error: "Cupón no encontrado" };
+    const snap: QuerySnapshot<DocumentData> | null = await findCouponByCode(code);
+    if (!snap || snap.empty) {
+      return { valid: false, error: snap === null ? "El código debe tener al menos 3 caracteres" : "Cupón no encontrado" };
     }
 
     const data: DocumentData = snap.docs[0].data();
@@ -94,7 +97,7 @@ export const couponService: {
       return { valid: false, error: "Este cupón ya no está disponible" };
     }
 
-    if (coupon.expiresAt && new Date(coupon.expiresAt) < new Date()) {
+    if (isCouponExpired(coupon.expiresAt)) {
       return { valid: false, error: "Este cupón ha expirado" };
     }
 
@@ -105,12 +108,7 @@ export const couponService: {
   },
 
   checkCodeExists: async (code: string): Promise<boolean> => {
-    const normalized: string = code.trim().toUpperCase();
-    if (normalized.length < 3) {
-      return false;
-    }
-    const q: Query<DocumentData> = query(collection(db, COUPONS_COLLECTION), where("code", "==", normalized));
-    const snap: QuerySnapshot<DocumentData> = await getDocs(q);
-    return !snap.empty;
+    const snap: QuerySnapshot<DocumentData> | null = await findCouponByCode(code);
+    return snap ? !snap.empty : false;
   },
 };

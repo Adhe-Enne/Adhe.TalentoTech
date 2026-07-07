@@ -1,10 +1,10 @@
-import { useCallback, useState } from "react";
+import { useCallback } from "react";
 
 import type { CreateOrderPayload, Order } from "../models";
 import type { OrderStatusValue } from "../models/Order";
 
 import { orderService } from "../services/orderService";
-import { extractErrorMessage } from "../utils/errorUtils";
+import useAsyncAction from "./useAsyncAction";
 
 interface UseOrdersReturn {
   error: string | null;
@@ -18,82 +18,37 @@ interface UseOrdersReturn {
 }
 
 const useOrders: () => UseOrdersReturn = (): UseOrdersReturn => {
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
+  const { execute, executeWithFallback, executeSilent, error, isLoading } = useAsyncAction("Error en operación");
 
-  const checkout: (payload: CreateOrderPayload) => Promise<string> = useCallback(async (payload: CreateOrderPayload): Promise<string> => {
-    setIsLoading(true);
-    setError(null);
-    try {
-      return await orderService.createOrder(payload);
-    } catch (err: unknown) {
-      const msg: string = extractErrorMessage(err, "Error al procesar la compra");
-      setError(msg);
-      throw err;
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
+  const checkout: (payload: CreateOrderPayload) => Promise<string> = useCallback(
+    (payload: CreateOrderPayload): Promise<string> => execute(() => orderService.createOrder(payload), "Error al procesar la compra"),
+    [execute],
+  );
 
-  const fetchUserOrders: (userId: string) => Promise<Order[]> = useCallback(async (userId: string): Promise<Order[]> => {
-    setIsLoading(true);
-    setError(null);
-    try {
-      return await orderService.fetchUserOrders(userId);
-    } catch (err: unknown) {
-      const msg: string = extractErrorMessage(err, "Error al obtener pedidos");
-      setError(msg);
-      return [];
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
+  const fetchUserOrders: (userId: string) => Promise<Order[]> = useCallback(
+    (userId: string): Promise<Order[]> => executeWithFallback(() => orderService.fetchUserOrders(userId), [], "Error al obtener pedidos"),
+    [executeWithFallback],
+  );
 
-  const fetchAllOrders: () => Promise<Order[]> = useCallback(async (): Promise<Order[]> => {
-    setIsLoading(true);
-    setError(null);
-    try {
-      return await orderService.fetchAllOrders();
-    } catch (err: unknown) {
-      const msg: string = extractErrorMessage(err, "Error al obtener pedidos");
-      setError(msg);
-      return [];
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
+  const fetchAllOrders: () => Promise<Order[]> = useCallback(
+    (): Promise<Order[]> => executeWithFallback(() => orderService.fetchAllOrders(), [], "Error al obtener pedidos"),
+    [executeWithFallback],
+  );
 
-  const fetchOrderById: (id: string) => Promise<Order | null> = useCallback(async (id: string): Promise<Order | null> => {
-    setError(null);
-    try {
-      return await orderService.fetchOrderById(id);
-    } catch (err: unknown) {
-      const msg: string = extractErrorMessage(err, "Error al obtener pedido");
-      setError(msg);
-      return null;
-    }
-  }, []);
+  const fetchOrderById: (id: string) => Promise<Order | null> = useCallback(
+    (id: string): Promise<Order | null> => executeSilent(() => orderService.fetchOrderById(id), null, "Error al obtener pedido") as Promise<Order | null>,
+    [executeSilent],
+  );
 
-  const deleteOrder: (id: string) => Promise<void> = useCallback(async (id: string): Promise<void> => {
-    setError(null);
-    try {
-      await orderService.deleteOrder(id);
-    } catch (err: unknown) {
-      const msg: string = extractErrorMessage(err, "Error al eliminar pedido");
-      setError(msg);
-    }
-  }, []);
+  const deleteOrder: (id: string) => Promise<void> = useCallback(
+    (id: string): Promise<void> => executeSilent(() => orderService.deleteOrder(id), undefined, "Error al eliminar pedido") as Promise<void>,
+    [executeSilent],
+  );
 
-  const updateOrderStatus: (id: string, status: OrderStatusValue) => Promise<void> = useCallback(async (id: string, status: OrderStatusValue): Promise<void> => {
-    setError(null);
-    try {
-      await orderService.updateOrderStatus(id, status);
-    } catch (err: unknown) {
-      const msg: string = extractErrorMessage(err, "Error al actualizar pedido");
-      setError(msg);
-      throw err;
-    }
-  }, []);
+  const updateOrderStatus: (id: string, status: OrderStatusValue) => Promise<void> = useCallback(
+    (id: string, status: OrderStatusValue): Promise<void> => execute(() => orderService.updateOrderStatus(id, status), "Error al actualizar pedido"),
+    [execute],
+  );
 
   return { deleteOrder, error, isLoading, checkout, fetchAllOrders, fetchOrderById, fetchUserOrders, updateOrderStatus };
 };

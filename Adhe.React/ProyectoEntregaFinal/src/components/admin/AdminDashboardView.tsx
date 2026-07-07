@@ -2,7 +2,7 @@ import React from "react";
 import { Col, Row } from "react-bootstrap";
 import { Link } from "react-router-dom";
 
-import type { Order } from "../../models";
+import type { Coupon, Order, Product, Category } from "../../models";
 
 import HelmetMeta from "../ui/HelmetMeta";
 import LoadingSpinner from "../ui/LoadingSpinner";
@@ -30,9 +30,13 @@ interface Metric {
 }
 
 interface AdminDashboardViewProps {
+  categories: Category[];
+  coupons: Coupon[];
   loading: boolean;
   metrics: Metric[];
   orders: Order[];
+  products: Product[];
+  rates: Record<string, number>;
   onRefresh: () => void;
 }
 
@@ -45,7 +49,7 @@ const VARIANT_MAP: Record<string, { bg: string; text: string; border: string }> 
 };
 
 const AdminDashboardView: React.FC<AdminDashboardViewProps> = (props) => {
-  const { loading, metrics, onRefresh, orders } = props;
+  const { categories, coupons, loading, metrics, orders, products, rates, onRefresh } = props;
 
   if (loading) {
     return <LoadingSpinner message="Cargando dashboard..." />;
@@ -92,7 +96,7 @@ const AdminDashboardView: React.FC<AdminDashboardViewProps> = (props) => {
       </Row>
       <Row className="g-3 mt-3">
         <Col lg={6} xs={12}>
-          <ProductsByCategory />
+          <ProductsByCategory categories={categories} products={products} />
         </Col>
         <Col lg={6} xs={12}>
           <RecentOrders orders={orders} />
@@ -100,15 +104,15 @@ const AdminDashboardView: React.FC<AdminDashboardViewProps> = (props) => {
       </Row>
       <Row className="g-3 mt-3">
         <Col lg={6} xs={12}>
-          <StockAlerts />
+          <StockAlerts products={products} />
         </Col>
         <Col lg={6} xs={12}>
-          <CouponInsights />
+          <CouponInsights coupons={coupons} />
         </Col>
       </Row>
       <Row className="g-3 mt-3">
         <Col lg={6} xs={12}>
-          <InventoryByCurrency />
+          <InventoryByCurrency products={products} rates={rates} />
         </Col>
         <Col lg={6} xs={12}>
           <DiscountsByCurrency orders={orders} />

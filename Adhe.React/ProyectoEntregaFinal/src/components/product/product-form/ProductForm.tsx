@@ -87,7 +87,7 @@ const ProductForm: React.FC<ProductFormProps> = (props) => {
               <small className="text-muted">Imagen actual:</small>
             </div>
           )}
-          <div className="mb-2">{errors.file && <div className="invalid-feedback d-block">{errors.file}</div>}</div>
+          <div className="mb-2">{errors.file && <div className="invalid-feedback d-block" role="alert">{errors.file}</div>}</div>
           <ProductImagePreview name={fields.file?.name} onClear={() => setFile(null)} onFileChange={setFile} url={displayUrl} />
           {isEdit && existingImageUrl && !fields.file && (
             <div className="mt-1">

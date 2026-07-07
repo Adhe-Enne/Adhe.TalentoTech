@@ -1,16 +1,20 @@
 import React, { useMemo } from "react";
 import { FaBoxes, FaDollarSign } from "react-icons/fa";
 
-import useProducts from "../../../hooks/selectors/useProducts";
-import { useAllExchangeRates } from "../../../hooks/useAllExchangeRates";
+import type { Product } from "../../../models";
+
 import { formatPrice } from "../../../utils/format";
 import { CURRENCY_META, type InventoryCurrencyRow } from "./currencyMeta";
 import DashboardCard from "./DashboardCard";
 import ProgressBarRow from "./ProgressBarRow";
 
-const InventoryByCurrency: React.FC = () => {
-  const { products } = useProducts();
-  const { rates } = useAllExchangeRates();
+interface InventoryByCurrencyProps {
+  products: Product[];
+  rates: Record<string, number>;
+}
+
+const InventoryByCurrency: React.FC<InventoryByCurrencyProps> = (props) => {
+  const { products, rates } = props;
 
   const currencyData: InventoryCurrencyRow[] = useMemo(() => {
     const originalTotals: Record<string, number> = {};

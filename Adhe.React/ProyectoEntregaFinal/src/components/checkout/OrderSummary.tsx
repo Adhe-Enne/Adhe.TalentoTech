@@ -1,14 +1,20 @@
 import React, { type JSX } from "react";
 import { ListGroup } from "react-bootstrap";
 
+import type { AppliedCoupon } from "../../contexts/Cart/CartContext";
 import type { CartItem } from "../../models";
 
-import useCart from "../../hooks/selectors/useCart";
 import { formatPrice } from "../../utils/format";
 
-const OrderSummary: React.FC = () => {
-  const { cart, appliedCoupon, discountedTotal, rawTotal } = useCart();
+interface OrderSummaryProps {
+  appliedCoupon: AppliedCoupon | null;
+  cart: CartItem[];
+  discountedTotal: number;
+  rawTotal: number;
+}
 
+const OrderSummary: React.FC<OrderSummaryProps> = (props) => {
+  const { appliedCoupon, cart, discountedTotal, rawTotal } = props;
   return (
     <div className="card">
       <div className="card-body">

@@ -1,10 +1,10 @@
 import React, { type ReactNode } from "react";
 
 interface EmptyStateProps {
+  title: string;
   action?: ReactNode;
   icon?: ReactNode;
   message?: string;
-  title: string;
 }
 
 const EmptyState: React.FC<EmptyStateProps> = (props) => {

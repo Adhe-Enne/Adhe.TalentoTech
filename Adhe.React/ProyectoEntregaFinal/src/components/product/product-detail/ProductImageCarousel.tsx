@@ -1,6 +1,7 @@
 import React, { useState, useCallback } from "react";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 
+import { DEFAULT_AVATAR_URL } from "../../../App.Constants";
 import styles from "./ProductImageCarousel.module.css";
 
 interface Props {
@@ -11,7 +12,7 @@ interface Props {
 const ProductImageCarousel: React.FC<Props> = (props) => {
   const { images, alt = "Imagen del producto" } = props;
 
-  const imgs: string[] = images?.length ? images : ["/images/avatar1.svg"];
+  const imgs: string[] = images?.length ? images : [DEFAULT_AVATAR_URL];
 
   const [index, setIndex] = useState<number>(0);
 
