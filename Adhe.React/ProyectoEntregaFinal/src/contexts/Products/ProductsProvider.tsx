@@ -47,10 +47,14 @@ export const ProductsProvider: React.FC<ProviderProps> = (props) => {
 
   const updateProduct: (id: string, p: Partial<Product>) => Promise<void> = useCallback(
     async (id: string, p: Partial<Product>): Promise<void> => {
-      const { updatedAt: _u, ...clean } = p;
-      await productService.updateProduct(id, clean);
+      try {
+        const { updatedAt: _u, ...clean } = p;
+        await productService.updateProduct(id, clean);
 
-      setData((prevProducts) => prevProducts.map((product) => (product.id === id ? { ...product, ...clean, updatedAt: new Date().toISOString() } : product)));
+        setData((prevProducts) => prevProducts.map((product) => (product.id === id ? { ...product, ...clean, updatedAt: new Date().toISOString() } : product)));
+      } catch {
+        // Silencioso — el componente maneja la notificación via withToast
+      }
     },
     [setData],
   );

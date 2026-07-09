@@ -1,5 +1,4 @@
 import React from "react";
-import { Alert, Button, Spinner } from "react-bootstrap";
 
 interface ListStateDisplayProps {
   children: React.ReactNode;
@@ -13,9 +12,9 @@ const ListStateDisplay: React.FC<ListStateDisplayProps> = (props: ListStateDispl
   const { children, error, loading, loadingMessage = "Cargando...", onRetry } = props;
   if (loading) {
     return (
-      <div aria-busy="true" className="d-flex justify-content-center py-5">
-        <Spinner animation="border" role="status" />
-        <output aria-live="polite" className="visually-hidden">
+      <div aria-busy="true" className="flex justify-center py-5">
+        <span className="animate-spin h-8 w-8 border-4 border-gray-300 border-t-blue-600 rounded-full" role="status" />
+        <output aria-live="polite" className="sr-only">
           {loadingMessage}
         </output>
       </div>
@@ -24,14 +23,19 @@ const ListStateDisplay: React.FC<ListStateDisplayProps> = (props: ListStateDispl
 
   if (error) {
     return (
-      <Alert className="d-flex align-items-center gap-2" variant="danger">
+      <div className="flex items-center gap-2 bg-danger/10 border border-danger/20 text-danger p-4 rounded-lg" role="alert">
         <span>{error}</span>
         {onRetry && (
-          <Button aria-label="Reintentar" className="ms-auto" onClick={onRetry} size="sm" variant="outline-danger">
+          <button
+            aria-label="Reintentar"
+            className="ml-auto bg-transparent border border-danger text-danger px-3 py-1.5 rounded-lg text-sm hover:bg-danger/10"
+            onClick={onRetry}
+            type="button"
+          >
             Reintentar
-          </Button>
+          </button>
         )}
-      </Alert>
+      </div>
     );
   }
 

@@ -45,9 +45,9 @@ const InventoryByCurrency: React.FC<InventoryByCurrencyProps> = (props) => {
   const grandTotalUSD: number = useMemo(() => currencyData.reduce((s: number, c: InventoryCurrencyRow) => s + c.totalUSD, 0), [currencyData]);
 
   return (
-    <DashboardCard footer={<><strong>Total (USD)</strong><strong>{formatPrice(grandTotalUSD, "USD")}</strong></>} icon={<FaBoxes />} iconColor="success" title="Inventario por Moneda">
+    <DashboardCard footer={<><strong>Total (USD)</strong><strong>{formatPrice(grandTotalUSD, "USD")}</strong></>} icon={<FaBoxes />} iconColor="text-emerald-600" title="Inventario por Moneda">
       {currencyData.length === 0 ? (
-        <div className="text-center text-muted py-4">No hay productos registrados</div>
+        <div className="text-center text-gray-500 py-4">No hay productos registrados</div>
       ) : (
         currencyData.map((data: InventoryCurrencyRow) => {
           const { currency, totalOriginal, percentage } = data;
@@ -61,7 +61,7 @@ const InventoryByCurrency: React.FC<InventoryByCurrencyProps> = (props) => {
               ariaLabel={`${meta.label}: ${percentage.toFixed(1)}%`}
               color={meta.color}
               key={currency}
-              label={<span className="d-flex align-items-center gap-2">{meta.icon}<strong>{meta.label}</strong></span>}
+              label={<span className="flex items-center gap-2">{meta.icon}<strong>{meta.label}</strong></span>}
               percent={percentage}
               rightText={formatPrice(totalOriginal, currency)}
             />

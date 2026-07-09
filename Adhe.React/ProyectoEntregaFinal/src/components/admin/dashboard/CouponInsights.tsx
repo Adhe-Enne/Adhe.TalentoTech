@@ -1,5 +1,4 @@
 import React, { useMemo } from "react";
-import { Badge } from "react-bootstrap";
 import { FaTicketAlt } from "react-icons/fa";
 
 import type { Coupon } from "../../../models";
@@ -34,60 +33,60 @@ const CouponInsights: React.FC<CouponInsightsProps> = (props) => {
 
   if (coupons.length === 0) {
     return (
-      <div className="card shadow-sm h-100">
-        <div className="card-header bg-white d-flex align-items-center gap-2">
-          <FaTicketAlt className="text-info" />
+      <div className="bg-white rounded-xl shadow-sm h-full">
+        <div className="px-4 py-3 border-b border-gray-100 flex items-center gap-2 bg-white">
+          <FaTicketAlt className="text-accent" />
           <h5 className="mb-0">Cupones</h5>
         </div>
-        <div className="card-body text-center text-muted py-4">No hay cupones registrados</div>
+        <div className="p-4 text-center text-gray-500">No hay cupones registrados</div>
       </div>
     );
   }
 
   return (
-    <div className="card shadow-sm h-100">
-      <div className="card-header bg-white d-flex align-items-center gap-2">
-        <FaTicketAlt className="text-info" />
+    <div className="bg-white rounded-xl shadow-sm h-full">
+      <div className="px-4 py-3 border-b border-gray-100 flex items-center gap-2 bg-white">
+        <FaTicketAlt className="text-accent" />
         <h5 className="mb-0">Cupones</h5>
       </div>
-      <div className="card-body">
-        <div className="row g-3">
-          <div className="col-6">
-            <div className="text-center p-2 rounded bg-primary bg-opacity-10">
-              <div className="fs-4 fw-bold text-primary">{insights.total}</div>
-              <div className="small text-muted">Totales</div>
+      <div className="p-4">
+        <div className="grid grid-cols-12 gap-3">
+          <div className="col-span-6">
+            <div className="text-center p-2 rounded-lg bg-cta/10">
+              <div className="text-xl font-bold text-cta">{insights.total}</div>
+              <div className="text-sm text-gray-500">Totales</div>
             </div>
           </div>
-          <div className="col-6">
-            <div className="text-center p-2 rounded bg-success bg-opacity-10">
-              <div className="fs-4 fw-bold text-success">{insights.active}</div>
-              <div className="small text-muted">Activos</div>
+          <div className="col-span-6">
+            <div className="text-center p-2 rounded-lg bg-success/10">
+              <div className="text-xl font-bold text-success">{insights.active}</div>
+              <div className="text-sm text-gray-500">Activos</div>
             </div>
           </div>
-          <div className="col-6">
-            <div className="text-center p-2 rounded bg-warning bg-opacity-10">
-              <div className="fs-4 fw-bold text-warning">{insights.expired}</div>
-              <div className="small text-muted">Expirados</div>
+          <div className="col-span-6">
+            <div className="text-center p-2 rounded-lg bg-warning/10">
+              <div className="text-xl font-bold text-warning">{insights.expired}</div>
+              <div className="text-sm text-gray-500">Expirados</div>
             </div>
           </div>
-          <div className="col-6">
-            <div className="text-center p-2 rounded bg-danger bg-opacity-10">
-              <div className="fs-4 fw-bold text-danger">{insights.nearLimit}</div>
-              <div className="small text-muted">Por agotar</div>
+          <div className="col-span-6">
+            <div className="text-center p-2 rounded-lg bg-danger/10">
+              <div className="text-xl font-bold text-danger">{insights.nearLimit}</div>
+              <div className="text-sm text-gray-500">Por agotar</div>
             </div>
           </div>
         </div>
         {insights.mostUsed && (
-          <div className="mt-3 pt-3 border-top small text-muted d-flex justify-content-between">
+          <div className="mt-3 pt-3 border-t border-gray-200 text-sm text-gray-500 flex justify-between">
             <span>
               <strong>Más usado:</strong> {insights.mostUsed.code}
             </span>
             <span>
-              <Badge bg="secondary">{insights.mostUsed.usedCount} usos</Badge>
+              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">{insights.mostUsed.usedCount} usos</span>
             </span>
           </div>
         )}
-        <div className="mt-2 small text-muted d-flex justify-content-between">
+        <div className="mt-2 text-sm text-gray-500 flex justify-between">
           <span>Usos totales</span>
           <strong>{insights.totalUsage}</strong>
         </div>

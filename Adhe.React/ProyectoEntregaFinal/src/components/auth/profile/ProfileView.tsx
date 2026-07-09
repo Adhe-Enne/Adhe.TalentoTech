@@ -1,13 +1,12 @@
 import React from "react";
-import { Badge, Button } from "react-bootstrap";
-import { FaShoppingBag } from "react-icons/fa";
+import { FaArrowLeft, FaShoppingBag } from "react-icons/fa";
+import { FaRightFromBracket } from "react-icons/fa6";
 import { useNavigate, type NavigateFunction } from "react-router-dom";
 
 import type { UserInfo } from "../../../types/auth";
 
 import ConfirmDialog from "../../ui/ConfirmDialog";
 import HelmetMeta from "../../ui/HelmetMeta";
-import styles from "./Profile.module.css";
 
 interface ProfileViewProps {
   loggingOut: boolean;
@@ -23,33 +22,71 @@ const ProfileView: React.FC<ProfileViewProps> = (props) => {
   const navigate: NavigateFunction = useNavigate();
 
   const roleLabel: string = user?.rol === "admin" ? "Administrador" : "Usuario";
+  const initials: string = user?.email?.charAt(0).toUpperCase() ?? "?";
 
   return (
-    <div className={`d-flex justify-content-center align-items-center ${styles.profilePage}`}>
+    <div className="min-h-[70vh] flex justify-center px-4 py-12">
       <HelmetMeta description="Revisa tu perfil en Talento Tech." title="Talento Tech | Perfil" />
-      <div className={`card shadow-sm ${styles.profileCard}`}>
-        <div className="card-body p-4 text-center">
-          <div className={`rounded-circle bg-primary d-flex align-items-center justify-content-center mx-auto mb-3 ${styles.avatar}`}>
-            <span className="text-white fs-2 fw-bold">{user?.email?.charAt(0).toUpperCase() ?? "?"}</span>
+
+      <div className="w-full max-w-lg">
+        <div className="bg-white rounded-2xl shadow-sm overflow-hidden animate-fade-in">
+          {/* Cover */}
+          <div className="h-28 bg-gradient-to-br from-brand via-brand/90 to-accent" />
+
+          {/* Avatar */}
+          <div className="flex justify-center -mt-12">
+            <div className="w-24 h-24 rounded-2xl bg-white p-1 shadow-lg">
+              <div className="w-full h-full rounded-xl bg-gradient-to-br from-brand to-accent flex items-center justify-center">
+                <span className="text-white text-2xl font-bold">{initials}</span>
+              </div>
+            </div>
           </div>
-          <h4 className="mb-1">{user?.email ?? "Sin sesión"}</h4>
-          <Badge bg={user?.rol === "admin" ? "warning" : "secondary"} className={user?.rol === "admin" ? "text-dark mb-3" : "mb-3"}>
-            {roleLabel}
-          </Badge>
 
-          <hr />
+          {/* Info */}
+          <div className="text-center px-6 pt-3 pb-2">
+            <h3 className="text-xl font-bold text-gray-900 mb-1">{user?.email ?? "Sin sesión"}</h3>
+            <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold ${user?.rol === "admin" ? "bg-warning/20 text-warning" : "bg-brand/10 text-brand"}`}>
+              {roleLabel}
+            </span>
+          </div>
 
-          <div className="d-flex flex-column gap-2">
-            <Button aria-label="Mis pedidos" onClick={() => navigate("/mis-ordenes")} variant="outline-primary">
-              <FaShoppingBag aria-hidden="true" className="me-1" />
+          {/* Divider */}
+          <div className="px-6">
+            <hr className="border-gray-100" />
+          </div>
+
+          {/* Actions */}
+          <div className="px-6 py-4 flex flex-col gap-2">
+            <button
+              aria-label="Ver mis pedidos"
+              className="flex items-center justify-center gap-2 w-full px-4 py-2.5 text-sm font-medium text-brand bg-brand/5 hover:bg-brand/10 rounded-xl transition-colors"
+              onClick={() => navigate("/mis-ordenes")}
+              type="button"
+            >
+              <FaShoppingBag aria-hidden="true" className="w-4 h-4" />
               Mis pedidos
-            </Button>
-            <Button aria-label="Volver al inicio" onClick={() => navigate("/")} variant="outline-secondary">
+            </button>
+
+            <button
+              aria-label="Volver al inicio"
+              className="flex items-center justify-center gap-2 w-full px-4 py-2.5 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-xl transition-colors"
+              onClick={() => navigate("/")}
+              type="button"
+            >
+              <FaArrowLeft aria-hidden="true" className="w-4 h-4" />
               Volver al inicio
-            </Button>
-            <Button aria-label="Cerrar sesión" disabled={loggingOut} onClick={onShowConfirm} variant="outline-danger">
+            </button>
+
+            <button
+              aria-label="Cerrar sesión"
+              className="flex items-center justify-center gap-2 w-full px-4 py-2.5 text-sm font-medium text-danger bg-danger/5 hover:bg-danger/10 rounded-xl disabled:opacity-50 transition-colors"
+              disabled={loggingOut}
+              onClick={onShowConfirm}
+              type="button"
+            >
+              <FaRightFromBracket aria-hidden="true" className="w-4 h-4" />
               {loggingOut ? "Cerrando sesión..." : "Cerrar sesión"}
-            </Button>
+            </button>
           </div>
         </div>
       </div>

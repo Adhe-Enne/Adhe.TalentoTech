@@ -25,12 +25,20 @@ const AdminProductList: React.FC = () => {
   const handleToggleEnabled: (id: string, current: boolean) => Promise<void> = useCallback(
     async (id: string, current: boolean) => {
       setTogglingIds((prev) => new Set(prev).add(id));
-      await withDelay(updateProduct(id, { isEnabled: !current }));
-      setTogglingIds((prev) => {
-        const next: Set<string> = new Set(prev);
-        next.delete(id);
-        return next;
-      });
+      try {
+        await withToast(
+          () => withDelay(updateProduct(id, { isEnabled: !current })),
+          "Actualizando...",
+          "Estado actualizado",
+          "Error al actualizar producto",
+        );
+      } finally {
+        setTogglingIds((prev) => {
+          const next: Set<string> = new Set(prev);
+          next.delete(id);
+          return next;
+        });
+      }
     },
     [updateProduct],
   );

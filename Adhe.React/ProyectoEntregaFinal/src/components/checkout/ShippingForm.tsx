@@ -1,5 +1,4 @@
 import React, { forwardRef, useCallback, useImperativeHandle, useState, type ChangeEvent } from "react";
-import { Form } from "react-bootstrap";
 
 import type { ShippingInfo } from "../../models";
 
@@ -145,24 +144,28 @@ const ShippingForm: React.ForwardRefRenderFunction<ShippingFormHandle, object> =
   }, []);
 
   return (
-    <div className="card">
-      <div className="card-body">
-        <h5 className="card-title">Datos de envío</h5>
-        <p className="text-muted small">Completá los campos para recibir tu pedido.</p>
+    <div className="border border-gray-200 rounded-lg shadow-sm bg-white">
+      <div className="p-4">
+        <h5 className="text-lg font-semibold mb-3">Datos de envío</h5>
+        <p className="text-gray-500 text-sm">Completá los campos para recibir tu pedido.</p>
         {fields.map((f) => (
-          <Form.Group className="mb-3" key={f.key}>
-            <Form.Label htmlFor={`shipping-${f.key}`}>{f.label}</Form.Label>
-            <Form.Control
+          <div className="mb-3" key={f.key}>
+            <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor={`shipping-${f.key}`}>{f.label}</label>
+            <input
+              className={`w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-accent focus:border-accent ${
+                touched[f.key] && !!fieldErrors[f.key] ? "border-red-500 ring-red-500" : "border-gray-300"
+              }`}
               id={`shipping-${f.key}`}
-              isInvalid={touched[f.key] && !!fieldErrors[f.key]}
               onChange={(e: ChangeEvent<HTMLInputElement>) => handleChange(f.key, e.target.value)}
               placeholder={f.placeholder}
               required
               type={f.type}
               value={values[f.key]}
             />
-            <Form.Control.Feedback type="invalid">{touched[f.key] ? fieldErrors[f.key] || `${f.label} es obligatorio` : ""}</Form.Control.Feedback>
-          </Form.Group>
+            {touched[f.key] && (fieldErrors[f.key] || `${f.label} es obligatorio`) && (
+              <div className="text-danger text-xs mt-1">{fieldErrors[f.key] || `${f.label} es obligatorio`}</div>
+            )}
+          </div>
         ))}
       </div>
     </div>

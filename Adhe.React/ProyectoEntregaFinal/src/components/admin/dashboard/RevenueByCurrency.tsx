@@ -47,9 +47,9 @@ const RevenueByCurrency: React.FC<RevenueByCurrencyProps> = (props) => {
   const grandTotalUSD: number = useMemo(() => currencyData.reduce((s: number, c: RevenueCurrencyRow) => s + c.totalUSD, 0), [currencyData]);
 
   return (
-    <DashboardCard footer={<><strong>Total (Conversion a USD)</strong><strong>{formatPrice(grandTotalUSD, "USD")}</strong></>} icon={<FaDollarSign />} iconColor="success" title="Ingresos por Moneda">
+    <DashboardCard footer={<><strong>Total (Conversion a USD)</strong><strong>{formatPrice(grandTotalUSD, "USD")}</strong></>} icon={<FaDollarSign />} iconColor="text-emerald-600" title="Ingresos por Moneda">
       {currencyData.length === 0 ? (
-        <div className="text-center text-muted py-4">No hay ingresos registrados</div>
+        <div className="text-center text-gray-500 py-4">No hay ingresos registrados</div>
       ) : (
         currencyData.map((row: RevenueCurrencyRow) => {
           const { currency, totalOriginal, percentage } = row;
@@ -63,7 +63,7 @@ const RevenueByCurrency: React.FC<RevenueByCurrencyProps> = (props) => {
               ariaLabel={`${meta.label}: ${percentage.toFixed(1)}%`}
               color={meta.color}
               key={currency}
-              label={<span className="d-flex align-items-center gap-2">{meta.icon}<strong>{meta.label}</strong></span>}
+              label={<span className="flex items-center gap-2">{meta.icon}<strong>{meta.label}</strong></span>}
               percent={percentage}
               rightText={formatPrice(totalOriginal, currency)}
             />

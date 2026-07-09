@@ -1,10 +1,8 @@
 import React, { useCallback, useMemo, useState } from "react";
-import { Spinner } from "react-bootstrap";
 import { FaSync } from "react-icons/fa";
 
 import { useAllExchangeRates } from "../../hooks/useAllExchangeRates";
 import ConfirmDialog from "../ui/ConfirmDialog";
-import styles from "./ExchangeRatesBanner.module.css";
 
 const DISPLAY_CURRENCIES: readonly string[] = ["ARS", "EUR", "BRL"];
 
@@ -62,18 +60,23 @@ const ExchangeRatesBanner: React.FC<ExchangeRatesBannerProps> = (props) => {
     void handleRefresh();
   }, [handleRefresh]);
 
+  const barClasses: string = "bg-gray-900 text-white";
+
   if (loading) {
     return (
-      <div aria-busy="true" aria-live="polite" className={styles.banner} role="status">
-        <span className={styles.loading}>Cargando tipos de cambio...</span>
+      <div aria-busy="true" aria-live="polite" className={`${barClasses} border-b border-white/10 py-2.5 px-4 text-sm text-center`} role="status">
+        <span className="opacity-70 italic">Cargando tipos de cambio...</span>
       </div>
     );
   }
 
   return (
-    <div aria-label="Tipos de cambio actuales" aria-live="polite" className={styles.banner} role="status">
-      <span className={styles.rates}>
-        <strong aria-label="1 dólar estadounidense">1 USD</strong>
+    <div aria-label="Tipos de cambio actuales" aria-live="polite" className={`${barClasses} border-b border-white/10 py-2.5 px-4 text-sm text-center`} role="status">
+      <span className="inline-flex items-center flex-wrap gap-y-1.5 gap-x-3 justify-center">
+        <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1">
+          <span aria-hidden="true" className="text-base font-bold">$</span>
+          <strong aria-label="1 dólar estadounidense" className="text-base font-bold tracking-wide">1 USD</strong>
+        </span>
         {DISPLAY_CURRENCIES.map((currency: string, i: number) => {
           const rate: number | undefined = rates[currency];
           const sourceUrl: string | undefined = sources[currency];
@@ -85,31 +88,31 @@ const ExchangeRatesBanner: React.FC<ExchangeRatesBannerProps> = (props) => {
           return (
             <React.Fragment key={currency}>
               {i > 0 && (
-                <span aria-hidden="true" className={styles.separator}>
+                <span aria-hidden="true" className="opacity-30">
                   |
                 </span>
               )}
               {sourceUrl ? (
-                <a aria-label={`Ver conversión de USD a ${currency}`} className={styles.sourceLink} href={sourceUrl} rel="noopener noreferrer" target="_blank">
-                  = {rateFormatter.format(rate)} <strong>{currency}</strong>
+                <a aria-label={`Ver conversión de USD a ${currency}`} className="text-white/90 underline decoration-dotted hover:text-white hover:decoration-solid transition-colors" href={sourceUrl} rel="noopener noreferrer" target="_blank">
+                  = {rateFormatter.format(rate)} <strong className="text-white">{currency}</strong>
                 </a>
               ) : (
                 <span>
-                  = {rateFormatter.format(rate)} <strong>{currency}</strong>
+                  = {rateFormatter.format(rate)} <strong className="text-white">{currency}</strong>
                 </span>
               )}
             </React.Fragment>
           );
         })}
         {timeStr && (
-          <span className={styles.updated} title={lastUpdated ? new Date(lastUpdated).toLocaleString("es-AR") : ""}>
+          <span className="opacity-60 text-xs whitespace-nowrap" title={lastUpdated ? new Date(lastUpdated).toLocaleString("es-AR") : ""}>
             — {timeStr}
           </span>
         )}
         {showRefresh && (
-          <button aria-label="Forzar actualización de tasas de cambio" className={styles.refreshBtn} disabled={refreshing} onClick={handleConfirmRequest} type="button">
-            {refreshing ? <Spinner animation="border" aria-hidden="true" size="sm" /> : <FaSync aria-hidden="true" />}
-            <span className={styles.refreshLabel}>Forzar actualización</span>
+          <button aria-label="Forzar actualización de tasas de cambio" className="items-center bg-white/10 border border-white/20 rounded cursor-pointer inline-flex text-xs gap-1 leading-none py-1 px-2.5 opacity-80 hover:opacity-100 hover:bg-white/20 hover:border-warning hover:text-warning disabled:cursor-not-allowed disabled:opacity-40 transition-colors" disabled={refreshing} onClick={handleConfirmRequest} type="button">
+            {refreshing ? <span aria-hidden="true" className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" /> : <FaSync aria-hidden="true" />}
+            <span className="whitespace-nowrap">Forzar actualización</span>
           </button>
         )}
       </span>

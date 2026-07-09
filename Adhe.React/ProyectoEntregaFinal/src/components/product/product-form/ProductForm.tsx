@@ -11,7 +11,6 @@ import CategoryCreateModal from "./CategoryCreateModal";
 import useCategoryCreate from "./hooks/useCategoryCreate";
 import { useProductForm } from "./hooks/useProductForm";
 import { useTagManager } from "./hooks/useTagManager";
-import styles from "./Product.module.css";
 import ProductImagePreview from "./ProductImagePreview";
 import TagAutocomplete from "./TagAutocomplete";
 
@@ -79,26 +78,26 @@ const ProductForm: React.FC<ProductFormProps> = (props) => {
   );
 
   return (
-    <form className={styles.formCard} noValidate onSubmit={(e) => handleSubmit(onSubmit)(e)}>
-      <div className={styles.leftColumn}>
-        <div className={styles.preview}>
+    <form className="max-w-[960px] mx-auto grid gap-5 items-start grid-cols-1 md:grid-cols-[420px_1fr] md:auto-rows-min" noValidate onSubmit={(e) => handleSubmit(onSubmit)(e)}>
+      <div className="md:col-[1] md:row-[1] flex flex-col gap-3 items-stretch">
+          <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-4 min-h-[360px] flex flex-col items-stretch justify-start relative">
           {isEdit && existingImageUrl && !fields.file && (
             <div className="mb-2">
-              <small className="text-muted">Imagen actual:</small>
+              <small className="text-gray-500">Imagen actual:</small>
             </div>
           )}
-          <div className="mb-2">{errors.file && <div className="invalid-feedback d-block" role="alert">{errors.file}</div>}</div>
+          <div className="mb-2">{errors.file && <div className="text-danger text-xs mt-1 block" role="alert">{errors.file}</div>}</div>
           <ProductImagePreview name={fields.file?.name} onClear={() => setFile(null)} onFileChange={setFile} url={displayUrl} />
           {isEdit && existingImageUrl && !fields.file && (
             <div className="mt-1">
-              <small className="text-muted">Seleccioná un archivo para reemplazar la imagen actual</small>
+              <small className="text-gray-500">Seleccioná un archivo para reemplazar la imagen actual</small>
             </div>
           )}
         </div>
-        <div className={styles.additionalArea}>
-          <div className={styles.additionalHeader}>
+          <div className="bg-white rounded-xl border border-gray-200 shadow-sm px-4 py-3 h-[180px] min-h-[180px] max-h-[180px] overflow-hidden flex flex-col gap-2">
+          <div className="flex justify-between items-center">
             <h5 className="m-0">Imágenes adicionales</h5>
-            <label className={`btn btn-sm btn-outline-primary ${styles.uploadLabel}`} htmlFor={addInputId}>
+            <label className="bg-accent/5 border border-accent/15 text-accent px-3 py-1.5 rounded-xl shadow-sm hover:bg-accent/10 text-sm cursor-pointer inline-flex items-center gap-2 transition-all duration-150 hover:-translate-y-0.5" htmlFor={addInputId}>
               Seleccionar imágenes
             </label>
           </div>
@@ -110,25 +109,25 @@ const ProductForm: React.FC<ProductFormProps> = (props) => {
             onChange={(files: File[]) => setField("images", files)}
             onExistingChange={(urls) => setField("existingImageUrls", urls)}
           />
-          {errors.images && <div className="invalid-feedback d-block">{errors.images}</div>}
+          {errors.images && <div className="text-danger text-xs mt-1 block">{errors.images}</div>}
         </div>
       </div>
 
-      <div className={styles.fields}>
+      <div className="md:col-[2] md:row-[1] bg-white rounded-xl border border-gray-200 shadow-sm p-6 flex flex-col space-y-5">
         <div>
-          <label className="form-label" htmlFor="nombre">
+          <label className="block text-sm font-semibold text-gray-700 mb-1.5" htmlFor="nombre">
             Nombre
           </label>
-          <input className={`form-control${errors.nombre ? " is-invalid" : ""}`} id="nombre" onChange={(e) => setField("nombre", e.target.value)} required value={fields.nombre} />
-          {errors.nombre && <div className="invalid-feedback">{errors.nombre}</div>}
+          <input className={`w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-accent/40 focus:border-accent transition${errors.nombre ? " border-red-500" : ""}`} id="nombre" onChange={(e) => setField("nombre", e.target.value)} required value={fields.nombre} />
+          {errors.nombre && <div className="text-danger text-xs mt-1">{errors.nombre}</div>}
         </div>
 
         <div>
-          <label className="form-label" htmlFor="categoria">
+          <label className="block text-sm font-semibold text-gray-700 mb-1.5" htmlFor="categoria">
             Categoría
           </label>
-          <div className="d-flex gap-2">
-            <select className="form-select" id="categoria" onChange={(e) => handleCategoryChange(e.target.value)} value={fields.categoriaId}>
+          <div className="flex gap-2">
+            <select className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-accent/40 focus:border-accent transition" id="categoria" onChange={(e) => handleCategoryChange(e.target.value)} value={fields.categoriaId}>
               <option value="">-- Sin categoría --</option>
               {categories.map((c) => (
                 <option key={c.id} value={c.id}>
@@ -136,33 +135,33 @@ const ProductForm: React.FC<ProductFormProps> = (props) => {
                 </option>
               ))}
             </select>
-            <button className="btn btn-outline-secondary" onClick={handleOpenCategory} type="button">
-              <FaPlus className="me-1" />
+            <button className="border border-gray-300 text-gray-700 px-3 py-2 rounded-lg text-sm font-medium hover:bg-gray-50 transition inline-flex items-center gap-1.5" onClick={handleOpenCategory} type="button">
+              <FaPlus />
               Nueva
             </button>
           </div>
         </div>
 
-        <div className={styles.fieldRow}>
-          <div className={styles.priceInput}>
-            <label className="form-label" htmlFor="precio">
+        <div className="grid grid-cols-[1fr_1fr_auto] gap-3 items-end">
+          <div className="max-w-[180px]">
+            <label className="block text-sm font-semibold text-gray-700 mb-1.5" htmlFor="precio">
               Precio
             </label>
-            <input className={`form-control${errors.precio ? " is-invalid" : ""}`} id="precio" min="0.01" onChange={(e) => setField("precio", e.target.value)} required step="0.01" type="number" value={fields.precio} />
-            {errors.precio && <div className="invalid-feedback">{errors.precio}</div>}
+            <input className={`w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-accent/40 focus:border-accent transition${errors.precio ? " border-red-500" : ""}`} id="precio" min="0.01" onChange={(e) => setField("precio", e.target.value)} required step="0.01" type="number" value={fields.precio} />
+            {errors.precio && <div className="text-danger text-xs mt-1">{errors.precio}</div>}
           </div>
-          <div className={styles.stockField}>
-            <label className="form-label" htmlFor="stock">
+          <div className="min-w-[100px]">
+              <label className="block text-sm font-semibold text-gray-700 mb-1.5" htmlFor="stock">
               Stock
             </label>
-            <input className={`form-control${errors.stock ? " is-invalid" : ""}`} id="stock" min="0" onChange={(e) => setField("stock", e.target.value)} step="1" type="number" value={fields.stock} />
-            {errors.stock && <div className="invalid-feedback">{errors.stock}</div>}
+            <input className={`w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-accent/40 focus:border-accent transition${errors.stock ? " border-red-500" : ""}`} id="stock" min="0" onChange={(e) => setField("stock", e.target.value)} step="1" type="number" value={fields.stock} />
+            {errors.stock && <div className="text-danger text-xs mt-1">{errors.stock}</div>}
           </div>
-          <div className={styles.currencyField}>
-            <label className="form-label" htmlFor="currency">
+          <div className="min-w-[120px]">
+              <label className="block text-sm font-semibold text-gray-700 mb-1.5" htmlFor="currency">
               Moneda
             </label>
-            <select className="form-select" id="currency" onChange={(e) => setField("currency", parseCurrency(e.target.value))} value={fields.currency}>
+            <select className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-accent/40 focus:border-accent transition" id="currency" onChange={(e) => setField("currency", parseCurrency(e.target.value))} value={fields.currency}>
               <option value="USD">USD</option>
               <option value="ARS">ARS</option>
               <option value="EUR">EUR</option>
@@ -172,11 +171,11 @@ const ProductForm: React.FC<ProductFormProps> = (props) => {
         </div>
 
         <div>
-          <label className="form-label" htmlFor="descripcion">
+          <label className="block text-sm font-semibold text-gray-700 mb-1.5" htmlFor="descripcion">
             Descripción
           </label>
-          <textarea className={`form-control${errors.descripcion ? " is-invalid" : ""}`} id="descripcion" onChange={(e) => setField("descripcion", e.target.value)} value={fields.descripcion} />
-          {errors.descripcion && <div className="invalid-feedback">{errors.descripcion}</div>}
+          <textarea className={`w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-accent/40 focus:border-accent transition${errors.descripcion ? " border-red-500" : ""}`} id="descripcion" onChange={(e) => setField("descripcion", e.target.value)} value={fields.descripcion} />
+          {errors.descripcion && <div className="text-danger text-xs mt-1">{errors.descripcion}</div>}
         </div>
 
         <TagAutocomplete
@@ -193,12 +192,12 @@ const ProductForm: React.FC<ProductFormProps> = (props) => {
         />
       </div>
 
-      <div className={styles.formActions}>
-        <div className={styles.actions}>
-          <button className={`btn btn-ghost ${styles.cancelBtn}`} onClick={handleCancel} type="button">
+      <div className="col-span-full md:col-[2] md:row-[2] flex justify-end gap-3 mt-2">
+        <div className="flex gap-3 mt-2 justify-end">
+          <button className="border border-gray-300 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-50 transition" onClick={handleCancel} type="button">
             {isEdit ? "Cancelar edición" : "Cancelar"}
           </button>
-          <button className="btn btn-cta btn-icon" disabled={!!loading} type="submit">
+          <button className="inline-flex items-center gap-2 bg-accent text-white px-5 py-2 rounded-lg text-sm font-medium hover:opacity-90 transition" disabled={!!loading} type="submit">
             <FaCloudUploadAlt />
             {submitLabel}
           </button>

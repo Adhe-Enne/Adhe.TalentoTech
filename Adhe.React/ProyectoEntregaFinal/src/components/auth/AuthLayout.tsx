@@ -2,21 +2,6 @@ import React from "react";
 
 import HelmetMeta from "../ui/HelmetMeta";
 
-const pageStyles: Record<string, React.CSSProperties> = {
-  page: {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    minHeight: "calc(100vh - 120px)",
-    padding: "2rem 1rem",
-    background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-  },
-  card: {
-    maxWidth: 420,
-    width: "100%",
-  },
-} as const;
-
 interface AuthLayoutProps {
   children: React.ReactNode;
   helmetDescription: string;
@@ -30,10 +15,10 @@ const AuthLayout: React.FC<AuthLayoutProps> = (props: AuthLayoutProps) => {
   return (
     <>
       <HelmetMeta description={helmetDescription} title={helmetTitle} />
-      <div style={pageStyles.page}>
-        <div className="card shadow-sm" style={pageStyles.card}>
-          <div className="card-body p-4">
-            <h2 className="card-title text-center mb-4">{title}</h2>
+      <div className="flex justify-center items-center min-h-[calc(100vh-120px)] p-8" style={{ background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)" }}>
+        <div className="w-full max-w-md">
+          <div className="bg-white rounded-xl shadow-lg p-8">
+            <h2 className="text-2xl font-bold text-center mb-6">{title}</h2>
             {children}
           </div>
         </div>

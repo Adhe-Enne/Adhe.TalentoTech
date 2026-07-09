@@ -2,10 +2,10 @@ import React from "react";
 import { FaDollarSign, FaEuroSign, FaMoneyBillWave } from "react-icons/fa";
 
 export const CURRENCY_META: Record<string, { icon: React.ReactNode; color: string; label: string }> = {
-  USD: { icon: <FaDollarSign />, color: "success", label: "USD" },
-  ARS: { icon: <FaMoneyBillWave />, color: "info", label: "ARS" },
-  EUR: { icon: <FaEuroSign />, color: "primary", label: "EUR" },
-  BRL: { icon: <FaMoneyBillWave />, color: "warning", label: "BRL" },
+  USD: { icon: <FaDollarSign />, color: "bg-emerald-500", label: "USD" },
+  ARS: { icon: <FaMoneyBillWave />, color: "bg-cyan-500", label: "ARS" },
+  EUR: { icon: <FaEuroSign />, color: "bg-blue-500", label: "EUR" },
+  BRL: { icon: <FaMoneyBillWave />, color: "bg-amber-500", label: "BRL" },
 };
 
 export interface CurrencyRow {

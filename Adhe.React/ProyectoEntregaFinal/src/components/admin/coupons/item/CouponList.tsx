@@ -1,5 +1,4 @@
 import React from "react";
-import { Alert, Table } from "react-bootstrap";
 
 import type { Coupon, CouponUpdatePayload } from "../../../../models";
 
@@ -21,29 +20,29 @@ const CouponList: React.FC<CouponListProps> = (props) => {
   return (
     <ListStateDisplay error={error} loading={loading} loadingMessage="Cargando cupones..." onRetry={fetchCoupons}>
       {coupons.length === 0 ? (
-        <Alert className="text-center py-4" variant="info">
+        <div className="bg-info/10 border border-info/20 text-info text-center py-4 rounded-lg" role="alert">
           No hay cupones aun. Crea el primero usando el formulario de arriba.
-        </Alert>
+        </div>
       ) : (
-        <div className="table-responsive">
-          <Table className="align-middle" hover>
+        <div className="overflow-x-auto">
+          <table className="min-w-full divide-y divide-gray-200">
             <thead>
               <tr>
-                <th>Codigo</th>
-                <th>Descuento</th>
-                <th>Estado</th>
-                <th>Usos</th>
-                <th>Vencimiento</th>
-                <th>Activo</th>
-                <th>Accion</th>
+                <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Codigo</th>
+                <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Descuento</th>
+                <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
+                <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Usos</th>
+                <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Vencimiento</th>
+                <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Activo</th>
+                <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Accion</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className="divide-y divide-gray-200">
               {coupons.map((c) => (
                 <CouponItem coupon={c} key={c.id} onDeleteRequest={onDeleteRequest} onUpdateCoupon={onUpdateCoupon} />
               ))}
             </tbody>
-          </Table>
+          </table>
         </div>
       )}
     </ListStateDisplay>

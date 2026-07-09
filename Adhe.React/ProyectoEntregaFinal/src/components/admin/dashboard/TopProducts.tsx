@@ -49,36 +49,36 @@ const TopProducts: React.FC<TopProductsProps> = (props) => {
 
   if (products.length === 0) {
     return (
-      <div className="card shadow-sm h-100">
-        <div className="card-header bg-white d-flex align-items-center gap-2">
-          <FaTrophy className="text-warning" />
+        <div className="bg-white rounded-lg border border-gray-200 shadow-sm h-100">
+        <div className="px-4 py-3 border-b border-gray-100 font-semibold bg-white flex items-center gap-2">
+          <FaTrophy className="text-amber-500" />
           <h5 className="mb-0">Top Productos</h5>
         </div>
-        <div className="card-body text-center text-muted py-4">No hay datos de ventas</div>
+        <div className="p-4 text-center text-gray-500 py-4">No hay datos de ventas</div>
       </div>
     );
   }
 
   return (
-    <div className="card shadow-sm h-100">
-      <div className="card-header bg-white d-flex align-items-center gap-2">
-        <FaTrophy className="text-warning" />
+    <div className="bg-white rounded-lg border border-gray-200 shadow-sm h-100">
+      <div className="px-4 py-3 border-b border-gray-100 font-semibold bg-white flex items-center gap-2">
+        <FaTrophy className="text-amber-500" />
         <h5 className="mb-0">Top Productos</h5>
       </div>
-      <div className="card-body">
-        <h6 className="text-muted mb-2">Más vendido por cantidad</h6>
+      <div className="p-4">
+        <h6 className="text-gray-500 mb-2">Más vendido por cantidad</h6>
         {byQuantity && (
-          <div className="d-flex justify-content-between align-items-center mb-3">
+          <div className="flex justify-between items-center mb-3">
             <strong>{byQuantity.name}</strong>
-            <span className="text-primary fw-bold">{byQuantity.quantity} und.</span>
+            <span className="text-blue-600 font-bold">{byQuantity.quantity} und.</span>
           </div>
         )}
 
-        <h6 className="text-muted mb-2">Mayor facturación</h6>
+        <h6 className="text-gray-500 mb-2">Mayor facturación</h6>
         {byRevenue && (
-          <div className="d-flex justify-content-between align-items-center mb-3">
+          <div className="flex justify-between items-center mb-3">
             <strong>{byRevenue.name}</strong>
-            <span className="text-success fw-bold">{formatPrice(byRevenue.revenue, "USD")} (Conversion)</span>
+            <span className="text-emerald-600 font-bold">{formatPrice(byRevenue.revenue, "USD")} (Conversion)</span>
           </div>
         )}
       </div>

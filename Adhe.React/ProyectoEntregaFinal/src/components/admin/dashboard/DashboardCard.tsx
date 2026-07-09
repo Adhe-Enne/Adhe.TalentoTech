@@ -12,14 +12,14 @@ const DashboardCard: React.FC<DashboardCardProps> = (props) => {
   const { children, footer, icon, iconColor = "primary", title } = props;
 
   return (
-    <div className="card shadow-sm h-100">
-      <div className="card-header bg-white d-flex align-items-center gap-2">
-        <span className={`text-${iconColor}`}>{icon}</span>
+    <div className="bg-white rounded-xl border border-gray-200 shadow-sm h-full">
+      <div className="px-4 py-3 border-b border-gray-100 font-semibold bg-white flex items-center gap-2">
+        <span className={iconColor}>{icon}</span>
         <h5 className="mb-0">{title}</h5>
       </div>
-      <div className="card-body">
+      <div className="p-4">
         {children}
-        {footer && <div className="d-flex justify-content-between pt-2 border-top">{footer}</div>}
+        {footer && <div className="flex justify-between pt-2 border-t border-gray-100">{footer}</div>}
       </div>
     </div>
   );

@@ -48,20 +48,26 @@ const OrderStatusBreakdown: React.FC<OrderStatusBreakdownProps> = (props) => {
   }, [orders]);
 
   return (
-    <DashboardCard icon={<FaCheckCircle />} iconColor="success" title="Estado de Pedidos">
+    <DashboardCard icon={<FaCheckCircle />} iconColor="text-emerald-600" title="Estado de Pedidos">
       {statusData.length === 0 ? (
-        <div className="text-center text-muted py-4">No hay pedidos registrados</div>
+        <div className="text-center text-gray-500 py-4">No hay pedidos registrados</div>
       ) : (
         statusData.map((statusRow: StatusRow) => {
           const { status, count, percentage } = statusRow;
-          const variant: string = ORDER_STATUS_VARIANT[status] ?? "secondary";
+          const variantMap: Record<string, string> = { success: "bg-success", danger: "bg-danger", warning: "bg-warning" };
+          const variant: string = variantMap[ORDER_STATUS_VARIANT[status]] ?? "bg-gray-300";
           const meta: StatusMeta = STATUS_META[status] ?? { icon: null, label: status };
           return (
             <ProgressBarRow
               ariaLabel={`${meta.label}: ${percentage.toFixed(1)}%`}
               color={variant}
               key={status}
-              label={<span className="d-flex align-items-center gap-2">{meta.icon}<strong>{meta.label}</strong></span>}
+              label={
+                <span className="flex items-center gap-2">
+                  {meta.icon}
+                  <strong>{meta.label}</strong>
+                </span>
+              }
               percent={percentage}
               rightText={`${count} (${percentage.toFixed(1)}%)`}
             />

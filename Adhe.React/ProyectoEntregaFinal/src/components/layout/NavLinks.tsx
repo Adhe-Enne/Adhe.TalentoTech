@@ -6,6 +6,8 @@ import useAuth from "../../hooks/selectors/useAuth";
 import useCart from "../../hooks/selectors/useCart";
 import useFavorites from "../../hooks/selectors/useFavorites";
 
+const btnClass: string = "relative inline-flex items-center justify-center px-2.5 py-2.5 rounded-lg hover:bg-white/20 hover:scale-110 transition-all duration-200 min-w-[44px] min-h-[40px]";
+
 const NavLinks: React.FC = () => {
   const { user, isAdmin } = useAuth();
   const { favCount } = useFavorites();
@@ -14,40 +16,42 @@ const NavLinks: React.FC = () => {
 
   const showFavCount: () => JSX.Element = () => {
     if (favCount && favCount > 0) {
-      return <span className="cart-badge position-absolute top-0 start-100 translate-middle">{favCount}</span>;
+      return <span className="bg-accent text-white font-semibold rounded-full px-[9px] py-1 text-[0.8rem] absolute -top-1.5 -right-1.5 shadow-md">{favCount}</span>;
     }
     return <></>;
   };
 
+  const iconBase: string = "w-[22px] h-[22px] inline-block align-middle text-white/85";
+
   return (
-    <ul className="navbar-nav ms-auto align-items-center nav-tools">
-      <li className="nav-item">
-        <Link aria-label="Favoritos" className="btn btn-ghost btn-sm position-relative me-2" to="/productos?filter=favorites">
-          <FaHeart aria-hidden="true" className="nav-icon nav-fav-icon" />
+    <ul className="flex items-center gap-2 list-none m-0 p-0">
+      <li>
+        <Link aria-label="Favoritos" className={btnClass} to="/productos?filter=favorites">
+          <FaHeart aria-hidden="true" className={`w-[22px] h-[22px] inline-block align-middle text-accent`} />
           {showFavCount()}
         </Link>
       </li>
-      <li className="nav-item">
-        <Link aria-label="Carrito" className="btn btn-ghost btn-sm position-relative" to="/carrito">
-          <FaShoppingCart aria-hidden="true" className="nav-icon nav-cart-icon" />
-          {cartCount > 0 && <span className="cart-badge position-absolute top-0 start-100 translate-middle">{cartCount}</span>}
+      <li>
+        <Link aria-label="Carrito" className={btnClass} to="/carrito">
+          <FaShoppingCart aria-hidden="true" className={iconBase} />
+          {cartCount > 0 && <span className="bg-accent text-white font-semibold rounded-full px-[9px] py-1 text-[0.8rem] absolute -top-1.5 -right-1.5 shadow-md">{cartCount}</span>}
         </Link>
       </li>
-      <li className="nav-item">
-        <Link aria-label="Mis pedidos" className="btn btn-ghost btn-sm me-2" to="/mis-ordenes">
-          <FaBox aria-hidden="true" className="nav-icon" />
+      <li>
+        <Link aria-label="Mis pedidos" className={btnClass} to="/mis-ordenes">
+          <FaBox aria-hidden="true" className={iconBase} />
         </Link>
       </li>
-      <li className="nav-item">
-        <Link aria-label={user ? "Perfil" : "Iniciar sesión"} className="btn btn-ghost btn-sm me-2" to={user ? "/perfil" : "/login"}>
-          <FaUser aria-hidden="true" className="nav-icon" />
+      <li>
+        <Link aria-label={user ? "Perfil" : "Iniciar sesión"} className={btnClass} to={user ? "/perfil" : "/login"}>
+          <FaUser aria-hidden="true" className={iconBase} />
         </Link>
       </li>
 
       {isAdmin && (
-        <li className="nav-item">
-          <Link aria-label="Administración" className="btn btn-ghost btn-sm me-2" to="/admin">
-            <FaCog aria-hidden="true" className="nav-icon" />
+        <li>
+          <Link aria-label="Administración" className={btnClass} to="/admin">
+            <FaCog aria-hidden="true" className={iconBase} />
           </Link>
         </li>
       )}

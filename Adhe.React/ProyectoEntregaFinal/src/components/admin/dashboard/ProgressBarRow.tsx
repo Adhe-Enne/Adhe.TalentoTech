@@ -11,21 +11,22 @@ interface ProgressBarRowProps {
 }
 
 const ProgressBarRow: React.FC<ProgressBarRowProps> = (props) => {
-  const { ariaLabel, barHeight = 20, color = "secondary", extra, label, percent = 0, rightText = "" } = props;
+  const { ariaLabel, barHeight = 20, color = "bg-gray-400", extra, label, percent = 0, rightText = "" } = props;
 
   return (
     <div className="mb-3">
-      <div className="d-flex justify-content-between align-items-center mb-1">
+      <div className="flex justify-between items-center mb-1">
         <span>{label}</span>
-        <span className="text-muted small">{rightText}</span>
+        <span className="text-gray-500 text-sm">{rightText}</span>
       </div>
       {extra}
-      <div className="progress" style={{ height: barHeight }}>
-        <div className={`progress-bar bg-${color}`} style={{ width: `${percent}%` }}>
-          {percent > 8 && `${percent.toFixed(1)}%`}
-        </div>
+      <div className="bg-gray-200 rounded-full overflow-hidden" style={{ height: barHeight }}>
+        <div className={`${color} h-full`} style={{ width: `${percent}%` }} />
       </div>
-      <progress aria-label={ariaLabel ?? `${percent.toFixed(1)}%`} className="visually-hidden" max={100} value={Math.round(percent)} />
+      <div className="flex justify-end mt-1">
+        <span className="text-xs text-gray-400">{percent.toFixed(1)}%</span>
+      </div>
+      <progress aria-label={ariaLabel ?? `${percent.toFixed(1)}%`} className="sr-only" max={100} value={Math.round(percent)} />
     </div>
   );
 };

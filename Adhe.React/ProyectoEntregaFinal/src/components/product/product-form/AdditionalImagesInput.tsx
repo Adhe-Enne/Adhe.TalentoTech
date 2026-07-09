@@ -1,8 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState, type RefObject } from "react";
 import { FaChevronLeft, FaChevronRight, FaTimes } from "react-icons/fa";
 
-import styles from "./Product.module.css";
-
 interface Props {
   files: File[];
   existingUrls?: string[];
@@ -88,40 +86,40 @@ const AdditionalImagesInput: React.FC<Props> = (props) => {
   }
 
   return (
-    <div className={styles.additionalImages}>
+    <div className="flex flex-col gap-2">
       {!hideUploadButton && (
-        <label className={`btn btn-sm btn-outline-primary ${styles.uploadLabel}`} htmlFor={id}>
+        <label className="bg-accent/5 border border-accent/15 text-accent px-3 py-1.5 rounded-xl shadow-sm hover:bg-accent/10 text-sm cursor-pointer inline-flex items-center gap-2 transition-all duration-150 hover:-translate-y-0.5" htmlFor={id}>
           <span>Seleccionar imágenes</span>
         </label>
       )}
-      <input accept="image/*" className={styles.hiddenInput} id={id} multiple onChange={handleFiles} type="file" />
-      <div className={styles.thumbScrollWrap}>
+      <input accept="image/*" className="hidden" id={id} multiple onChange={handleFiles} type="file" />
+      <div className="relative flex items-center">
         {canScrollLeft && (
-          <button aria-label="Desplazar izquierda" className={`${styles.scrollBtn} ${styles.left}`} onClick={() => scrollByOffset(-240)} type="button">
+          <button aria-label="Desplazar izquierda" className="absolute top-1/2 -translate-y-1/2 bg-black/55 text-white w-[34px] h-[34px] rounded-full border-none flex items-center justify-center cursor-pointer z-[60] left-2 disabled:opacity-35 disabled:cursor-not-allowed" disabled={!canScrollLeft} onClick={() => scrollByOffset(-240)} type="button">
             <FaChevronLeft aria-hidden="true" />
           </button>
         )}
-        <div className={`${styles.additionalGrid} mt-2`} ref={scrollRef}>
-          {!hasItems && <div className="text-muted small py-3">No hay imágenes adicionales</div>}
+        <div className="flex gap-2 items-center overflow-x-auto p-[6px_2px] max-w-full flex-auto mt-2" ref={scrollRef}>
+          {!hasItems && <div className="text-gray-500 text-sm py-3">No hay imágenes adicionales</div>}
           {existingUrls?.map((url, idx) => (
-            <div className={styles.thumbWrap} key={`existing-${url}`}>
-              <img alt={`imagen existente ${idx + 1}`} className={styles.additionalThumb} src={url} />
-              <button aria-label={`Eliminar imagen existente ${idx + 1}`} className={styles.thumbRemove} onClick={() => removeExistingAt(idx)} type="button">
+            <div className="relative inline-block" key={`existing-${url}`}>
+              <img alt={`imagen existente ${idx + 1}`} className="w-20 h-20 object-cover rounded-lg block" src={url} />
+              <button aria-label={`Eliminar imagen existente ${idx + 1}`} className="absolute top-[6px] right-[6px] bg-black/60 text-white w-[22px] h-[22px] rounded-full border-none flex items-center justify-center cursor-pointer z-[40] text-sm leading-none" onClick={() => removeExistingAt(idx)} type="button">
                 <FaTimes aria-hidden="true" />
               </button>
             </div>
           ))}
           {previews.map((u, idx) => (
-            <div className={styles.thumbWrap} key={u}>
-              <img alt={`preview-${idx}`} className={styles.additionalThumb} src={u} />
-              <button aria-label={`Eliminar imagen adicional ${idx + 1}`} className={styles.thumbRemove} onClick={() => removeFileAt(idx)} type="button">
+            <div className="relative inline-block" key={u}>
+              <img alt={`preview-${idx}`} className="w-20 h-20 object-cover rounded-lg block" src={u} />
+              <button aria-label={`Eliminar imagen adicional ${idx + 1}`} className="absolute top-[6px] right-[6px] bg-black/60 text-white w-[22px] h-[22px] rounded-full border-none flex items-center justify-center cursor-pointer z-[40] text-sm leading-none" onClick={() => removeFileAt(idx)} type="button">
                 <FaTimes aria-hidden="true" />
               </button>
             </div>
           ))}
         </div>
         {canScrollRight && (
-          <button aria-label="Desplazar derecha" className={`${styles.scrollBtn} ${styles.right}`} onClick={() => scrollByOffset(240)} type="button">
+          <button aria-label="Desplazar derecha" className="absolute top-1/2 -translate-y-1/2 bg-black/55 text-white w-[34px] h-[34px] rounded-full border-none flex items-center justify-center cursor-pointer z-[60] right-2 disabled:opacity-35 disabled:cursor-not-allowed" disabled={!canScrollRight} onClick={() => scrollByOffset(240)} type="button">
             <FaChevronRight aria-hidden="true" />
           </button>
         )}

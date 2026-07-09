@@ -1,5 +1,4 @@
 import React from "react";
-import { Alert, Button, Table } from "react-bootstrap";
 import { FaEdit, FaPlus } from "react-icons/fa";
 import { Link } from "react-router-dom";
 
@@ -11,7 +10,6 @@ import DeleteButton from "../../ui/DeleteButton";
 import LoadingSpinner from "../../ui/LoadingSpinner";
 import RefreshButton from "../../ui/RefreshButton";
 import ToggleSwitch from "../../ui/ToggleSwitch";
-import adminStyles from "./AdminProductList.module.css";
 
 interface DeleteTarget {
   id: string;
@@ -43,16 +41,16 @@ const AdminProductListView: React.FC<AdminProductListViewProps> = (props) => {
 
   return (
     <div>
-      <div className="d-flex justify-content-between align-items-center mb-3">
+      <div className="flex justify-between items-center mb-3">
         <h3 className="mb-0">Productos</h3>
-        <div className="d-flex gap-2 align-items-center">
-          <Link aria-label="Crear nuevo producto" className="btn btn-success btn-sm" to="/admin/productos/nuevo">
-            <FaPlus aria-hidden="true" className="me-1" />
+        <div className="flex gap-2 items-center">
+          <Link aria-label="Crear nuevo producto" className="inline-flex items-center gap-2 bg-success text-white px-4 py-2 rounded-lg font-medium hover:opacity-90 whitespace-nowrap transition-colors" to="/admin/productos/nuevo">
+            <FaPlus aria-hidden="true" />
             Nuevo producto
           </Link>
           <input
-            aria-label="Buscar productos por nombre"
-            className={`form-control form-control-sm ${adminStyles.searchInput}`}
+          aria-label="Buscar productos por nombre"
+             className="w-full px-3 py-2 border border-gray-300 rounded-full text-sm focus:ring-2 focus:ring-accent focus:border-accent max-w-[260px]"
             onChange={(e) => onSearchChange(e.target.value)}
             placeholder="Buscar por nombre..."
             value={search}
@@ -62,49 +60,49 @@ const AdminProductListView: React.FC<AdminProductListViewProps> = (props) => {
       </div>
 
       {filtered.length === 0 ? (
-        <Alert className="text-center py-4" variant="info">
+        <div className="bg-info/10 border border-info/20 text-info text-center py-4 rounded-lg" role="alert">
           {search ? "No se encontraron productos con ese nombre." : "No hay productos disponibles."}
-        </Alert>
+        </div>
       ) : (
-        <div className="table-responsive">
-          <Table className="align-middle" hover>
+        <div className="overflow-x-auto">
+          <table className="min-w-full divide-y divide-gray-200">
             <thead>
               <tr>
-                <th className={adminStyles.thumbCol} />
-                <th>Nombre</th>
-                <th>Precio</th>
-                <th>Stock</th>
-                <th>Categoria</th>
-                <th>Activo</th>
-                <th>Acciones</th>
+                <th className="w-14" />
+                <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nombre</th>
+                <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Precio</th>
+                <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Stock</th>
+                <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Categoria</th>
+                <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Activo</th>
+                <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className="divide-y divide-gray-200">
               {filtered.map((p) => (
-                <tr className={adminStyles.productRow} key={p.id}>
-                  <td>
-                    <img alt={p.name} className={`rounded ${adminStyles.thumb}`} src={p.image} />
+                <tr className="hover:bg-accent/[0.02]" key={p.id}>
+                  <td className="px-3 py-2 whitespace-nowrap">
+                    <img alt={p.name} className="w-12 h-12 object-cover rounded-lg" src={p.image} />
                   </td>
-                  <td className="fw-semibold">{p.name}</td>
-                  <td className="text-primary fw-bold">{formatPrice(p.price, p.currency)}</td>
-                  <td>{p.stock}</td>
-                  <td>{p.category?.name ?? "Sin categoria"}</td>
-                  <td>
+                  <td className="px-3 py-2 whitespace-nowrap font-medium text-gray-900">{p.name}</td>
+                  <td className="px-3 py-2 whitespace-nowrap font-semibold text-emerald-600">{formatPrice(p.price, p.currency)}</td>
+                  <td className="px-3 py-2 whitespace-nowrap text-gray-500">{p.stock}</td>
+                  <td className="px-3 py-2 whitespace-nowrap text-gray-500">{p.category?.name ?? "Sin categoria"}</td>
+                  <td className="px-3 py-2 whitespace-nowrap">
                     <ToggleSwitch checked={p.isEnabled} label={`${p.isEnabled ? "Desactivar" : "Activar"} ${p.name}`} loading={togglingIds.has(p.id)} onToggle={() => onToggleEnabled(p.id, p.isEnabled)} />
                   </td>
-                  <td>
-                    <div className="d-flex gap-1">
-                      <Button aria-label={`Editar ${p.name}`} onClick={() => onEdit(p.id)} size="sm" variant="outline-primary">
-                        <FaEdit className="me-1" />
+                  <td className="px-3 py-2 whitespace-nowrap">
+                    <div className="flex gap-1">
+                      <button aria-label={`Editar ${p.name}`} className="inline-flex items-center gap-1.5 bg-blue-50 text-blue-700 border border-blue-200 px-2.5 py-1.5 rounded-lg text-sm hover:bg-blue-100 hover:border-blue-300 transition-colors" onClick={() => onEdit(p.id)}>
+                        <FaEdit />
                         Editar
-                      </Button>
+                      </button>
                       <DeleteButton aria-label={`Eliminar ${p.name}`} onClick={() => onDeleteRequest(p.id, p.name)} />
                     </div>
                   </td>
                 </tr>
               ))}
             </tbody>
-          </Table>
+          </table>
         </div>
       )}
 

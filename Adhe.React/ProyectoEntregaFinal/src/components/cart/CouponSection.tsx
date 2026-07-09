@@ -1,5 +1,4 @@
 import React, { useCallback, useMemo, useState, type ChangeEvent } from "react";
-import { Badge, Button } from "react-bootstrap";
 import { FaTrash } from "react-icons/fa";
 
 import useCart from "../../hooks/selectors/useCart";
@@ -39,30 +38,30 @@ const CouponSection: React.FC = () => {
   }, [removeCoupon]);
 
   return (
-    <div className="card mt-3">
-      <div className="card-body">
-        <h5 className="card-title">Cupon de descuento</h5>
+    <div className="border border-gray-200 rounded-lg shadow-sm bg-white mt-3">
+      <div className="p-4">
+        <h5 className="text-lg font-semibold mb-3">Cupon de descuento</h5>
         {appliedCoupon ? (
-          <div className="d-flex align-items-center gap-2">
-            <Badge bg="success" className="fs-6">
+          <div className="flex items-center gap-2">
+            <span className="bg-success/10 text-success text-sm font-medium px-2.5 py-0.5 rounded-full">
               {appliedCoupon.code}
-            </Badge>
+            </span>
             <span className="text-success">{appliedCoupon.discountValue}% de descuento</span>
             {daysUntilExpiry !== null && daysUntilExpiry <= 7 && daysUntilExpiry > 0 && (
-              <Badge bg="warning" className="text-dark">
+              <span className="bg-warning/10 text-warning text-sm font-medium px-2.5 py-0.5 rounded-full">
                 Vence en {daysUntilExpiry} d&iacute;a{daysUntilExpiry === 1 ? "" : "s"}
-              </Badge>
+              </span>
             )}
-            <Button aria-label="Quitar cupón" className="ms-auto" onClick={handleRemoveCoupon} size="sm" variant="outline-danger">
-              <FaTrash className="me-1" />
+            <button aria-label="Quitar cupón" className="bg-transparent border border-danger/70 text-danger px-3 py-1.5 rounded-lg text-sm hover:bg-danger/5 ml-auto" onClick={handleRemoveCoupon}>
+              <FaTrash className="mr-1" />
               Quitar
-            </Button>
+            </button>
           </div>
         ) : (
-          <div className="d-flex gap-2">
+          <div className="flex gap-2">
               <input
                 aria-label="Código de cupón"
-                className="form-control text-uppercase"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-accent focus:border-accent uppercase disabled:opacity-50 disabled:cursor-not-allowed"
                 disabled={isApplyingCoupon}
                 maxLength={20}
                 onChange={(e: ChangeEvent<HTMLInputElement>) => setCouponCode(e.target.value)}
@@ -70,12 +69,12 @@ const CouponSection: React.FC = () => {
                 type="text"
                 value={couponCode}
               />
-            <Button aria-label="Aplicar cupón" disabled={isApplyingCoupon || !couponCode.trim()} onClick={() => void handleApplyCoupon()} variant="primary">
+            <button aria-label="Aplicar cupón" className="bg-accent text-white px-4 py-2 rounded-lg hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap" disabled={isApplyingCoupon || !couponCode.trim()} onClick={() => void handleApplyCoupon()}>
               {isApplyingCoupon ? "Aplicando..." : "Aplicar"}
-            </Button>
+            </button>
           </div>
         )}
-        {couponError && <div className="text-danger small mt-1" role="alert">{couponError}</div>}
+        {couponError && <div className="text-danger text-sm mt-1" role="alert">{couponError}</div>}
       </div>
     </div>
   );

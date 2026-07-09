@@ -1,5 +1,4 @@
 import React from "react";
-import { Alert } from "react-bootstrap";
 import { Link } from "react-router-dom";
 
 import SubmitButton from "../../ui/SubmitButton";
@@ -24,18 +23,18 @@ const RegisterView: React.FC<RegisterViewProps> = (props) => {
     <AuthLayout helmetDescription="Regístrate en Talento Tech." helmetTitle="Talento Tech | Registro" title="Crear cuenta">
       <form noValidate onSubmit={onSubmit}>
         <div className="mb-3">
-          <label className="form-label" htmlFor="reg-email">
+          <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="reg-email">
             Correo electrónico
           </label>
-          <input autoComplete="email" className="form-control" id="reg-email" onChange={(e) => onEmailChange(e.target.value)} placeholder="tu@email.com" required type="email" value={email} />
+          <input autoComplete="email" className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-accent focus:border-accent" id="reg-email" onChange={(e) => onEmailChange(e.target.value)} placeholder="tu@email.com" required type="email" value={email} />
         </div>
         <div className="mb-3">
-          <label className="form-label" htmlFor="reg-password">
+          <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="reg-password">
             Contraseña
           </label>
           <input
             autoComplete="new-password"
-            className="form-control"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-accent focus:border-accent"
             id="reg-password"
             minLength={6}
             onChange={(e) => onPasswordChange(e.target.value)}
@@ -46,12 +45,12 @@ const RegisterView: React.FC<RegisterViewProps> = (props) => {
           />
         </div>
         <div className="mb-3">
-          <label className="form-label" htmlFor="reg-confirm">
+          <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="reg-confirm">
             Confirmar contraseña
           </label>
           <input
             autoComplete="new-password"
-            className="form-control"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-accent focus:border-accent"
             id="reg-confirm"
             minLength={6}
             onChange={(e) => onConfirmPasswordChange(e.target.value)}
@@ -62,15 +61,15 @@ const RegisterView: React.FC<RegisterViewProps> = (props) => {
           />
         </div>
         {error && (
-          <Alert className="py-2 small" variant="danger">
+          <div className="bg-danger/10 border border-danger/20 text-danger p-3 rounded-lg text-sm" role="alert">
             {error}
-          </Alert>
+          </div>
         )}
         <SubmitButton loading={loading} loadingLabel="Creando cuenta...">
           Crear cuenta
         </SubmitButton>
       </form>
-      <p className="text-center mt-3 mb-0 small">
+      <p className="text-center mt-3 mb-0 text-sm">
         ¿Ya tenés una cuenta? <Link to="/login">Iniciá sesión</Link>
       </p>
     </AuthLayout>

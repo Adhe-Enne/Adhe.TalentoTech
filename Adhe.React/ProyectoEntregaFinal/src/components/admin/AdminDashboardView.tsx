@@ -1,5 +1,4 @@
 import React from "react";
-import { Col, Row } from "react-bootstrap";
 import { Link } from "react-router-dom";
 
 import type { Coupon, Order, Product, Category } from "../../models";
@@ -41,11 +40,11 @@ interface AdminDashboardViewProps {
 }
 
 const VARIANT_MAP: Record<string, { bg: string; text: string; border: string }> = {
-  primary: { bg: "bg-primary bg-opacity-10", text: "text-primary", border: "border-primary" },
-  success: { bg: "bg-success bg-opacity-10", text: "text-success", border: "border-success" },
-  warning: { bg: "bg-warning bg-opacity-10", text: "text-warning", border: "border-warning" },
-  danger: { bg: "bg-danger bg-opacity-10", text: "text-danger", border: "border-danger" },
-  info: { bg: "bg-info bg-opacity-10", text: "text-info", border: "border-info" },
+  primary: { bg: "bg-cta/10", text: "text-cta", border: "border-cta" },
+  success: { bg: "bg-success/10", text: "text-success", border: "border-success" },
+  warning: { bg: "bg-warning/10", text: "text-warning", border: "border-warning" },
+  danger: { bg: "bg-danger/10", text: "text-danger", border: "border-danger" },
+  info: { bg: "bg-accent/10", text: "text-accent", border: "border-accent" },
 };
 
 const AdminDashboardView: React.FC<AdminDashboardViewProps> = (props) => {
@@ -61,76 +60,69 @@ const AdminDashboardView: React.FC<AdminDashboardViewProps> = (props) => {
       <PageHeader className="mb-4" headingTag="h3" title="Dashboard">
         <RefreshButton loading={loading} onRefresh={onRefresh} />
       </PageHeader>
-      <Row className="g-3">
+      <div className="grid grid-cols-12 gap-3 items-stretch">
         {metrics.map((m: Metric) => {
           const vs: { bg: string; text: string; border: string } | undefined = m.variant ? VARIANT_MAP[m.variant] : undefined;
           return (
-            <Col key={m.label} lg={3} sm={6} xs={12}>
-              <div className={`card h-100 shadow-sm rounded-3${vs ? " " + vs.border : ""} position-relative`}>
-                <div className="card-body d-flex align-items-center gap-3 p-3">
-                  <div
-                    className={`d-flex align-items-center justify-content-center rounded-circle flex-shrink-0 ${vs?.bg ?? "bg-info bg-opacity-10"} ${vs?.text ?? "text-info"}`}
-                    style={{ width: 48, height: 48, fontSize: "1.25rem" }}
-                  >
-                    {m.icon}
-                  </div>
-                  <div>
-                    <div className="fs-3 fw-bold lh-1 text-dark">{m.value}</div>
-                    <div className="small text-muted mt-1">{m.label}</div>
-                    {m.subtitle && <div className="small text-muted opacity-75 mt-1">{m.subtitle}</div>}
-                  </div>
+            <div className="col-span-12 sm:col-span-6 lg:col-span-3" key={m.label}>
+              <div className={`bg-white rounded-xl shadow-sm h-full flex items-center p-5 gap-5 relative overflow-hidden${vs ? " border " + vs.border : ""}`}>
+                <div className={`flex items-center justify-center rounded-full shrink-0 w-16 h-16 text-3xl ${vs?.bg ?? "bg-accent/10"} ${vs?.text ?? "text-accent"}`}>{m.icon}</div>
+                <div className="min-w-0">
+                  <div className="text-2xl font-bold leading-none text-gray-900">{m.value}</div>
+                  <div className="text-sm text-gray-500 mt-1.5">{m.label}</div>
+                  {m.subtitle && <div className="text-xs text-gray-500/75 mt-1 line-clamp-2">{m.subtitle}</div>}
                 </div>
-                {m.link && <Link aria-label={`Ir a ${m.label}`} className="stretched-link" to={m.link} />}
+                {m.link && <Link aria-label={`Ir a ${m.label}`} className="absolute inset-0" to={m.link} />}
               </div>
-            </Col>
+            </div>
           );
         })}
-      </Row>
-      <Row className="g-3 mt-4">
-        <Col lg={6} xs={12}>
+      </div>
+      <div className="grid grid-cols-12 gap-3 mt-4">
+        <div className="col-span-12 lg:col-span-6">
           <RevenueByCurrency orders={orders} />
-        </Col>
-        <Col lg={6} xs={12}>
+        </div>
+        <div className="col-span-12 lg:col-span-6">
           <OrderStatusBreakdown orders={orders} />
-        </Col>
-      </Row>
-      <Row className="g-3 mt-3">
-        <Col lg={6} xs={12}>
+        </div>
+      </div>
+      <div className="grid grid-cols-12 gap-3 mt-3">
+        <div className="col-span-12 lg:col-span-6">
           <ProductsByCategory categories={categories} products={products} />
-        </Col>
-        <Col lg={6} xs={12}>
+        </div>
+        <div className="col-span-12 lg:col-span-6">
           <RecentOrders orders={orders} />
-        </Col>
-      </Row>
-      <Row className="g-3 mt-3">
-        <Col lg={6} xs={12}>
+        </div>
+      </div>
+      <div className="grid grid-cols-12 gap-3 mt-3">
+        <div className="col-span-12 lg:col-span-6">
           <StockAlerts products={products} />
-        </Col>
-        <Col lg={6} xs={12}>
+        </div>
+        <div className="col-span-12 lg:col-span-6">
           <CouponInsights coupons={coupons} />
-        </Col>
-      </Row>
-      <Row className="g-3 mt-3">
-        <Col lg={6} xs={12}>
+        </div>
+      </div>
+      <div className="grid grid-cols-12 gap-3 mt-3">
+        <div className="col-span-12 lg:col-span-6">
           <InventoryByCurrency products={products} rates={rates} />
-        </Col>
-        <Col lg={6} xs={12}>
+        </div>
+        <div className="col-span-12 lg:col-span-6">
           <DiscountsByCurrency orders={orders} />
-        </Col>
-      </Row>
-      <Row className="g-3 mt-3">
-        <Col lg={6} xs={12}>
+        </div>
+      </div>
+      <div className="grid grid-cols-12 gap-3 mt-3">
+        <div className="col-span-12 lg:col-span-6">
           <AverageTicketByCurrency orders={orders} />
-        </Col>
-      </Row>
-      <Row className="g-3 mt-3">
-        <Col lg={6} xs={12}>
+        </div>
+      </div>
+      <div className="grid grid-cols-12 gap-3 mt-3">
+        <div className="col-span-12 lg:col-span-6">
           <TopProducts orders={orders} />
-        </Col>
-        <Col lg={6} xs={12}>
+        </div>
+        <div className="col-span-12 lg:col-span-6">
           <MonthlyTrends orders={orders} />
-        </Col>
-      </Row>
+        </div>
+      </div>
     </div>
   );
 };

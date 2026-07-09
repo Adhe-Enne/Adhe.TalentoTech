@@ -13,8 +13,8 @@ const OrderItemRow: React.FC<OrderItemRowProps> = (props) => {
   const { item, imageSize = 40 } = props;
 
   return (
-    <div className="d-flex align-items-center gap-2 mb-2">
-      <img alt={item.productName} className="rounded" src={item.productImage} style={{ width: imageSize, height: imageSize, objectFit: "cover" }} />
+    <div className="flex items-center gap-2 mb-2">
+      <img alt={item.productName} className={`rounded object-cover`} src={item.productImage} style={{ width: imageSize, height: imageSize }} />
       <div className="flex-grow-1 small">
         <strong>{item.productName}</strong>
         <div className="text-muted">

@@ -17,7 +17,7 @@ interface CategoryRow {
   percentage: number;
 }
 
-const CATEGORY_COLORS: string[] = ["primary", "success", "info", "warning", "danger", "secondary", "dark"];
+const CATEGORY_COLORS: string[] = ["bg-blue-500", "bg-emerald-500", "bg-cyan-500", "bg-amber-500", "bg-red-500", "bg-gray-300", "bg-gray-700"];
 
 const ProductsByCategory: React.FC<ProductsByCategoryProps> = (props) => {
   const { categories, products } = props;
@@ -57,9 +57,9 @@ const ProductsByCategory: React.FC<ProductsByCategoryProps> = (props) => {
   }, [products, categories]);
 
   return (
-    <DashboardCard icon={<FaFolder />} iconColor="primary" title="Productos por Categoría">
+    <DashboardCard icon={<FaFolder />} iconColor="text-blue-600" title="Productos por Categoría">
       {categoryData.length === 0 ? (
-        <div className="text-center text-muted py-4">No hay productos o categorías registrados</div>
+        <div className="text-center text-gray-500 py-4">No hay productos o categorías registrados</div>
       ) : (
         categoryData.map((row: CategoryRow, index: number) => {
           const { categoryName, count, percentage } = row;

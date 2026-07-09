@@ -3,7 +3,6 @@ import React, { useState, type RefObject } from "react";
 import useNotification from "../../../hooks/selectors/useNotification";
 import { useDialog } from "../../../hooks/useDialog";
 import { isValidSlug, maxLength } from "../../../utils/validators";
-import modalStyles from "./CategoryCreateModal.module.css";
 
 interface CategoryCreateModalProps {
   isCreating: boolean;
@@ -88,37 +87,37 @@ const CategoryCreateModal: React.FC<CategoryCreateModalProps> = (props) => {
   };
 
   return (
-    <dialog aria-busy={isCreating} aria-modal="true" className={modalStyles.dialog} onClose={handleClose} ref={dialogRef}>
-      <div className={modalStyles.content}>
-        <h5 className={modalStyles.title}>Crear categoría</h5>
+    <dialog aria-busy={isCreating} aria-modal="true" className="fixed inset-0 m-auto w-fit h-fit max-w-[90vw] max-h-[90vh] p-0 bg-transparent open:backdrop:bg-black/50 animate-zoom-in" onClose={handleClose} ref={dialogRef}>
+      <div className="bg-white rounded-xl shadow-xl w-[min(400px,90vw)] p-5 space-y-4">
+        <h5 className="text-lg font-semibold text-gray-900">Crear categoría</h5>
         {isCreating && (
-          <div className={modalStyles.loading}>
-            <span aria-hidden="true" className="spinner-border spinner-border-sm" />
-            <small>Creando categoría...</small>
+          <div className="flex items-center gap-2.5">
+            <span aria-hidden="true" className="animate-spin h-4 w-4 border-2 border-gray-300 border-t-accent rounded-full inline-block" />
+            <small className="text-sm text-gray-600">Creando categoría...</small>
           </div>
         )}
-        <div className="mb-2">
-          <label className="form-label" htmlFor="new-category-name">
+        <div>
+          <label className="block text-sm font-semibold text-gray-700 mb-1.5" htmlFor="new-category-name">
             Nombre *
           </label>
-          <input autoFocus className={`form-control${nameError ? " is-invalid" : ""}`} disabled={isCreating} id="new-category-name" onChange={(e) => handleNameChange(e.target.value)} value={name} />
-          {nameError && <div className="invalid-feedback">{nameError}</div>}
+          <input autoFocus className={`w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-accent/40 focus:border-accent transition${nameError ? " border-danger" : ""}`} disabled={isCreating} id="new-category-name" onChange={(e) => handleNameChange(e.target.value)} value={name} />
+          {nameError && <div className="text-danger text-xs mt-1">{nameError}</div>}
         </div>
-        <div className="mb-2">
-          <label className="form-label" htmlFor="new-category-slug">
+        <div>
+          <label className="block text-sm font-semibold text-gray-700 mb-1.5" htmlFor="new-category-slug">
             Slug *
           </label>
-          <input className={`form-control${slugError ? " is-invalid" : ""}`} disabled={isCreating} id="new-category-slug" onChange={(e) => handleSlugChange(e.target.value)} value={slug} />
-          {slugError && <div className="invalid-feedback">{slugError}</div>}
+          <input className={`w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-accent/40 focus:border-accent transition${slugError ? " border-danger" : ""}`} disabled={isCreating} id="new-category-slug" onChange={(e) => handleSlugChange(e.target.value)} value={slug} />
+          {slugError && <div className="text-danger text-xs mt-1">{slugError}</div>}
         </div>
-        <div className="d-flex justify-content-end gap-2">
-          <button aria-label="Cancelar creación de categoría" className="btn btn-secondary" disabled={isCreating} onClick={handleClose} type="button">
+        <div className="flex justify-end gap-2 pt-1">
+          <button aria-label="Cancelar creación de categoría" className="border border-gray-300 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-50 transition disabled:opacity-50" disabled={isCreating} onClick={handleClose} type="button">
             Cancelar
           </button>
-          <button aria-label="Crear categoría" className="btn btn-primary" disabled={isCreating || !!nameError || !!slugError || !name.trim() || !slug} onClick={handleCreate} type="button">
+          <button aria-label="Crear categoría" className="bg-accent text-white px-4 py-2 rounded-lg text-sm font-medium hover:opacity-90 transition disabled:opacity-50 inline-flex items-center gap-2" disabled={isCreating || !!nameError || !!slugError || !name.trim() || !slug} onClick={handleCreate} type="button">
             {isCreating ? (
               <>
-                <span aria-hidden="true" className="spinner-border spinner-border-sm me-2"></span>
+                <span aria-hidden="true" className="animate-spin h-4 w-4 border-2 border-gray-300 border-t-accent rounded-full inline-block" />
                 <span>Creando...</span>
               </>
             ) : (

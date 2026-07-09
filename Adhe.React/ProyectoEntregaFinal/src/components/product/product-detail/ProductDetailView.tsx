@@ -1,5 +1,4 @@
 import React, { useCallback, useState } from "react";
-import { Badge, Button, Col, Container, Row } from "react-bootstrap";
 import { FaArrowLeft, FaShoppingCart } from "react-icons/fa";
 
 import type { Product } from "../../../models";
@@ -41,62 +40,76 @@ const ProductDetailView: React.FC<ProductDetailViewProps> = (props) => {
   return (
     <>
       <HelmetMeta description={`${product.name} — ${(product.description ?? "Producto disponible en Talento Tech").slice(0, 160)}`} title={`${product.name} | Talento Tech`} />
-      <Container>
-        <Row className="gx-4 gy-3 justify-content-center product-detail">
-          <Col md={5} xs={12}>
-            <div className="card">
+      <div className="max-w-7xl mx-auto px-4 py-4">
+        <div className="grid grid-cols-12 gap-3 justify-center product-detail">
+          <div className="col-span-12 md:col-span-5">
+            <div className="bg-white rounded-xl shadow-sm overflow-hidden">
               <ProductImageCarousel alt={product.name} images={[product.image, ...(images ?? [])]} />
             </div>
-          </Col>
-          <Col md={5} xs={12}>
-            <div className="d-flex justify-content-between align-items-start">
+          </div>
+          <div className="col-span-12 md:col-span-5">
+            <div className="flex justify-between items-start">
               <h2>{product.name}</h2>
               <RefreshButton loading={loading} onRefresh={onRefresh} />
             </div>
-            {categoryName && <div className="mb-1 text-muted">Categoría: {categoryName}</div>}
+            {categoryName && (
+              <div className="mb-2">
+                <span className="inline-flex items-center gap-1.5 bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm font-medium border border-gray-200">
+                  <svg className="w-3.5 h-3.5 opacity-60" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M7 7h.01M7 3h5a1.99 1.99 0 011.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A2 2 0 013 12V7a4 4 0 014-4z" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                  {categoryName}
+                </span>
+              </div>
+            )}
 
-            <div className="mb-3 text-muted">{product.description ?? "Sin descripción"}</div>
+            <div className="h-48 overflow-y-auto mb-3 pr-2 text-gray-500 whitespace-pre-line">{product.description ?? "Sin descripción"}</div>
 
             <div className="mb-3">
-              <span className="badge-price"> {formatPrice(product.price, product.currency)}</span>
+              <div className="inline-flex items-baseline gap-1.5 bg-accent/10 text-accent px-4 py-2.5 rounded-xl border border-accent/20">
+                <span className="text-sm font-medium opacity-80">Precio:</span>
+                <span className="text-2xl font-bold tracking-tight">{formatPrice(product.price, product.currency)}</span>
+              </div>
             </div>
 
-            <div className="mb-2">{stock > 0 ? <Badge bg="success">{stock} en stock</Badge> : <Badge bg="danger">Sin stock</Badge>}</div>
+            <div className="mb-2">
+              {stock > 0 ? (
+                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-success text-white">{stock} en stock</span>
+              ) : (
+                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-danger text-white">Sin stock</span>
+              )}
+            </div>
 
             {tags && tags.length > 0 && (
-              <div className="mb-2">
+              <div className="mb-2 flex flex-wrap gap-1">
                 {tags.map((t) => (
-                  <Badge bg="secondary" className="me-1" key={t.id}>
+                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-600 text-white" key={t.id}>
                     {t.name}
-                  </Badge>
+                  </span>
                 ))}
               </div>
             )}
 
-            <div className="d-flex align-items-center gap-2 mt-3">
+            <div className="flex items-center gap-2 mt-3">
               <span className="mb-0">Cantidad:</span>
               <QuantityStepper max={stock} min={1} onDecrement={handleDecrement} onIncrement={handleIncrement} size="md" value={cantidad} />
               {stock <= 0 ? (
-                <Button disabled variant="secondary">
+                <button className="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 disabled:opacity-50" disabled>
                   Sin stock
-                </Button>
+                </button>
               ) : (
-                <button aria-label={`Agregar ${product.name} al carrito`} className="btn btn-cta btn-icon" onClick={handleAdd}>
-                  <FaShoppingCart />
-                  Añadir al carrito
+                <button aria-label={`Agregar ${product.name} al carrito`} className="bg-accent text-white px-4 py-2 rounded-lg hover:opacity-90 inline-flex items-center gap-2" onClick={handleAdd}>
+                  <FaShoppingCart /> Añadir al carrito
                 </button>
               )}
             </div>
 
             <div className="mt-3">
-              <button aria-label="Volver a productos" className="btn btn-cta" onClick={onBack}>
-                <FaArrowLeft className="me-1" />
-                Volver
+              <button aria-label="Volver a productos" className="inline-flex items-center gap-2 bg-accent text-white px-4 py-2 rounded-lg hover:opacity-90" onClick={onBack}>
+                <FaArrowLeft /> Volver
               </button>
             </div>
-          </Col>
-        </Row>
-      </Container>
+          </div>
+        </div>
+      </div>
     </>
   );
 };

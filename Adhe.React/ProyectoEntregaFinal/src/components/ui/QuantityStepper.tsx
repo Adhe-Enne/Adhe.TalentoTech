@@ -1,8 +1,6 @@
 import React from "react";
 import { FaMinus, FaPlus } from "react-icons/fa";
 
-import styles from "./QuantityStepper.module.css";
-
 interface QuantityStepperProps {
   max: number;
   value: number;
@@ -18,14 +16,19 @@ const QuantityStepper: React.FC<QuantityStepperProps> = (props) => {
   const atMin: boolean = value <= min;
   const atMax: boolean = value >= max;
 
-  const btnClass: string = `btn ${size === "sm" ? "btn-sm" : ""} btn-outline-secondary ${styles.btn}`;
-  const valClass: string = size === "sm" ? "px-2 fw-semibold" : "px-3 fw-semibold fs-5";
+  const isSm: boolean = size === "sm";
+  const btnClass: string = isSm
+    ? "w-7 h-7 flex items-center justify-center bg-transparent border-0 text-gray-500 hover:text-gray-700 hover:bg-gray-100 cursor-pointer rounded-full transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+    : "w-9 h-9 flex items-center justify-center bg-transparent border-0 text-gray-500 hover:text-gray-700 hover:bg-gray-100 cursor-pointer rounded-full transition-colors disabled:opacity-40 disabled:cursor-not-allowed";
+  const valClass: string = isSm
+    ? "w-8 text-center text-sm font-semibold text-gray-800 self-stretch flex items-center justify-center border-x border-gray-200"
+    : "w-10 text-center text-base font-semibold text-gray-800 self-stretch flex items-center justify-center border-x border-gray-200";
 
   return (
-    <fieldset aria-label="Cantidad" className={`d-inline-flex align-items-center gap-0 ${styles.fieldset}`}>
+    <fieldset aria-label="Cantidad" className="inline-flex items-center rounded-full border border-gray-300 bg-white overflow-hidden">
       <button
         aria-label="Reducir cantidad"
-        className={`${btnClass} ${styles.btnMinus}`}
+        className={btnClass}
         disabled={disabled || atMin}
         onClick={onDecrement}
         type="button"
@@ -34,14 +37,13 @@ const QuantityStepper: React.FC<QuantityStepperProps> = (props) => {
       </button>
       <span
         aria-live="polite"
-        className={`${valClass} ${styles.value}`}
-        style={{ fontSize: size === "sm" ? "0.875rem" : "1rem" }}
+        className={valClass}
       >
         {value}
       </span>
       <button
         aria-label="Aumentar cantidad"
-        className={`${btnClass} ${styles.btnPlus}`}
+        className={btnClass}
         disabled={disabled || atMax}
         onClick={onIncrement}
         type="button"

@@ -2,8 +2,6 @@ import React, { useMemo } from "react";
 
 import type { Tag } from "../../../models/Tag";
 
-import styles from "./Product.module.css";
-
 interface TagAutocompleteProps {
   allTags: Tag[];
   selectedTags: string[];
@@ -33,13 +31,13 @@ const TagAutocomplete: React.FC<TagAutocompleteProps> = (props) => {
   }, [allTags, selectedTags, queryLower, categoriaId]);
 
   return (
-    <div className={styles.relative}>
-      <label className="form-label" htmlFor="tags-input">
+    <div className="relative">
+      <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="tags-input">
         Tags
       </label>
-      <div className={styles.relative}>
+      <div className="relative">
         <input
-          className="form-control"
+          className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-accent focus:border-accent"
           id="tags-input"
           onChange={(e) => {
             onQueryChange(e.target.value);
@@ -56,11 +54,11 @@ const TagAutocomplete: React.FC<TagAutocompleteProps> = (props) => {
           value={tagQuery}
         />
         {showSuggestions && (suggestions.length > 0 || tagQuery.trim().length > 0) && (
-          <ul className={styles.tagSuggestions} ref={suggestionsRef}>
+          <ul className="absolute left-0 right-0 top-[44px] bg-white border border-[rgba(33,53,71,0.08)] shadow-[0_6px_18px_rgba(33,53,71,0.04)] rounded-lg list-none mt-[6px] p-[6px_0] z-[120] max-h-[200px] overflow-auto" ref={suggestionsRef}>
             {suggestions.map((s) => (
               <li key={s.id}>
                 <button
-                  className={styles.suggestionItem}
+                  className="px-3 py-2 cursor-pointer hover:bg-[rgba(15,102,112,0.06)] w-full text-left"
                   onMouseDown={(ev) => {
                     ev.preventDefault();
                     onAdd(s.name);
@@ -74,7 +72,7 @@ const TagAutocomplete: React.FC<TagAutocompleteProps> = (props) => {
             {suggestions.length === 0 && tagQuery.trim().length > 0 && (
               <li>
                 <button
-                  className={styles.suggestionItem}
+                  className="px-3 py-2 cursor-pointer hover:bg-[rgba(15,102,112,0.06)] w-full text-left"
                   onMouseDown={(ev) => {
                     ev.preventDefault();
                     onAdd(tagQuery);
@@ -92,9 +90,9 @@ const TagAutocomplete: React.FC<TagAutocompleteProps> = (props) => {
         {allTags
           .filter((t) => selectedTags.includes(t.id))
           .map((t) => (
-            <span className="badge bg-secondary me-1" key={t.id}>
+            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-200 text-gray-700 mr-1" key={t.id}>
               {t.name}{" "}
-              <button aria-label={`Eliminar tag ${t.name}`} className="btn btn-sm btn-link text-white ms-1" onClick={() => onRemove(t.name)} type="button">
+              <button aria-label={`Eliminar tag ${t.name}`} className="text-white hover:text-gray-300 ms-1 text-sm px-1 py-0.5 bg-transparent border-0" onClick={() => onRemove(t.name)} type="button">
                 ×
               </button>
             </span>

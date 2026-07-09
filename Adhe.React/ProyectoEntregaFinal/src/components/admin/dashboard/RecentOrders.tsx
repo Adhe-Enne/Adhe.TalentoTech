@@ -1,5 +1,4 @@
 import React, { useMemo } from "react";
-import { Badge } from "react-bootstrap";
 import { FaShoppingBag } from "react-icons/fa";
 
 import type { Order } from "../../../models";
@@ -18,12 +17,12 @@ const RecentOrders: React.FC<RecentOrdersProps> = (props) => {
 
   if (recentOrders.length === 0) {
     return (
-      <div className="card shadow-sm h-100">
-        <div className="card-header bg-white d-flex align-items-center gap-2">
-          <FaShoppingBag className="text-primary" />
+      <div className="bg-white rounded-xl shadow-sm h-full">
+        <div className="px-4 py-3 border-b border-gray-100 flex items-center gap-2 bg-white">
+          <FaShoppingBag className="text-cta" />
           <h5 className="mb-0">Pedidos Recientes</h5>
         </div>
-        <div className="card-body text-center text-muted py-4">
+        <div className="p-4 text-center text-gray-500">
           No hay pedidos registrados
         </div>
       </div>
@@ -31,36 +30,42 @@ const RecentOrders: React.FC<RecentOrdersProps> = (props) => {
   }
 
   return (
-    <div className="card shadow-sm h-100">
-      <div className="card-header bg-white d-flex align-items-center gap-2">
-        <FaShoppingBag className="text-primary" />
+    <div className="bg-white rounded-xl shadow-sm h-full">
+      <div className="px-4 py-3 border-b border-gray-100 flex items-center gap-2 bg-white">
+        <FaShoppingBag className="text-cta" />
         <h5 className="mb-0">Pedidos Recientes</h5>
       </div>
-      <div className="card-body p-0">
-        <div className="table-responsive">
-          <table className="table table-hover mb-0">
-            <thead className="table-light">
+      <div className="p-0">
+        <div className="overflow-x-auto">
+          <table className="min-w-full mb-0">
+            <thead className="bg-gray-50">
               <tr>
-                <th>ID</th>
-                <th>Usuario</th>
-                <th>Total</th>
-                <th>Estado</th>
+                <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+                <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Usuario</th>
+                <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total</th>
+                <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className="divide-y divide-gray-200">
               {recentOrders.map((order: Order) => (
-                <tr key={order.id}>
-                  <td className="text-muted small" style={{ maxWidth: 80 }}>
-                    <span className="text-truncate d-inline-block" style={{ maxWidth: 70 }}>
+                <tr className="hover:bg-gray-50" key={order.id}>
+                  <td className="text-gray-500 text-sm px-3 py-2" style={{ maxWidth: 80 }}>
+                    <span className="truncate inline-block" style={{ maxWidth: 70 }}>
                       {order.id}
                     </span>
                   </td>
-                  <td className="small">{order.userEmail}</td>
-                  <td className="small">{formatPrice(order.total, order.currency)}</td>
-                  <td>
-                    <Badge bg={ORDER_STATUS_VARIANT[order.status] ?? "secondary"}>
+                  <td className="text-sm px-3 py-2">{order.userEmail}</td>
+                  <td className="text-sm px-3 py-2">{formatPrice(order.total, order.currency)}</td>
+                  <td className="px-3 py-2">
+                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                      (ORDER_STATUS_VARIANT[order.status] ?? "secondary") === "success" ? "bg-success/10 text-success" :
+                      (ORDER_STATUS_VARIANT[order.status] ?? "secondary") === "warning" ? "bg-warning/10 text-warning" :
+                      (ORDER_STATUS_VARIANT[order.status] ?? "secondary") === "danger" ? "bg-danger/10 text-danger" :
+                      (ORDER_STATUS_VARIANT[order.status] ?? "secondary") === "info" ? "bg-info/10 text-info" :
+                      "bg-gray-100 text-gray-800"
+                    }`}>
                       {order.status}
-                    </Badge>
+                    </span>
                   </td>
                 </tr>
               ))}

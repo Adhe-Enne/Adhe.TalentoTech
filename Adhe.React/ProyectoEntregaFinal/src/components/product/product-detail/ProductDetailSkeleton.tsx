@@ -1,32 +1,30 @@
 import React from "react";
 
-import styles from "./ProductDetail.module.css";
-
 const ProductDetailSkeleton: React.FC = () => (
-  <div aria-busy="true" className="container py-4">
-    <div aria-hidden="true" className="card">
-      <div className="card-body p-4">
-        <div className="row gx-4 gy-3">
-          <div className="col-12 col-md-5">
-            <div className="placeholder-glow">
-              <span className={`placeholder col-12 ${styles.skeletonImg}`} />
+  <div aria-busy="true" className="max-w-7xl mx-auto px-4 py-4">
+    <div aria-hidden="true" className="bg-white rounded-xl shadow-sm overflow-hidden">
+      <div className="p-4">
+        <div className="grid grid-cols-12 gap-3">
+          <div className="col-span-12 md:col-span-5">
+            <div className="animate-pulse">
+              <span className="block w-full h-[300px] rounded-md bg-[#e5e7eb]" />
             </div>
           </div>
-          <div className="col-12 col-md-5">
-            <div className="placeholder-glow mb-3">
-              <span className={`placeholder col-8 ${styles.skeletonTitle}`} />
+          <div className="col-span-12 md:col-span-5">
+            <div className="animate-pulse mb-3">
+              <span className="block w-2/3 rounded bg-[#e5e7eb] h-7" />
             </div>
-            <div className="placeholder-glow mb-2">
-              <span className={`placeholder col-4 ${styles.skeletonText}`} />
+            <div className="animate-pulse mb-2">
+              <span className="block w-1/3 rounded bg-[#e5e7eb] h-4" />
             </div>
-            <div className="placeholder-glow mb-3">
-              <span className={`placeholder col-12 ${styles.skeletonDesc}`} />
+            <div className="animate-pulse mb-3">
+              <span className="block w-full rounded bg-[#e5e7eb] h-12" />
             </div>
-            <div className="placeholder-glow mb-3">
-              <span className={`placeholder col-3 ${styles.skeletonBadge}`} />
+            <div className="animate-pulse mb-3">
+              <span className="block w-1/4 rounded-full bg-[#e5e7eb] h-8" />
             </div>
-            <div className="placeholder-glow">
-              <span className={`placeholder col-5 ${styles.skeletonBtn}`} />
+            <div className="animate-pulse">
+              <span className="block w-5/12 rounded bg-[#e5e7eb] h-[38px]" />
             </div>
           </div>
         </div>

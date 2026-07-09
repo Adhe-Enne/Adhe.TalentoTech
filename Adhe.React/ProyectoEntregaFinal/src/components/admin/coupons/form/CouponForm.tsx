@@ -1,5 +1,4 @@
 import React, { useCallback, useState } from "react";
-import { Button, Spinner } from "react-bootstrap";
 import { FaPlus } from "react-icons/fa";
 
 import useCoupons from "../../../../hooks/selectors/useCoupons";
@@ -7,7 +6,6 @@ import { couponService } from "../../../../services/couponService";
 import { getTodayString } from "../../../../utils/dateUtils";
 import { isValidCouponCode } from "../../../../utils/validators";
 import { withToast } from "../../../../utils/withToast";
-import styles from "./CouponForm.module.css";
 
 interface FormErrors {
   code?: string;
@@ -118,44 +116,44 @@ const CouponForm: React.FC = () => {
   const hasErrors: boolean = Object.keys(errors).length > 0;
 
   return (
-    <form className={`card mb-4 ${styles.formCard}`} onSubmit={handleSubmit}>
-      <div className="card-body">
-        <h5 className="card-title mb-3">Crear cupon</h5>
-        <div className="row g-3">
-          <div className="col-12 col-sm-4">
-            <label className="form-label" htmlFor="couponCode">
+    <form className="bg-white rounded-xl shadow-sm overflow-hidden mb-4" onSubmit={handleSubmit}>
+      <div className="p-4">
+        <h5 className="text-lg font-semibold mb-3">Crear cupon</h5>
+        <div className="grid grid-cols-12 gap-3">
+          <div className="col-span-12 sm:col-span-4">
+            <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="couponCode">
               Codigo
             </label>
-            <input className={`form-control${errors.code ? " is-invalid" : ""}`} id="couponCode" maxLength={30} onBlur={handleCodeBlur} onChange={(e) => handleChange("code", e.target.value)} placeholder="Ej: DESCUENTO10" value={code} />
-            {errors.code && <div className="invalid-feedback">{errors.code}</div>}
+            <input className={`w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-accent focus:border-accent ${errors.code ? "border-danger focus:ring-danger/30 focus:border-danger" : "border-gray-300"}`} id="couponCode" maxLength={30} onBlur={handleCodeBlur} onChange={(e) => handleChange("code", e.target.value)} placeholder="Ej: DESCUENTO10" value={code} />
+            {errors.code && <div className="text-danger text-sm mt-1">{errors.code}</div>}
           </div>
-          <div className="col-12 col-sm-3">
-            <label className="form-label" htmlFor="couponDiscount">
+          <div className="col-span-12 sm:col-span-3">
+            <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="couponDiscount">
               Descuento (%)
             </label>
-            <input className={`form-control${errors.discount ? " is-invalid" : ""}`} id="couponDiscount" max={100} min={1} onChange={(e) => handleChange("discount", e.target.value)} placeholder="10" type="number" value={discountValue} />
-            {errors.discount && <div className="invalid-feedback">{errors.discount}</div>}
+            <input className={`w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-accent focus:border-accent ${errors.discount ? "border-danger focus:ring-danger/30 focus:border-danger" : "border-gray-300"}`} id="couponDiscount" max={100} min={1} onChange={(e) => handleChange("discount", e.target.value)} placeholder="10" type="number" value={discountValue} />
+            {errors.discount && <div className="text-danger text-sm mt-1">{errors.discount}</div>}
           </div>
-          <div className="col-12 col-sm-5">
-            <label className="form-label" htmlFor="couponExpiresAt">
-              Vencimiento <small className="text-muted">(opcional)</small>
+          <div className="col-span-12 sm:col-span-5">
+            <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="couponExpiresAt">
+              Vencimiento <small className="text-gray-500">(opcional)</small>
             </label>
-            <input className={`form-control${errors.expiresAt ? " is-invalid" : ""}`} id="couponExpiresAt" min={today} onChange={(e) => handleChange("expiresAt", e.target.value)} type="date" value={expiresAt} />
-            {errors.expiresAt && <div className="invalid-feedback">{errors.expiresAt}</div>}
+            <input className={`w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-accent focus:border-accent ${errors.expiresAt ? "border-danger focus:ring-danger/30 focus:border-danger" : "border-gray-300"}`} id="couponExpiresAt" min={today} onChange={(e) => handleChange("expiresAt", e.target.value)} type="date" value={expiresAt} />
+            {errors.expiresAt && <div className="text-danger text-sm mt-1">{errors.expiresAt}</div>}
           </div>
         </div>
-        <div className="row mt-3">
-          <div className="col-12">
-            <Button aria-label="Crear cupón" className="w-100" disabled={submitting || hasErrors} type="submit" variant="primary">
+        <div className="grid grid-cols-12 gap-3 mt-3">
+          <div className="col-span-12">
+            <button aria-label="Crear cupón" className="w-full flex items-center justify-center gap-2 bg-cta text-white px-4 py-2 rounded-lg hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed" disabled={submitting || hasErrors} type="submit">
               {submitting ? (
-                <Spinner animation="border" size="sm" />
+                <span className="animate-spin h-4 w-4 border-2 border-gray-300 border-t-accent rounded-full inline-block" />
               ) : (
                 <>
-                  <FaPlus aria-hidden="true" className="me-1" />
+                  <FaPlus aria-hidden="true" />
                   Crear cupon
                 </>
               )}
-            </Button>
+            </button>
           </div>
         </div>
       </div>

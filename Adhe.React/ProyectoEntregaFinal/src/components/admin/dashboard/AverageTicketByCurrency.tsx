@@ -63,11 +63,11 @@ const AverageTicketByCurrency: React.FC<AverageTicketByCurrencyProps> = (props) 
         </>
       }
       icon={<FaChartLine />}
-      iconColor="success"
+      iconColor="text-emerald-600"
       title="Ticket Promedio por Moneda"
     >
       {currencyData.length === 0 ? (
-        <div className="text-center text-muted py-4">No hay pedidos completados</div>
+        <div className="text-center text-gray-500 py-4">No hay pedidos completados</div>
       ) : (
         currencyData.map((data: AverageTicketCurrencyRow) => {
           const { averageOriginal, count, currency, percentage } = data;
@@ -81,13 +81,13 @@ const AverageTicketByCurrency: React.FC<AverageTicketByCurrencyProps> = (props) 
               ariaLabel={`${meta.label}: ${percentage.toFixed(1)}%`}
               color={meta.color}
               extra={
-                <div className="small text-muted mb-1">
+                <div className="text-sm text-gray-500 mb-1">
                   {count} pedido{count === 1 ? "" : "s"}
                 </div>
               }
               key={currency}
               label={
-                <span className="d-flex align-items-center gap-2">
+                <span className="flex items-center gap-2">
                   {meta.icon}
                   <strong>{meta.label}</strong>
                 </span>
