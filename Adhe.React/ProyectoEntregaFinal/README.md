@@ -1,18 +1,24 @@
-# 🛍️ Adhe.E-commerce — Proyecto PreEntrega
+# 🛍️ Adhe.E-commerce — Proyecto Entrega Final
 
-Pequeña tienda demo construida con React + TypeScript (Vite). Este repositorio contiene una aplicación educativa para practicar conceptos de React, hooks, context providers y manejo simple de datos en el frontend. Cuenta con datos de productos precargados, gestión de favoritos en `localStorage`, un carrito de compras simulado y un sistema de notificaciones.
+Aplicación educativa tipo e-commerce construida con React + TypeScript + Vite. Este proyecto integra **autenticación Firebase**, **Firestore como backend**, panel de administración con roles, carrito persistente por usuario, catálogo paginado, sistema de cupones, y gestión completa de productos.
 
-> **Adhe** es parte de User que utilizo para mis proyectos personales (`Adhe-Enne`), puedes encontrar más en [github.com/Adhe-Enne](https://github.com/Adhe-Enne) .
+> **Adhe** es parte del usuario que utilizo para mis proyectos personales (`Adhe-Enne`), puedes encontrar más en [github.com/Adhe-Enne](https://github.com/Adhe-Enne).
 
 **Resumen rápido**
 
 - **Tipo:** SPA (Vite + React + TypeScript)
-- **Stack:** React 19, TypeScript, Vite, Bootstrap 5
-- **Propósito:** Practicar manipulación de estado con Contexts, forms, subida de imágenes cliente (FileReader), manejo de favoritos en `localStorage` y notificaciones.
+- **Stack:** React 19, TypeScript 6, Vite 8, Tailwind CSS v4 + principios **Tailwind UI**, Firebase 12.14 (Auth + Firestore)
+- **Autenticación:** Firebase Auth con roles `user` y `admin`
+- **Backend:** Firebase Firestore (productos, categorías, etiquetas, cupones, órdenes, miembros del equipo)
+- **Propósito:** E-commerce educativo con login, registro, roles, carrito, checkout, historial de órdenes, panel admin (CRUD productos, cupones, dashboard)
+
+**🔗 Demo en vivo**
+
+El proyecto está publicado en **Netlify**: [talento-tech-react.netlify.app](https://talento-tech-react.netlify.app/)
 
 **Arranque rápido**
 
-Requisitos: Node.js (16+ recomendable) y npm.
+Requisitos: Node.js ≥18 (recomendado ≥22) y npm.
 
 ```bash
 # instalar dependencias
@@ -21,7 +27,7 @@ npm install
 # arrancar modo desarrollo (Vite)
 npm run dev
 
-# build de producción
+# build de producción (incluye typecheck)
 npm run build
 
 # correr eslint
@@ -31,186 +37,239 @@ npm run lint
 npm run preview
 ```
 
-**Datos precargados**
+**Variables de entorno requeridas**
 
-- Los productos iniciales están en: `public/productos.json`.
-- Imágenes de ejemplo en: `public/images/`
-- Favoritos se guardan en `localStorage` con la key `tt_favorites`.
-- Los productos creados desde la UI se mantienen en memoria (no se persisten en servidor/localStorage).
+Copiar `.env.development` con las siguientes claves de Firebase:
 
-**Principales pantallas y acciones (foco funcional)**
+```
+VITE_FIREBASE_API_KEY
+VITE_FIREBASE_AUTH_DOMAIN
+VITE_FIREBASE_PROJECT_ID
+VITE_FIREBASE_STORAGE_BUCKET
+VITE_FIREBASE_MESSAGING_SENDER_ID
+VITE_FIREBASE_APP_ID
+```
 
-**🏠 Home / Productos**
+Si falta alguna, la app lanza un error claro al iniciar.
 
-- Lista de productos en cuadrícula. Archivos clave: [src/components/home/HomeContainer.tsx](src/components/home/HomeContainer.tsx)
-- Búsqueda por texto: query param `q` (p. ej. `?q=camiseta`).
-- Filtrar favoritos: query param `filter=favorites`.
-- Acciones por tarjeta: _Ver detalle_, _Añadir al carrito_ (muestra notificación).
+---
+
+## 🔐 Autenticación y roles
+
+El sistema usa **Firebase Auth** con dos roles:
+
+| Rol | Acceso |
+|-----|--------|
+| `user` | Navegar, comprar, historial de órdenes, perfil |
+| `admin` | Todo lo anterior + `/admin/*` (dashboard, productos, cupones, pedidos) |
+
+El componente `AuthGuard` envuelve las rutas y redirige según el estado (`guest`/`protected`) y el rol del usuario.
+
+---
+
+## 🏠 Pantallas principales
+
+**🏠 Home / Catálogo**
+- Lista de productos paginada desde Firestore
+- Búsqueda por texto (`?q=...`) y filtro de favoritos (`?filter=favorites`)
+- Carga infinita (paginación con `startAfter`)
 
 **🔎 Detalle de producto**
-
-- Página de detalle por producto (`/producto/:id`). Muestra imagen, descripción, precio y control de cantidad.
-- Permite añadir la cantidad seleccionada al carrito. Archivos: [src/components/product/product-detail/ProductDetailContainer.tsx](src/components/product/product-detail/ProductDetailContainer.tsx) y [src/components/product/product-detail/DetalleProducto.tsx](src/components/product/product-detail/DetalleProducto.tsx).
-
-**➕ Nuevo producto**
-
-- Ruta: `/new`. Formulario con campos: nombre, precio, descripción e imagen.
-- La imagen se previsualiza antes de subir (FileReader). La subida está simulada (delay) y el nuevo producto se inserta en memoria. Archivos: [src/components/product/product-form/ProductForm.tsx](src/components/product/product-form/ProductForm.tsx) y [src/components/product/product-form/NewProductContainerWrapper.tsx](src/components/product/product-form/NewProductContainerWrapper.tsx).
+- Ruta `/producto/:id` con imagen, descripción, precio y control de cantidad
 
 **🧺 Carrito**
+- Persiste en `localStorage` con key por usuario (`tt_cart_{uid}`)
+- Aumentar/disminuir cantidad, eliminar items, ver total
+- Soporte para **cupones de descuento** (porcentaje, monto fijo)
 
-- Lista de ítems añadidos, botones para aumentar/disminuir cantidad, eliminar y ver total.
-- El carrito es una estructura en memoria (no persistente) y está gestionado por el `CartProvider`. Archivos: [src/components/cart/Carrito.tsx](src/components/cart/Carrito.tsx) y [src/components/cart/CarritoContainer.tsx](src/components/cart/CarritoContainer.tsx).
-- El botón de "Proceder al Pago" simula un proceso de compra mostrando una notificación y luego limpia el carrito y redirige a la página principal.
+**💳 Checkout**
+- Formulario de envío con validación
+- Resumen de orden y total con descuento aplicado
+- Confirmación y almacenamiento en Firestore (`orders_purchases`)
+
+**📦 Órdenes**
+- `/mis-ordenes` — historial de compras del usuario
+- `/orden/:id` — detalle y confirmación de una orden
 
 **💙 Favoritos**
-
-- Cada producto puede marcarse/desmarcarse como favorito desde la tarjeta (♥).
-- Favoritos se almacenan en `localStorage` bajo la clave `tt_favorites` (array de ids). El contador en el header usa el valor calculado por el contexto (`count`) para evitar inconsistencias.
+- Marcar/desmarcar desde la tarjeta (♥)
+- Persisten en `localStorage` con clave `tt_favorites`
+- Filtro especial en Home: `?filter=favorites`
 
 **✉️ Contacto**
+- Formulario de contacto simulado + directorio del equipo desde Firestore
 
-- Formulario de contacto que muestra una notificación simulada al enviar. Incluye un listado del equipo (Directorio). Archivo: [src/components/contact/Contacto.tsx](src/components/contact/Contacto.tsx).
+**👤 Perfil**
+- `/perfil` — datos del usuario autenticado
+
+**👥 Equipo**
+- `/equipo` — vista completa del equipo desde Firestore (`team_members`)
 
 **🔔 Notificaciones**
-
-- Sistema simple de notificaciones en la parte superior (stack). API expuesta por `useNotification()` para mostrar mensajes con variantes (`success`, `info`, `warning`, `danger`). Ver [src/contexts/Notification/Notification.Provider.tsx](src/contexts/Notification/Notification.Provider.tsx).
-
-**Arquitectura & puntos clave**
-
-- Context Providers: `ProductsProvider`, `CartProvider`, `FavoritesProvider`, `NotificationProvider` — proveen API para la UI (crear producto, añadir al carrito, toggle favoritos, notificaciones).
-  - [src/contexts/Products/Products.Provider.tsx](src/contexts/Products/Products.Provider.tsx)
-  - [src/contexts/Cart/Cart.Provider.tsx](src/contexts/Cart/Cart.Provider.tsx)
-  - [src/contexts/Favorites/Favorites.Provider.tsx](src/contexts/Favorites/Favorites.Provider.tsx)
-  - [src/contexts/Notification/Notification.Provider.tsx](src/contexts/Notification/Notification.Provider.tsx)
-
-- Hooks de conveniencia: `useProducts`, `useCart`, `useFavorites`, `useNotification` (ver `src/hooks/`).
-
-- Manejo de imágenes en formularios: `ProductImagePreview` y hooks abortables (`useAbortableFileReader`, `useAbortableTimeout`) que permiten cancelar lecturas y timeouts cuando el componente se desmonta.
-
-**Consejos para probar y depurar**
-
-- Limpiar favoritos en localStorage (para empezar desde cero):
-  ```js
-  localStorage.removeItem("tt_favorites");
-  ```
-- Si un producto no aparece en detalle, revisar que el `id` exista en `public/productos.json` o que no se haya eliminado en runtime.
-- Notificaciones: revisar `NotificationBar` en la UI para mensajes.
-
-**Rutas principales**
-
-- `/` → Home / listado
-- `/productos` → listado (admite `?q=...` y `?filter=favorites`)
-- `/producto/:id` → detalle del producto
-- `/new` → crear nuevo producto
-- `/carrito` → ver carrito
-- `/contacto` → contacto + directorio
-
-**Archivos importantes (edición)**
-
-- Layout / header: [src/components/layout/Layout.tsx](src/components/layout/Layout.tsx)
-- Formulario producto: [src/components/product/product-form/ProductForm.tsx](src/components/product/product-form/ProductForm.tsx)
-- Hooks cancelables: [src/components/product/product-form/hooks](src/components/product/product-form/hooks)
-- Datos precargados: [public/productos.json](public/productos.json)
+- Sistema integrado vía `react-toastify` con variantes: `success`, `info`, `warning`, `error`
 
 ---
 
-Si quieres, puedo:
+## 🛠️ Panel de Administración
 
-- Añadir ejemplos de screenshots en el README.
-- Generar instrucciones de pruebas (checklist de QA) más detalladas.
-- Crear un pequeño script `reports/lines.json` con estadísticas (ya generado si quieres que lo guarde en el repo).
+Todas las rutas bajo `/admin/*` requieren rol `admin`.
 
-¿Quieres que incorpore capturas o que haga un commit con este README?
+| Ruta | Función |
+|------|---------|
+| `/admin` | Dashboard con métricas (ventas, órdenes, productos) |
+| `/admin/productos` | Listado y gestión de productos |
+| `/admin/productos/nuevo` | Crear producto (con categoría, etiquetas, imágenes) |
+| `/admin/productos/:id/editar` | Editar producto existente |
+| `/admin/cupones` | CRUD de cupones (activar/desactivar) |
+| `/admin/ordenes` | Listado de pedidos de todos los usuarios |
 
-**_ Fin del README generado automáticamente por el asistente. _**
+---
 
-## Estructura general de carpetas
+## 🧱 Arquitectura
 
-A continuación se muestra la estructura general del proyecto. Se omite el contenido de carpetas en niveles inferiores; entre paréntesis se indica brevemente su propósito.
+### Providers (9 contextos)
 
 ```
-/ (raíz del proyecto)
+AuthProvider → CartProvider → NotificationProvider → FavoritesProvider → CategoriesProvider → TagsProvider → ProductsProvider → TeamProvider → CouponsProvider
+```
+
+Cada provider expone hooks selectores en `src/hooks/selectors/` (ej. `useAuth`, `useCart`, `useFavorites`).
+
+### Lazy loading
+
+Todas las rutas secundarias (admin, auth, checkout, órdenes, detalle, equipo) usan `React.lazy()` + `<Suspense>` para carga diferida.
+
+### Servicios Firebase (9)
+
+En `src/services/`: `authService`, `categoryService`, `couponService`, `exchangeRateService`, `imageService`, `orderService`, `productService`, `tagService`, `teamService`.
+
+### Estilos
+
+- **Tailwind CSS v4** con configuración `@theme` en `src/index.css` (colores semánticos, tipografía, spacing)
+- Principios **Tailwind UI**: utility-first, diseño responsive sin media queries, componentes self-contained
+- `react-datepicker` y `react-toastify` con estilos importados
+- Sin Bootstrap ni react-bootstrap
+
+---
+
+## 🗺️ Rutas principales
+
+| Ruta | Componente | Acceso |
+|------|-----------|--------|
+| `/login` | Login | Invitados |
+| `/registro` | Register | Invitados |
+| `/` | Home (catálogo) | Usuarios |
+| `/productos` | Home (catálogo) | Usuarios |
+| `/producto/:id` | Detalle producto | Usuarios |
+| `/carrito` | Cart | Usuarios |
+| `/checkout` | Checkout | Usuarios |
+| `/orden/:id` | Confirmación orden | Usuarios |
+| `/mis-ordenes` | Historial órdenes | Usuarios |
+| `/perfil` | Perfil usuario | Usuarios |
+| `/equipo` | Vista equipo | Usuarios |
+| `/contacto` | Contacto | Usuarios |
+| `/admin` | Dashboard admin | Admin |
+| `/admin/productos` | Lista productos | Admin |
+| `/admin/productos/nuevo` | Crear producto | Admin |
+| `/admin/productos/:id/editar` | Editar producto | Admin |
+| `/admin/cupones` | Cupones | Admin |
+| `/admin/ordenes` | Órdenes | Admin |
+
+---
+
+## 📁 Estructura general de carpetas
+
+```
+ProyectoEntregaFinal/
 ├─ package.json                (dependencias y scripts npm)
-├─ vite.config.ts              (configuración de Vite)
-├─ tsconfig.json               (configuración TypeScript)
-├─ tsconfig.app.json           (configuración TS para la app)
-├─ tsconfig.node.json          (configuración TS para node tooling)
-├─ eslint.config.js            (configuración ESLint)
+├─ vite.config.ts              (Vite + React + Tailwind plugins)
+├─ eslint.config.js            (ESLint con 10+ plugins)
+├─ tsconfig.json               (referencia a app + node)
+├─ tsconfig.app.json           (strict: true, noUnusedLocals, etc.)
+├─ tsconfig.node.json          (config TS para tooling node)
+├─ .prettierrc                 (printWidth: 220, endOfLine: lf)
+├─ .env.development            (variables Firebase — no commiteado)
+├─ .gitignore
 ├─ index.html                  (HTML base)
-├─ public/                     (archivos estáticos servidos por Vite)
+├─ public/
 │  ├─ productos.json           (datos iniciales de productos)
 │  ├─ images/                  (imágenes de productos y assets)
-│  └─ screenshots/             (capturas usadas en README / docs)
-├─ src/                        (código fuente de la aplicación)
-│  ├─ main.tsx                 (entrypoint React + mounting)
-│  ├─ index.css, App.tsx       (estilos/global y componente raíz)
-│  ├─ assets/                  (recursos estáticos del app)
-│  ├─ components/              (componentes UI organizados por dominio)
-│  │  ├─ layout/               (header, navbar, layout general)
-│  │  ├─ home/                 (pantalla principal y containers)
-│  │  ├─ product/              (tarjetas, detalle y formulario de producto)
-│  │  ├─ cart/                 (componentes del carrito)
-│  │  └─ contact/              (contacto y directorio)
-│  ├─ contexts/                (Providers: Products, Cart, Favorites, Notification)
-│  ├─ hooks/                   (hooks reutilizables: useCart, useFavorites, etc.)
-│  ├─ models/                  (tipos e interfaces TypeScript)
-│  └─ utils/                   (helpers y utilidades, p.ej. navigation)
-└─ README.md                   (documentación del proyecto)
+│  └─ data/
+│     └─ nosotros.json         (datos del equipo)
+├─ src/
+│  ├─ main.tsx                 (entrypoint: React + HelmetProvider + ToastContainer)
+│  ├─ App.tsx                  (BrowserRouter + AppRoutes)
+│  ├─ App.Constants.ts         (nombres de colecciones Firestore)
+│  ├─ firebase.ts              (config Firebase Auth + Firestore)
+│  ├─ index.css                (Tailwind v4 @theme + estilos globales)
+│  ├─ components/
+│  │  ├─ AppProviders.tsx      (nesting de los 9 providers)
+│  │  ├─ AppRoutes.tsx         (definición de todas las rutas)
+│  │  ├─ admin/                (AdminLayout, AdminDashboard, CRUD, cupones, órdenes)
+│  │  ├─ auth/                 (AuthGuard, Login, Register, Profile, AuthLayout)
+│  │  ├─ cart/                 (carrito)
+│  │  ├─ checkout/             (formulario envío, resumen orden)
+│  │  ├─ common/               (ExchangeRatesBanner, etc.)
+│  │  ├─ contact/              (formulario contacto + directorio)
+│  │  ├─ home/                 (Home + HomeView + paginación)
+│  │  ├─ layout/               (Layout principal, navbar, header)
+│  │  ├─ orders/               (OrderConfirmation, OrderHistory)
+│  │  ├─ product/              (tarjetas, detalle, formularios)
+│  │  ├─ team/                 (TeamList, vista completa)
+│  │  └─ ui/                   (HelmetMeta, LoadingSpinner, etc.)
+│  ├─ contexts/                (Auth, Cart, Categories, Coupons, Favorites, Notification, Products, Tags, Team)
+│  ├─ hooks/                   (useAsyncCollection, useCartActions, useOrders, etc.)
+│  │  └─ selectors/            (useAuth, useCart, useFavorites, etc.)
+│  ├─ models/                  (Product, CartItem, Order, Coupon, Category, Tag, User, etc.)
+│  ├─ services/                (9 servicios Firebase: auth, products, orders, coupons, etc.)
+│  ├─ types/                   (auth, shared, ExchangeRateTypes, PaginatedResult, etc.)
+│  └─ utils/                   (storage, errorUtils, firestore helpers, parseDataUtils)
+└─ README.md                   (este archivo)
 ```
 
-Notas rápidas:
+---
 
-- Los componentes y providers están organizados por dominio para facilitar la navegación y el testing.
-- `public/productos.json` contiene los datos de ejemplo que carga la app al inicio.
-- Favoritos se gestionan a través de `localStorage` y el `FavoritesProvider` en `src/contexts/Favorites/`.
+## 🧰 Tecnologías
 
-## 📸 Capturas (placeholders)
-
-A continuación hay capturas de ejemplo que puedes reemplazar por screenshots reales. Si prefieres, súbelas a `public/screenshots/` con los mismos nombres para que se muestren automáticamente.
-
-- Home / listado:
-
-  ![Home](public/screenshots/Home.jpeg)
-
-- Detalle de producto:
-
-  ![Detalle](public/screenshots/Product-Detail.jpeg)
-
-- Nuevo producto (form):
-
-  ![Nuevo producto](public/screenshots/New-Product.jpeg)
-
-- Carrito:
-
-  ![Carrito](public/screenshots/Cart.jpeg)
-
-- Favoritos / lista:
-
-  ![Favoritos](public/screenshots/Favorites.jpeg)
-
-> Nota: reemplaza estos archivos por capturas reales (PNG/JPG) manteniendo la ruta `public/screenshots/`.
-
-## 🧰 Tecnologías y extensiones utilizadas
-
-### Tecnologías empleadas
-
-- **React**: ^19.2.5 (react, react-dom)
-- **React Router**: ^7.14.0 (`react-router-dom`)
-- **UI**: Bootstrap 5 (`bootstrap`) + Bootswatch
-- **Build / Bundler**: Vite (^8.0.8)
-- **TypeScript**: ^6.0.2
-- **Dependencias dev relevantes**: Para lograr un codigo lejible y de calidad, se emplean ESLint (^10.x) y plugins (`@typescript-eslint`, `eslint-plugin-react`, `eslint-plugin-simple-import-sort`, `eslint-plugin-perfectionist`), `@vitejs/plugin-react`.
-
-Archivos clave: `public/productos.json`, imágenes en `public/images/products/`, providers en `src/contexts/` y hooks en `src/hooks/`.
-
-### Extensiones de VS Code Empleadas
-
-- **SonarQube**: Para análisis de calidad del código y detección de problemas estáticos.
-- **SonarLint**: Plugin en el IDE para análisis en tiempo real.
-- **ESLint** — `dbaeumer.vscode-eslint` (el proyecto incluye configuración de ESLint y plugins para TypeScript y React).
-- **Prettier** — `esbenp.prettier-vscode` (formateo automático).
-- **GitLens** — `eamodio.gitlens` (útil para historial y revisiones rápidas).
-- **Editor: TypeScript/JS built-in** — la funcionalidad de TypeScript viene con VS Code; asegúrate de usar la versión de TypeScript del workspace si la necesitas.
+| Categoría | Tecnología | Versión |
+|-----------|-----------|---------|
+| **Lenguaje** | TypeScript | ^6.0.2 |
+| **Framework** | React | ^19.2.5 |
+| **Build** | Vite | ^8.0.8 |
+| **UI** | Tailwind CSS v4 + principios Tailwind UI | ^4.3.2 |
+| **Backend** | Firebase (Auth + Firestore) | ^12.14.0 |
+| **Ruteo** | React Router | ^7.14.0 |
+| **Íconos** | react-icons | ^5.6.0 |
+| **Notificaciones** | react-toastify | ^11.1.0 |
+| **SEO** | react-helmet-async | ^3.0.0 |
+| **Date picker** | react-datepicker | ^9.1.0 |
+| **Estado** | use-context-selector | ^2.0.0 |
+| **Linting** | ESLint 9 + 10+ plugins | ^9.39.4 |
+| **Formateo** | Prettier | — |
 
 ---
+
+## ⚙️ Convenciones del proyecto
+
+- **ESLint estricto**: `@typescript-eslint/explicit-function-return-type: "error"` — toda función requiere tipo de retorno explícito
+- **Destructuring**: prohibido en firmas de función (se hace dentro del cuerpo)
+- **Orden**: imports, interfaces, props JSX, miembros de clase — todo ordenado alfabéticamente por `perfectionist`
+- **Variables no usadas**: error (`noUnusedLocals`, `noUnusedParameters`)
+- **No hay tests** — el proyecto no incluye framework de testing
+- **AGENTS.md** local en la raíz del proyecto (ignorado por git)
+
+---
+
+## 🔍 Archivos clave
+
+| Archivo | Propósito |
+|---------|-----------|
+| `src/components/AppRoutes.tsx` | Definición de todas las rutas con lazy loading |
+| `src/components/AppProviders.tsx` | Nesting de los 9 context providers |
+| `src/firebase.ts` | Inicialización Firebase (valida env vars al inicio) |
+| `src/contexts/Auth/AuthProvider.tsx` | Estado de autenticación + Firebase Auth |
+| `src/components/auth/guards/AuthGuard.tsx` | Guard de rutas (guest/protected + roles) |
+| `src/App.Constants.ts` | Nombres de colecciones Firestore |
+| `eslint.config.js` | 182 líneas de configuración ESLint |
+| `tsconfig.app.json` | TypeScript strict config para la app |
+| `public/productos.json` | Datos de ejemplo para precarga inicial |

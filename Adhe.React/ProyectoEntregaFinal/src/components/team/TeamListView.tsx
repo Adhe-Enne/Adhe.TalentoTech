@@ -21,7 +21,11 @@ const TeamListView: React.FC<TeamListViewProps> = (props) => {
     return <LoadingSpinner message="Cargando equipo..." />;
   }
   if (error) {
-    return <div aria-live="assertive" className="text-muted italic" role="alert">Error: {error}</div>;
+    return (
+      <div aria-live="assertive" className="text-muted italic" role="alert">
+        Error: {error}
+      </div>
+    );
   }
 
   return (
@@ -50,7 +54,13 @@ const TeamListView: React.FC<TeamListViewProps> = (props) => {
                     </a>
                   )}
                   {linkedin && (
-                    <a aria-label={`LinkedIn de ${nombre}`} className="text-xs text-gray-500 hover:text-[#0A66C2] transition-colors duration-200 inline-flex items-center gap-1 mt-0.5" href={linkedin} rel="noopener noreferrer" target="_blank">
+                    <a
+                      aria-label={`LinkedIn de ${nombre}`}
+                      className="text-xs text-gray-500 hover:text-[#0A66C2] transition-colors duration-200 inline-flex items-center gap-1 mt-0.5"
+                      href={linkedin}
+                      rel="noopener noreferrer"
+                      target="_blank"
+                    >
                       <FaLinkedin aria-hidden="true" />
                       LinkedIn
                     </a>

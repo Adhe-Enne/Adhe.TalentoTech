@@ -54,7 +54,10 @@ const TagAutocomplete: React.FC<TagAutocompleteProps> = (props) => {
           value={tagQuery}
         />
         {showSuggestions && (suggestions.length > 0 || tagQuery.trim().length > 0) && (
-          <ul className="absolute left-0 right-0 top-[44px] bg-white border border-[rgba(33,53,71,0.08)] shadow-[0_6px_18px_rgba(33,53,71,0.04)] rounded-lg list-none mt-[6px] p-[6px_0] z-[120] max-h-[200px] overflow-auto" ref={suggestionsRef}>
+          <ul
+            className="absolute left-0 right-0 top-[44px] bg-white border border-[rgba(33,53,71,0.08)] shadow-[0_6px_18px_rgba(33,53,71,0.04)] rounded-lg list-none mt-[6px] p-[6px_0] z-[120] max-h-[200px] overflow-auto"
+            ref={suggestionsRef}
+          >
             {suggestions.map((s) => (
               <li key={s.id}>
                 <button

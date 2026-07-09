@@ -45,9 +45,7 @@ const ProfileView: React.FC<ProfileViewProps> = (props) => {
           {/* Info */}
           <div className="text-center px-6 pt-3 pb-2">
             <h3 className="text-xl font-bold text-gray-900 mb-1">{user?.email ?? "Sin sesión"}</h3>
-            <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold ${user?.rol === "admin" ? "bg-warning/20 text-warning" : "bg-brand/10 text-brand"}`}>
-              {roleLabel}
-            </span>
+            <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold ${user?.rol === "admin" ? "bg-warning/20 text-warning" : "bg-brand/10 text-brand"}`}>{roleLabel}</span>
           </div>
 
           {/* Divider */}

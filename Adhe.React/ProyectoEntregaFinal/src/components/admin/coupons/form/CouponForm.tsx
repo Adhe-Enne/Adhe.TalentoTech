@@ -1,5 +1,6 @@
-import React, { useCallback, useState } from "react";
-import { FaPlus } from "react-icons/fa";
+import React, { useCallback, useRef, useState } from "react";
+import DatePicker from "react-datepicker";
+import { FaCalendarAlt, FaPlus, FaTimes } from "react-icons/fa";
 
 import useCoupons from "../../../../hooks/selectors/useCoupons";
 import { couponService } from "../../../../services/couponService";
@@ -22,6 +23,8 @@ const CouponForm: React.FC = () => {
   const [errors, setErrors] = useState<FormErrors>({});
   const [submitting, setSubmitting] = useState(false);
   const [isDuplicate, setIsDuplicate] = useState(false);
+  const [showPicker, setShowPicker] = useState(false);
+  const pickerRef: React.RefObject<HTMLDivElement | null> = useRef<HTMLDivElement | null>(null);
   const { createCoupon } = useCoupons();
 
   const handleChange: (field: keyof FormErrors, value: string) => void = useCallback((field: keyof FormErrors, value: string): void => {
@@ -116,7 +119,7 @@ const CouponForm: React.FC = () => {
   const hasErrors: boolean = Object.keys(errors).length > 0;
 
   return (
-    <form className="bg-white rounded-xl shadow-sm overflow-hidden mb-4" onSubmit={handleSubmit}>
+    <form className="bg-white rounded-xl shadow-sm overflow-visible mb-4" onSubmit={handleSubmit}>
       <div className="p-4">
         <h5 className="text-lg font-semibold mb-3">Crear cupon</h5>
         <div className="grid grid-cols-12 gap-3">
@@ -135,10 +138,65 @@ const CouponForm: React.FC = () => {
             {errors.discount && <div className="text-danger text-sm mt-1">{errors.discount}</div>}
           </div>
           <div className="col-span-12 sm:col-span-5">
-            <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="couponExpiresAt">
+            <label className="block text-sm font-medium text-gray-700 mb-1">
               Vencimiento <small className="text-gray-500">(opcional)</small>
             </label>
-            <input className={`w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-accent focus:border-accent ${errors.expiresAt ? "border-danger focus:ring-danger/30 focus:border-danger" : "border-gray-300"}`} id="couponExpiresAt" min={today} onChange={(e) => handleChange("expiresAt", e.target.value)} type="date" value={expiresAt} />
+            <div className="relative inline-block" ref={pickerRef}>
+              <button
+                aria-label="Seleccionar fecha de vencimiento"
+                className={`inline-flex items-center gap-2 px-3 py-1.5 text-sm font-medium rounded-lg border transition-all duration-150 cursor-pointer ${errors.expiresAt ? "border-danger" : "border-gray-300"}`}
+                onClick={() => setShowPicker(!showPicker)}
+                type="button"
+              >
+                <FaCalendarAlt className="w-3.5 h-3.5 text-gray-400" />
+                {expiresAt ? (
+                  <span className="text-gray-900">{new Date(expiresAt + "T00:00:00").toLocaleDateString("es-AR", { day: "numeric", month: "short", year: "numeric" })}</span>
+                ) : (
+                  <span className="text-gray-400 italic">Sin vencimiento</span>
+                )}
+              </button>
+              {showPicker && (
+                <div className="absolute z-50 mt-1 left-0">
+                  <DatePicker
+                    calendarClassName="!border-gray-200 !shadow-lg"
+                    customInput={<div />}
+                    dateFormat="dd/MM/yyyy"
+                    inline
+                    minDate={new Date(today)}
+                    onChange={(date: Date | null) => {
+                      if (date) {
+                        const y: string = String(date.getFullYear());
+                        const m: string = String(date.getMonth() + 1).padStart(2, "0");
+                        const d: string = String(date.getDate()).padStart(2, "0");
+                        handleChange("expiresAt", `${y}-${m}-${d}`);
+                      }
+                      setShowPicker(false);
+                    }}
+                    onClickOutside={() => setShowPicker(false)}
+                    open
+                    selected={expiresAt ? new Date(expiresAt + "T00:00:00") : null}
+                    selectsEnd
+                    showMonthDropdown
+                    showYearDropdown
+                    todayButton="Hoy"
+                  />
+                  {expiresAt && (
+                    <button
+                      aria-label="Eliminar fecha de vencimiento"
+                      className="absolute top-2 right-2 p-1 rounded-full bg-gray-100 hover:bg-red-100 text-gray-500 hover:text-red-600 transition-colors cursor-pointer"
+                      onClick={(e: React.MouseEvent) => {
+                        e.stopPropagation();
+                        handleChange("expiresAt", "");
+                        setShowPicker(false);
+                      }}
+                      type="button"
+                    >
+                      <FaTimes className="w-3 h-3" />
+                    </button>
+                  )}
+                </div>
+              )}
+            </div>
             {errors.expiresAt && <div className="text-danger text-sm mt-1">{errors.expiresAt}</div>}
           </div>
         </div>

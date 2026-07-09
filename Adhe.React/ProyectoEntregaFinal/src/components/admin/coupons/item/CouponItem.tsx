@@ -37,7 +37,7 @@ const CouponItem: React.FC<CouponItemProps> = (props) => {
 
   const handleDateChange: (date: Date | null) => Promise<void> = useCallback(async (date: Date | null): Promise<void> => {
     setShowPicker(false);
-    const newDate: string | null = date ? date.toISOString().split("T")[0] : null;
+    const newDate: string | null = date ? `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}` : null;
     if (newDate === (coupon.expiresAt ?? null)) {
       return;
     }
@@ -101,9 +101,8 @@ const CouponItem: React.FC<CouponItemProps> = (props) => {
                 calendarClassName="!border-gray-200 !shadow-lg"
                 customInput={<div />}
                 dateFormat="dd/MM/yyyy"
-                inline
-                maxDate={new Date()}
-                minDate={new Date(today)}
+                    inline
+                    minDate={new Date(today)}
                 onChange={(date: Date | null) => void handleDateChange(date)}
                 onClickOutside={() => setShowPicker(false)}
                 open
