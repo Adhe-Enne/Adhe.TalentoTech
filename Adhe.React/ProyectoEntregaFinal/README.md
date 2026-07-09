@@ -58,9 +58,9 @@ Si falta alguna, la app lanza un error claro al iniciar.
 
 El sistema usa **Firebase Auth** con dos roles:
 
-| Rol | Acceso |
-|-----|--------|
-| `user` | Navegar, comprar, historial de órdenes, perfil |
+| Rol     | Acceso                                                                 |
+| ------- | ---------------------------------------------------------------------- |
+| `user`  | Navegar, comprar, historial de órdenes, perfil                         |
 | `admin` | Todo lo anterior + `/admin/*` (dashboard, productos, cupones, pedidos) |
 
 El componente `AuthGuard` envuelve las rutas y redirige según el estado (`guest`/`protected`) y el rol del usuario.
@@ -70,42 +70,52 @@ El componente `AuthGuard` envuelve las rutas y redirige según el estado (`guest
 ## 🏠 Pantallas principales
 
 **🏠 Home / Catálogo**
+
 - Lista de productos paginada desde Firestore
 - Búsqueda por texto (`?q=...`) y filtro de favoritos (`?filter=favorites`)
 - Carga infinita (paginación con `startAfter`)
 
 **🔎 Detalle de producto**
+
 - Ruta `/producto/:id` con imagen, descripción, precio y control de cantidad
 
 **🧺 Carrito**
+
 - Persiste en `localStorage` con key por usuario (`tt_cart_{uid}`)
 - Aumentar/disminuir cantidad, eliminar items, ver total
 - Soporte para **cupones de descuento** (porcentaje, monto fijo)
 
 **💳 Checkout**
+
 - Formulario de envío con validación
 - Resumen de orden y total con descuento aplicado
 - Confirmación y almacenamiento en Firestore (`orders_purchases`)
 
 **📦 Órdenes**
+
 - `/mis-ordenes` — historial de compras del usuario
 - `/orden/:id` — detalle y confirmación de una orden
 
 **💙 Favoritos**
+
 - Marcar/desmarcar desde la tarjeta (♥)
 - Persisten en `localStorage` con clave `tt_favorites`
 - Filtro especial en Home: `?filter=favorites`
 
 **✉️ Contacto**
+
 - Formulario de contacto simulado + directorio del equipo desde Firestore
 
 **👤 Perfil**
+
 - `/perfil` — datos del usuario autenticado
 
 **👥 Equipo**
+
 - `/equipo` — vista completa del equipo desde Firestore (`team_members`)
 
 **🔔 Notificaciones**
+
 - Sistema integrado vía `react-toastify` con variantes: `success`, `info`, `warning`, `error`
 
 ---
@@ -114,14 +124,14 @@ El componente `AuthGuard` envuelve las rutas y redirige según el estado (`guest
 
 Todas las rutas bajo `/admin/*` requieren rol `admin`.
 
-| Ruta | Función |
-|------|---------|
-| `/admin` | Dashboard con métricas (ventas, órdenes, productos) |
-| `/admin/productos` | Listado y gestión de productos |
-| `/admin/productos/nuevo` | Crear producto (con categoría, etiquetas, imágenes) |
-| `/admin/productos/:id/editar` | Editar producto existente |
-| `/admin/cupones` | CRUD de cupones (activar/desactivar) |
-| `/admin/ordenes` | Listado de pedidos de todos los usuarios |
+| Ruta                          | Función                                             |
+| ----------------------------- | --------------------------------------------------- |
+| `/admin`                      | Dashboard con métricas (ventas, órdenes, productos) |
+| `/admin/productos`            | Listado y gestión de productos                      |
+| `/admin/productos/nuevo`      | Crear producto (con categoría, etiquetas, imágenes) |
+| `/admin/productos/:id/editar` | Editar producto existente                           |
+| `/admin/cupones`              | CRUD de cupones (activar/desactivar)                |
+| `/admin/ordenes`              | Listado de pedidos de todos los usuarios            |
 
 ---
 
@@ -154,26 +164,26 @@ En `src/services/`: `authService`, `categoryService`, `couponService`, `exchange
 
 ## 🗺️ Rutas principales
 
-| Ruta | Componente | Acceso |
-|------|-----------|--------|
-| `/login` | Login | Invitados |
-| `/registro` | Register | Invitados |
-| `/` | Home (catálogo) | Usuarios |
-| `/productos` | Home (catálogo) | Usuarios |
-| `/producto/:id` | Detalle producto | Usuarios |
-| `/carrito` | Cart | Usuarios |
-| `/checkout` | Checkout | Usuarios |
-| `/orden/:id` | Confirmación orden | Usuarios |
-| `/mis-ordenes` | Historial órdenes | Usuarios |
-| `/perfil` | Perfil usuario | Usuarios |
-| `/equipo` | Vista equipo | Usuarios |
-| `/contacto` | Contacto | Usuarios |
-| `/admin` | Dashboard admin | Admin |
-| `/admin/productos` | Lista productos | Admin |
-| `/admin/productos/nuevo` | Crear producto | Admin |
-| `/admin/productos/:id/editar` | Editar producto | Admin |
-| `/admin/cupones` | Cupones | Admin |
-| `/admin/ordenes` | Órdenes | Admin |
+| Ruta                          | Componente         | Acceso    |
+| ----------------------------- | ------------------ | --------- |
+| `/login`                      | Login              | Invitados |
+| `/registro`                   | Register           | Invitados |
+| `/`                           | Home (catálogo)    | Usuarios  |
+| `/productos`                  | Home (catálogo)    | Usuarios  |
+| `/producto/:id`               | Detalle producto   | Usuarios  |
+| `/carrito`                    | Cart               | Usuarios  |
+| `/checkout`                   | Checkout           | Usuarios  |
+| `/orden/:id`                  | Confirmación orden | Usuarios  |
+| `/mis-ordenes`                | Historial órdenes  | Usuarios  |
+| `/perfil`                     | Perfil usuario     | Usuarios  |
+| `/equipo`                     | Vista equipo       | Usuarios  |
+| `/contacto`                   | Contacto           | Usuarios  |
+| `/admin`                      | Dashboard admin    | Admin     |
+| `/admin/productos`            | Lista productos    | Admin     |
+| `/admin/productos/nuevo`      | Crear producto     | Admin     |
+| `/admin/productos/:id/editar` | Editar producto    | Admin     |
+| `/admin/cupones`              | Cupones            | Admin     |
+| `/admin/ordenes`              | Órdenes            | Admin     |
 
 ---
 
@@ -231,21 +241,21 @@ ProyectoEntregaFinal/
 
 ## 🧰 Tecnologías
 
-| Categoría | Tecnología | Versión |
-|-----------|-----------|---------|
-| **Lenguaje** | TypeScript | ^6.0.2 |
-| **Framework** | React | ^19.2.5 |
-| **Build** | Vite | ^8.0.8 |
-| **UI** | Tailwind CSS v4 + principios Tailwind UI | ^4.3.2 |
-| **Backend** | Firebase (Auth + Firestore) | ^12.14.0 |
-| **Ruteo** | React Router | ^7.14.0 |
-| **Íconos** | react-icons | ^5.6.0 |
-| **Notificaciones** | react-toastify | ^11.1.0 |
-| **SEO** | react-helmet-async | ^3.0.0 |
-| **Date picker** | react-datepicker | ^9.1.0 |
-| **Estado** | use-context-selector | ^2.0.0 |
-| **Linting** | ESLint 9 + 10+ plugins | ^9.39.4 |
-| **Formateo** | Prettier | — |
+| Categoría          | Tecnología                               | Versión  |
+| ------------------ | ---------------------------------------- | -------- |
+| **Lenguaje**       | TypeScript                               | ^6.0.2   |
+| **Framework**      | React                                    | ^19.2.5  |
+| **Build**          | Vite                                     | ^8.0.8   |
+| **UI**             | Tailwind CSS v4 + principios Tailwind UI | ^4.3.2   |
+| **Backend**        | Firebase (Auth + Firestore)              | ^12.14.0 |
+| **Ruteo**          | React Router                             | ^7.14.0  |
+| **Íconos**         | react-icons                              | ^5.6.0   |
+| **Notificaciones** | react-toastify                           | ^11.1.0  |
+| **SEO**            | react-helmet-async                       | ^3.0.0   |
+| **Date picker**    | react-datepicker                         | ^9.1.0   |
+| **Estado**         | use-context-selector                     | ^2.0.0   |
+| **Linting**        | ESLint 9 + 10+ plugins                   | ^9.39.4  |
+| **Formateo**       | Prettier                                 | —        |
 
 ---
 
@@ -256,20 +266,19 @@ ProyectoEntregaFinal/
 - **Orden**: imports, interfaces, props JSX, miembros de clase — todo ordenado alfabéticamente por `perfectionist`
 - **Variables no usadas**: error (`noUnusedLocals`, `noUnusedParameters`)
 - **No hay tests** — el proyecto no incluye framework de testing
-- **AGENTS.md** local en la raíz del proyecto (ignorado por git)
 
 ---
 
 ## 🔍 Archivos clave
 
-| Archivo | Propósito |
-|---------|-----------|
-| `src/components/AppRoutes.tsx` | Definición de todas las rutas con lazy loading |
-| `src/components/AppProviders.tsx` | Nesting de los 9 context providers |
-| `src/firebase.ts` | Inicialización Firebase (valida env vars al inicio) |
-| `src/contexts/Auth/AuthProvider.tsx` | Estado de autenticación + Firebase Auth |
-| `src/components/auth/guards/AuthGuard.tsx` | Guard de rutas (guest/protected + roles) |
-| `src/App.Constants.ts` | Nombres de colecciones Firestore |
-| `eslint.config.js` | 182 líneas de configuración ESLint |
-| `tsconfig.app.json` | TypeScript strict config para la app |
-| `public/productos.json` | Datos de ejemplo para precarga inicial |
+| Archivo                                    | Propósito                                           |
+| ------------------------------------------ | --------------------------------------------------- |
+| `src/components/AppRoutes.tsx`             | Definición de todas las rutas con lazy loading      |
+| `src/components/AppProviders.tsx`          | Nesting de los 9 context providers                  |
+| `src/firebase.ts`                          | Inicialización Firebase (valida env vars al inicio) |
+| `src/contexts/Auth/AuthProvider.tsx`       | Estado de autenticación + Firebase Auth             |
+| `src/components/auth/guards/AuthGuard.tsx` | Guard de rutas (guest/protected + roles)            |
+| `src/App.Constants.ts`                     | Nombres de colecciones Firestore                    |
+| `eslint.config.js`                         | 182 líneas de configuración ESLint                  |
+| `tsconfig.app.json`                        | TypeScript strict config para la app                |
+| `public/productos.json`                    | Datos de ejemplo para precarga inicial              |
